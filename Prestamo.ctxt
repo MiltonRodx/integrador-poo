@@ -1,0 +1,20 @@
+#BlueJ class context
+#Tue Oct 27 20:25:46 ART 2026
+comment0.target=Prestamo
+comment1.params=p_fechaRetiro
+comment1.target=void setFechaRetiro(java.util.Calendar)
+comment2.params=p_fechaDevolucion
+comment2.target=void setFechaDevolucion(java.util.Calendar)
+comment3.params=p_socio
+comment3.target=void setSocio(Socio)
+comment4.target=java.util.Calendar getFechaRetiro()
+comment5.target=java.util.Calendar getFechaDevolucion()
+comment6.target=Socio getSocio()
+comment7.params=p_fecha
+comment7.target=void registrarFechaDevolucion(java.util.Calendar)
+comment8.params=p_fecha
+comment8.target=boolean vencido(java.util.Calendar)
+comment8.text=Vencido si la fecha pasada es mayor a\: fecha de retiro + dias de prestamo del socio
+comment9.target=java.lang.String toString()
+comment9.text=To String es largo porque yo decidi dar formato aca\r\n       lo pense en vencimiento tambien pero como debia hacerlo en dos metodos\r\n       de registrar fecha y vencimiento iban a ser muy largos ahi los codigos\r\ny repetitivos
+numComments=10
