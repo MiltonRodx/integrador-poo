@@ -1,49 +1,47 @@
-# 📚 Trabajo Integrador POO - Gestión de Biblioteca
+# Trabajo Integrador de Programación Orientada a Objetos - Gestión de Biblioteca
 
-¡Bienvenid@s al repositorio del **Trabajo Integrador de Programación Orientada a Objetos**! 
+<p align="center">
+  <img src="./portada-biblioteca.png" alt="Capibara bibliotecario" width="850">
+</p>
 
-Este proyecto modela un sistema de **Gestión de Biblioteca** en Java, administrando el préstamo y devolución de libros para socios docentes y estudiantes, gestionando fechas de vencimiento, sanciones y reportes.
+## Descripción del proyecto
 
----
+Este proyecto consiste en el desarrollo de un sistema de gestión de biblioteca en Java, realizado para la asignatura Programación Orientada a Objetos.
 
-## 🖼️ Presentación del Proyecto
-![Capibara Bibliotecario](./Capibara%20bibliotecario%20en%20la%20biblioteca%20acogedora.png)
+El sistema permite administrar libros, socios y préstamos, contemplando las diferencias entre docentes y estudiantes. También incluye el control de fechas de vencimiento, devoluciones, morosidad y la generación de reportes.
 
----
+## Organización del proyecto
 
-## 🛠️ Estructura del Proyecto y División de Tareas
+El desarrollo se encuentra organizado según la división de clases asignada a los integrantes del equipo.
 
-El desarrollo se encuentra organizado según la división de clases asignada al equipo de trabajo:
+| Subgrupo | Integrantes | Clases asignadas |
+|---|---|---|
+| Grupo 1 | 1 integrante | `Prestamo`, `Socio` |
+| Grupo 2 | 1 integrante | `Estudiante`, `Docente` |
+| Grupo 3 | 1 integrante | `Libro` |
+| Grupo 4 | 3 integrantes | `Biblioteca` |
+| Equipo completo | Todos | `GestionBiblioteca` (clase ejecutable) |
 
-| Subgrupo | Integrantes | Clases Asignadas |
-| :--- | :--- | :--- |
-| **Grupo 1** | 1 Integrante | `Prestamo`, `Socio` |
-| **Grupo 2** | 1 Integrante | `Estudiante`, `Docente` |
-| **Grupo 3** | 1 Integrante | `Libro` |
-| **Grupo 4** | 3 Integrantes | `Biblioteca` |
-| **Equipo Completo** | Todos | `GestionBiblioteca` *(Clase ejecutable / Main)* |
+## Funcionamiento del sistema
 
----
+La clase `GestionBiblioteca` coordina las principales operaciones del programa:
 
-## 🚀 Flujo Principal del Executable (`GestionBiblioteca`)
+1. Creación de la biblioteca y carga inicial de libros y socios.
+2. Registro de docentes y estudiantes.
+3. Gestión de préstamos y devoluciones mediante fechas.
+4. Control del límite de préstamos de los estudiantes y verificación de morosidad.
+5. Consulta de libros, socios y títulos únicos.
+6. Generación de reportes y búsqueda de socios que tienen libros prestados.
 
-La clase ejecutable dentro de la rama `main` coordina los siguientes pasos clave:
+## Tecnologías utilizadas
 
-1. **Instanciación:** Se crea la `Biblioteca` principal.
-2. **Alta de Datos:** Carga inicial de ejemplares de `Libro` y socios de tipo `Docente` y `Estudiante`.
-3. **Gestión de Préstamos:**
-   - Registro de préstamos asociando `Socio`, `Libro` y la fecha de retiro mediante `Calendar`.
-   - Control de reglas de negocio (límite de 3 libros para estudiantes y verificación de morosidad).
-   - Devolución de libros actualizando la fecha y calculando docentes responsables.
-4. **Emisión de Reportes:**
-   - Cantidad de socios por tipo.
-   - Listado de libros, socios y títulos únicos.
-   - Consulta de morosidad y búsqueda del socio poseedor de un libro específico.
+- Java: desarrollo del sistema.
+- BlueJ: entorno de desarrollo.
+- Git: control de versiones.
+- GitHub: alojamiento del repositorio y trabajo colaborativo.
 
----
+## Conceptos aplicados
 
-## 💻 Tecnologías Utilizadas
+Durante el desarrollo se trabajan conceptos de programación orientada a objetos, como clases, objetos, encapsulamiento, herencia, polimorfismo, asociaciones entre objetos y colecciones.
 
-- **Lenguaje:** Java 
-- **Entorno de Desarrollo:** BlueJ
-- **Control de Versiones:** Git & GitHub
+También se utiliza `Calendar` para gestionar las fechas relacionadas con los préstamos y las devoluciones.
