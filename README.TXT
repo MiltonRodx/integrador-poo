@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./Capibara%20bibliotecario%20en%20la%20biblioteca%20acogedora.png" alt="Capibara bibliotecario - Gestión de Biblioteca" width="100%">
+  <img src="./Capibara bibliotecario en la biblioteca acogedora.png" alt="Capibara bibliotecario - Gestión de Biblioteca" width="100%">
 </p>
 
 <h1 align="center">Trabajo Integrador de Programación Orientada a Objetos</h1>
@@ -32,7 +32,7 @@ El desarrollo se encuentra dividido según las clases asignadas a los integrante
 </td>
 <td width="35%" align="center" valign="middle">
 
-<img src="./Capibara%20bibliotecario%20en%20la%20biblioteca%20acogedora.png" alt="Ilustración de la biblioteca" width="100%">
+<img src="./Capibara bibliotecario en la biblioteca acogedora.png" alt="Ilustración de la biblioteca" width="100%">
 
 <p><strong>Gestión de Biblioteca</strong></p>
 <p><em>Organización, préstamos y administración de libros.</em></p>
