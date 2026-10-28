@@ -1,47 +1,75 @@
-# Trabajo Integrador de Programación Orientada a Objetos - Gestión de Biblioteca
 
 <p align="center">
-  <img src="./portada-biblioteca.png" alt="Capibara bibliotecario" width="850">
+  <img src="./portada-biblioteca.png" alt="Capibara bibliotecario - Gestión de Biblioteca" width="100%">
 </p>
+
+<h1 align="center">Trabajo Integrador de Programación Orientada a Objetos</h1>
+<h2 align="center">Gestión de Biblioteca</h2>
+
+---
+
+<table>
+<tr>
+<td width="65%" valign="top">
 
 ## Descripción del proyecto
 
-Este proyecto consiste en el desarrollo de un sistema de gestión de biblioteca en Java, realizado para la asignatura Programación Orientada a Objetos.
+El presente repositorio corresponde al Trabajo Integrador de la asignatura **Programación Orientada a Objetos**.
 
-El sistema permite administrar libros, socios y préstamos, contemplando las diferencias entre docentes y estudiantes. También incluye el control de fechas de vencimiento, devoluciones, morosidad y la generación de reportes.
+El proyecto consiste en el desarrollo de un sistema de **Gestión de Biblioteca en Java**, destinado a administrar libros, socios y préstamos, contemplando las particularidades de docentes y estudiantes, las fechas de vencimiento, las devoluciones, las sanciones por morosidad y la generación de reportes.
 
-## Organización del proyecto
+## Organización del trabajo
 
-El desarrollo se encuentra organizado según la división de clases asignada a los integrantes del equipo.
+El desarrollo se encuentra dividido según las clases asignadas a los integrantes del equipo.
 
-| Subgrupo | Integrantes | Clases asignadas |
-|---|---|---|
-| Grupo 1 | 1 integrante | `Prestamo`, `Socio` |
-| Grupo 2 | 1 integrante | `Estudiante`, `Docente` |
-| Grupo 3 | 1 integrante | `Libro` |
-| Grupo 4 | 3 integrantes | `Biblioteca` |
-| Equipo completo | Todos | `GestionBiblioteca` (clase ejecutable) |
+| Subgrupo | Clases asignadas |
+| :--- | :--- |
+| Grupo 1 | `Prestamo`, `Socio` |
+| Grupo 2 | `Estudiante`, `Docente` |
+| Grupo 3 | `Libro` |
+| Grupo 4 | `Biblioteca` |
+| Equipo completo | `GestionBiblioteca` |
+
+</td>
+<td width="35%" align="center" valign="middle">
+
+<img src="./portada-biblioteca.png" alt="Ilustración de la biblioteca" width="100%">
+
+<p><strong>Gestión de Biblioteca</strong></p>
+<p><em>Organización, préstamos y administración de libros.</em></p>
+
+</td>
+</tr>
+</table>
+
+---
 
 ## Funcionamiento del sistema
 
-La clase `GestionBiblioteca` coordina las principales operaciones del programa:
+La clase ejecutable `GestionBiblioteca` coordina las principales operaciones del programa.
 
 1. Creación de la biblioteca y carga inicial de libros y socios.
-2. Registro de docentes y estudiantes.
+2. Registro de socios docentes y estudiantes.
 3. Gestión de préstamos y devoluciones mediante fechas.
-4. Control del límite de préstamos de los estudiantes y verificación de morosidad.
+4. Control del límite de tres libros para estudiantes y verificación de morosidad.
 5. Consulta de libros, socios y títulos únicos.
-6. Generación de reportes y búsqueda de socios que tienen libros prestados.
+6. Generación de reportes y búsqueda del socio que posee un libro determinado.
 
 ## Tecnologías utilizadas
 
-- Java: desarrollo del sistema.
-- BlueJ: entorno de desarrollo.
-- Git: control de versiones.
-- GitHub: alojamiento del repositorio y trabajo colaborativo.
+| Tecnología | Descripción |
+| :--- | :--- |
+| Java | Lenguaje de programación utilizado para desarrollar el sistema. |
+| BlueJ | Entorno de desarrollo. |
+| Git | Control de versiones. |
+| GitHub | Alojamiento del repositorio y colaboración. |
 
 ## Conceptos aplicados
 
-Durante el desarrollo se trabajan conceptos de programación orientada a objetos, como clases, objetos, encapsulamiento, herencia, polimorfismo, asociaciones entre objetos y colecciones.
+Durante el desarrollo se aplican conceptos de programación orientada a objetos, entre ellos clases y objetos, encapsulamiento, herencia, polimorfismo, asociaciones entre objetos y colecciones. También se utiliza `Calendar` para trabajar con las fechas de los préstamos y las devoluciones.
 
-También se utiliza `Calendar` para gestionar las fechas relacionadas con los préstamos y las devoluciones.
+---
+
+<p align="center">
+  <em>Trabajo Integrador · Programación Orientada a Objetos · Java</em>
+</p>
