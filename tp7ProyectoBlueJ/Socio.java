@@ -23,7 +23,7 @@ public Socio(int p_dniSocio, String p_nombre, int p_diasPrestamos){
  this.setPrestamos(new ArrayList<Prestamo>());
 }
 
-public Socio(int p_dniSocio, String p_nombre, int p_diasPrestamos,Prestamo p_prestamos){
+public Socio(int p_dniSocio, String p_nombre, int p_diasPrestamos,ArrayList<Prestamo>  p_prestamos){
 this.setDniSocio(p_dniSocio);
 this.setNombre(p_nombre);
 this.setDiasPrestamos(p_diasPrestamos);
