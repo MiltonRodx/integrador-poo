@@ -1,0 +1,26 @@
+#BlueJ class context
+#Wed Oct 28 14:56:42 ART 2026
+comment0.target=Libro
+comment1.params=p_titulo p_edicion p_editorial p_anio p_prestamos
+comment1.target=Libro(java.lang.String, int, java.lang.String, int, java.util.ArrayList)
+comment10.target=int getEdicion()
+comment11.target=java.lang.String getEditorial()
+comment12.target=int getAnio()
+comment13.target=boolean prestado()
+comment14.target=Prestamo ultimoPrestamo()
+comment15.target=java.lang.String toString()
+comment2.params=p_titulo p_edicion p_editorial p_anio
+comment2.target=Libro(java.lang.String, int, java.lang.String, int)
+comment3.params=p_prestamos
+comment3.target=void setPrestamos(java.util.ArrayList)
+comment4.params=p_titulo
+comment4.target=void setTitulo(java.lang.String)
+comment5.params=p_edicion
+comment5.target=void setEdicion(int)
+comment6.params=p_editorial
+comment6.target=void setEditorial(java.lang.String)
+comment7.params=p_anio
+comment7.target=void setAnio(int)
+comment8.target=java.util.ArrayList getPrestamos()
+comment9.target=java.lang.String getTitulo()
+numComments=16
