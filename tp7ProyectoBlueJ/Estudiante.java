@@ -13,7 +13,7 @@ public class Estudiante extends Socio
        this.carrera = p_carrera;
    }
 
-    public getCarrera(){
+    public String getCarrera(){
         return this.carrera;
     }
     
