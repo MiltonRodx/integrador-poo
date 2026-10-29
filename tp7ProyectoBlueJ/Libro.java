@@ -75,7 +75,7 @@ public class Libro
         }
         return false;
         
-}
+    }
     
     public Prestamo ultimoPrestamo(){
         return this.getPrestamos().getLast();

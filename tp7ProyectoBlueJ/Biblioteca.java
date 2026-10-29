@@ -71,7 +71,7 @@ public class Biblioteca {
         boolean agregado = this.agregarLibro(tempLibro);
         
         if (!agregado)
-            System.out.println("No se pudo agregar el libro " + tempLibro.getNombre());
+            System.out.println("No se pudo agregar el libro " + tempLibro.getTitulo());
     }
     
     // +nuevoSocioEstudiante(p_dniSocio: int, p_nombre: String, p_carrera: String): void
