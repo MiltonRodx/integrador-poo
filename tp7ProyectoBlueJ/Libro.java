@@ -66,10 +66,10 @@ public class Libro
     
 
     
-    public boolean prestado(){
+   public boolean prestado(){
         
         for (Prestamo prestamo: this.getPrestamos()){
-            if (prestamo.getLibro().getTitulo().equalsIgnoreCase(this.getTitulo())){
+            if (prestamo.getLibro().equals(this)){
                 return true;
             }
         }
