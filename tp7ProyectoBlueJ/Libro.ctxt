@@ -1,14 +1,18 @@
 #BlueJ class context
-#Thu Oct 29 23:15:28 ART 2026
+#Fri Oct 30 00:18:10 ART 2026
 comment0.target=Libro
 comment1.params=p_titulo p_edicion p_editorial p_anio p_prestamos
 comment1.target=Libro(java.lang.String, int, java.lang.String, int, java.util.ArrayList)
 comment10.target=int getEdicion()
 comment11.target=java.lang.String getEditorial()
 comment12.target=int getAnio()
-comment13.target=boolean prestado()
-comment14.target=Prestamo ultimoPrestamo()
-comment15.target=java.lang.String toString()
+comment13.params=p_prestamo
+comment13.target=boolean agregarPrestamo(Prestamo)
+comment14.params=p_prestamo
+comment14.target=boolean quitarPrestamo(Prestamo)
+comment15.target=boolean prestado()
+comment16.target=Prestamo ultimoPrestamo()
+comment17.target=java.lang.String toString()
 comment2.params=p_titulo p_edicion p_editorial p_anio
 comment2.target=Libro(java.lang.String, int, java.lang.String, int)
 comment3.params=p_prestamos
@@ -23,4 +27,4 @@ comment7.params=p_anio
 comment7.target=void setAnio(int)
 comment8.target=java.util.ArrayList getPrestamos()
 comment9.target=java.lang.String getTitulo()
-numComments=16
+numComments=18

@@ -12,9 +12,12 @@ public class Biblioteca {
     // Atributos
     // -------------------
     private String nombre;
-    private ArrayList<Libro> libros; // 0 a muchos
-    private ArrayList<Socio> socios; // 0 a muchos
+    private ArrayList<Libro> libros; // relacion 0 a muchos.
+    private ArrayList<Socio> socios; // relacion 0 a muchos también.
     
+    // -------------------
+    // Constructores
+    // -------------------
     public Biblioteca(String p_nombre, ArrayList<Libro> p_libros,
                 ArrayList<Socio> p_socios) {
         // Verificación mínima a fin de que estén inicializados las colecciones.
@@ -35,24 +38,21 @@ public class Biblioteca {
         this.setSocios(new ArrayList<>());
     }
 
-    // Metodos
+    // ---------------
     // Accessors
-    
+    // ---------------    
     private void setNombre(String p_nombre) { this.nombre = p_nombre; }
     
     public String getNombre() { return this.nombre; }
     
-    // Libro
     private void setLibros(ArrayList<Libro> p_libros) { this.libros = p_libros; }
     
     public ArrayList<Libro> getLibros() { return this.libros; }
     
-    // Socios
     private void setSocios(ArrayList<Socio> p_socios) { this.socios = p_socios; }
     
     public ArrayList<Socio> getSocios() { return this.socios; }
     
-    // Metodos agregar y quitar 
     public boolean agregarLibro(Libro p_libro) { return this.getLibros().add(p_libro); }
     
     public boolean quitarLibro(Libro p_libro) { return this.getLibros().remove(p_libro); }
@@ -61,8 +61,10 @@ public class Biblioteca {
     
     public boolean quitarSocio(Socio p_socio) { return this.getSocios().remove(p_socio); }
     
-    
+    // ------------------------
     // Metodos especificos.
+    // ------------------------
+    
     // +nuevoLibro(p_titulo: String, p_edicion: int, p_editorial: String, p_anio: int): void
     public void nuevoLibro(String p_titulo, int p_edicion, String p_editorial, int p_anio) {
         // Crear un libro
@@ -100,60 +102,107 @@ public class Biblioteca {
             + tempDocente.getDniSocio());
     }
     
+
     // +prestarLibro(p_fechaRetiro: Calendar, p_socio: Socio, p_libro: Libro): boolean
     public boolean prestarLibro(Calendar p_fechaRetiro, Socio p_socio, Libro p_libro) {
-        // que hay que hacer aca??
-        // TODO
+        // Crea el préstamo y lo agrega al socio y al libro.
+        // Verificamos primero que el libro no esté prestado.
+        if (p_libro.prestado()) return false;
+
+        // Creamos un préstamo.
+        Prestamo tempPrestamo = new Prestamo(p_fechaRetiro, p_socio, p_libro);
+
+        // Lo agregamos al socio; si falla, no hay nada que deshacer.
+        if (!p_socio.agregarPrestamo(tempPrestamo)) return false;
+
+        // Lo agregamos al libro; si falla, deshacemos lo hecho en el socio.
+        if (!p_libro.agregarPrestamo(tempPrestamo)) {
+            p_socio.quitarPrestamo(tempPrestamo);
+            return false;
+        }
+
+        return true;
     }
     
     // +devolverLibro(p_libro: Libro): void
-    public void devolverLibro(Libro p_libro) {
-        // TODO
+    public void devolverLibro(Libro p_libro) throws LibroNoPrestadoException {
+        // devolverLibro(Libro): Asigna la fecha de devolución del préstamo con la fecha actual.
+        // Si el libro no se encuentra prestado lanzar una excepción de tipo LibroNoPrestadoException
+        // con el mensaje descriptivo “El libro <<titulo>> no se puede devolver
+        // ya que se encuentra en la biblioteca”
+        
+        Calendar fechaActual = Calendar.getInstance(); // Obtenemos fecha local.
+        
+        // Verificar que el libro no se encuentre prestado y largar excepcion.
+        if (!p_libro.prestado()) {
+            throw new LibroNoPrestadoException("El libro " + p_libro.getTitulo()
+                + " no se puede devolver ya que se encuentra en la biblioteca.");
+        }
+        
+        p_libro.ultimoPrestamo().registrarFechaDevolucion(fechaActual);
     }
     
     // +cantidadDeSociosPorTipo(p_objeto: String): int
     public int cantidadDeSociosPorTipo(String p_objeto) {
-        // TODO
+        return (int) this.getSocios().stream()
+            .filter(p -> p.soyDeLaClase().equalsIgnoreCase(p_objeto)).count();
     }
     
     // +prestamosVencidos(): ArrayList
-    public ArrayList prestamosVencidos() {
+    public ArrayList<Prestamo> prestamosVencidos() {
         // TODO
+        // devuelve una colección con los préstamos vencidos al día de la fecha.
     }
     
     // +docentesResponsables(): ArrayList
-    public ArrayList docentesResponsables() {
+    public ArrayList<Docente> docentesResponsables() {
         // TODO
+        // devuelve un colección con los docentes responsables.
     }
     
+    
+    // Ruben hacele este
     // +quienTieneElLibro(p_libro: Libro): String
     public String quienTieneElLibro(Libro p_libro) {
         // TODO
+        //  devuelve el nombre del Socio que tiene el libro con el título ingresado, y si no se
+        // encuentra prestado lanza una excepción de tipo LibroNoPrestadoException con el mensaje descriptivo “El
+        // libro se encuentra en la biblioteca”.
     }
     
+    // Ruben hacele este
     // +listaDeSocios(): String
     public String listaDeSocios() {
         // TODO
+        //  devuelve un String según formato1.
     }
     
+    // Ruben hacele este
     // +buscarSocio(p_dni: int): Socio
     public Socio buscarSocio(int p_dni) {
         // TODO
+        // devuelve el Socio que tiene el dni pasado como parámetro, o null si no lo encuentra.
     }
     
+    // ARIEL HACE ESTA VOS
     // +listaDeTitulos(): String
     public String listaDeTitulos() {
         // TODO
+        // devuelve un String con la lista de los títulos con los que cuenta la Biblioteca.
     }
     
+    // ARIEL HACE ESTA VOS
     // +listaDeLibros(): String
     public String listaDeLibros() {
         // TODO
+        // devuelve un String según formato2.
     }
     
+    // ARIEL HACE ESTA VOS
     // +listaDeDocentesResponsables(): String
     public String listaDeDocentesResponsables() {
         // TODO
+        // devuelve un String según formato3.
     }
     
     
