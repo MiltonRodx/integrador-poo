@@ -148,14 +148,35 @@ public class Biblioteca {
             .filter(p -> p.soyDeLaClase().equalsIgnoreCase(p_objeto)).count();
     }
     
-    // +prestamosVencidos(): ArrayList
+      // +prestamosVencidos(): ArrayList
     public ArrayList<Prestamo> prestamosVencidos() {
+        Calendar fecha = new GregorianCalendar();
+        ArrayList<Prestamo> prestamosVencido = new ArrayList<>();
+        for(Libro unLibro : this.getLibros()){
+            Prestamo unPrestamo = unLibro.getprestamo();
+            
+        if (unPrestamo != null && unPrestamo.vencido(fecha)) {
+            prestamosVencido.add(unPrestamo);
+        }
+        }
+        return prestamosVencido ;
         // TODO
         // devuelve una colección con los préstamos vencidos al día de la fecha.
     }
     
     // +docentesResponsables(): ArrayList
     public ArrayList<Docente> docentesResponsables() {
+        ArrayList<Docente> docentesResponsables = new ArrayList<>();
+        
+        for(Socio unSocio : this.getSocios()){
+             String clase = unSocio.soyDelaClase();
+            if(clase.equalsIgnoreCase("Docente") && unSocio.esResponsable() ){
+            docentesResponsables.add((Docente)unSocio);
+            }
+        }
+        
+        
+        return docentesResponsables;
         // TODO
         // devuelve un colección con los docentes responsables.
     }
