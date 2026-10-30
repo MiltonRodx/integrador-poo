@@ -181,24 +181,46 @@ public class Biblioteca {
         // devuelve un colección con los docentes responsables.
     }
     
-    
-    // Ruben hacele este
+ 
     // +quienTieneElLibro(p_libro: Libro): String
-    public String quienTieneElLibro(Libro p_libro) {
+    public String quienTieneElLibro(Libro p_libro)throws LibroNoPrestadoException {
+        
         // TODO
         //  devuelve el nombre del Socio que tiene el libro con el título ingresado, y si no se
         // encuentra prestado lanza una excepción de tipo LibroNoPrestadoException con el mensaje descriptivo “El
         // libro se encuentra en la biblioteca”.
+        if(!p_libro.prestado()){
+         throw new LibroNoPrestadoException("El libro  se encuentra en la biblioteca.");
+        }
+        return "Socio:" + p_libro.getPrestamo().getSocio().getNombre() +" - Libro:"+ p_libro.getTitulo();
     }
     
-    // Ruben hacele este
+  
     // +listaDeSocios(): String
     public String listaDeSocios() {
-        // TODO
-        //  devuelve un String según formato1.
+        int i = 1;
+        String listado = "";
+        int cantDocente = 0;
+        int cantEstudiante = 0;
+        for(Socio unSocio : this.getSocios()){
+         listado += i +")"+ unSocio.toString()+ "\n";
+         i++;
+        if(unSocio.soyDelaClase().equalsIgnoreCase("Docente")){
+        cantDocente ++;
+        }else{
+        cantEstudiante ++;
+        }
+       
     }
+    return listado + "\n" + 
+        "**************************************************" + "\n" +
+        "Cantidad de Socio Del Tipo Estudiante: " + cantEstudiante  + "\n" +
+        "Cantidad de Socio Del Tipo Docente: " + cantDocente   + "\n" +
+        "**************************************************" ;
+}
+   
     
-    // Ruben hacele este
+       // ARIEL HACE ESTA VOS
     // +buscarSocio(p_dni: int): Socio
     public Socio buscarSocio(int p_dni) {
         // TODO
