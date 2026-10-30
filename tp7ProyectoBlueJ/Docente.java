@@ -1,34 +1,35 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
 
-public class Docente extends Socio
-{
-   private String area;
+public class Docente extends Socio {
+    private String area;
    
-   public Docente(int p_dniSocio, String p_nombre, int p_diasPrestamos,ArrayList <Prestamo> p_prestamos,String p_area ){
-       super( p_dniSocio,  p_nombre,  p_diasPrestamos, p_prestamos);
-       this.setArea(p_area);
-   }
-   
-   private void setArea(String p_area){
-       this.area = p_area;
-   }
-   
-   public String getArea(){
-       return this.area;
-   }
-
-   public boolean esResponsable(){
-     for (Prestamo p : this.getPrestamos()) {
-        if (p.vencido(Calendar.getInstance())) {
-            return false; 
-        }
+    public Docente(int p_dniSocio, String p_nombre, int p_diasPrestamos,
+            ArrayList<Prestamo> p_prestamos, String p_area) {
+        super(p_dniSocio, p_nombre, p_diasPrestamos, p_prestamos);
+        this.setArea(p_area);
     }
-        return true;
- }
    
-    
-   public void cambiarDiasDePrestamo(int p_dias){
-         this.setDiasPrestamo(this.getDiasPrestamo() + p_dias);
+    public Docente(int p_dniSocio, String p_nombre, int p_diasPrestamos, String p_area) {
+        super(p_dniSocio, p_nombre, p_diasPrestamos);
+        this.setArea(p_area);
+    }
+   
+    private void setArea(String p_area){ this.area = p_area; }
+   
+    public String getArea(){ return this.area; }
+
+    public boolean esResponsable(){
+        for (Prestamo p : this.getPrestamos()) {
+            if (p.vencido(Calendar.getInstance())) return false;
+        }
+        
+        return true;
+    }
+   
+    // - cambiarDiasDePrestamos(int): adiciona días de préstamo al docente.
+    public void cambiarDiasDePrestamo(int p_dias) {
+        this.setDiasPrestamos(this.getDiasPrestamos() + p_dias);
     }
     
     public boolean puedePedir(){

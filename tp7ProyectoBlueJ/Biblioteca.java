@@ -5,6 +5,7 @@
 //   Ruben Tiburcio Romero Fernandéz 46920161
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class Biblioteca {
     // -------------------
@@ -77,7 +78,7 @@ public class Biblioteca {
     // +nuevoSocioEstudiante(p_dniSocio: int, p_nombre: String, p_carrera: String): void
     public void nuevoSocioEstudiante(int p_dniSocio, String p_nombre, String p_carrera) {
         // Creo un socio estudiante
-        Socio tempEstudiante = new Estudiante(p_dniSocio, p_nombre, p_carrera);
+        Socio tempEstudiante = new Estudiante(p_dniSocio, p_nombre, 0, p_carrera);
         
         // lo agrego a los socios
         boolean agregado = this.agregarSocio(tempEstudiante);
@@ -90,7 +91,7 @@ public class Biblioteca {
     // +nuevoSocioDocente(p_dniSocio: int, p_nombre: String, p_area: String): void
     public void nuevoSocioDocente(int p_dniSocio, String p_nombre, String p_area) {
         // Creo socio docente
-        Socio tempDocente = new Docente(p_dniSocio, p_nombre, p_area);
+        Socio tempDocente = new Docente(p_dniSocio, p_nombre, 0, p_area);
         
         boolean agregado = this.agregarSocio(tempDocente);
         
