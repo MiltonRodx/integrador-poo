@@ -22,7 +22,8 @@ public class Estudiante extends Socio {
     public boolean puedePedir(){
         // +puedePedir(): devuelve true si el Estudiante no tiene ningún préstamo vencido
         // y si no tiene más de 3 libros prestados (en su poder).
-        return this.cantLibrosPrestados() <= 3 && super.puedePedir();
+        // "<= 3" dejaría pedir un 4.º libro; la consigna quiere como tope 3 en su poder.
+        return this.cantLibrosPrestados() < 3 && super.puedePedir();
     }
     
     public String soyDeLaClase() { return "Estudiante";  }

@@ -42,7 +42,7 @@ public class Docente extends Socio {
     }
    
     // - cambiarDiasDePrestamos(int): adiciona días de préstamo al docente.
-    public void cambiarDiasDePrestamo(int p_dias) {
+    public void cambiarDiasDePrestamos(int p_dias) {
         this.setDiasPrestamos(this.getDiasPrestamos() + p_dias);
     }
     

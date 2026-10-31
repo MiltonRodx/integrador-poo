@@ -108,8 +108,14 @@ public class Biblioteca {
     // +prestarLibro(p_fechaRetiro: Calendar, p_socio: Socio, p_libro: Libro): boolean
     public boolean prestarLibro(Calendar p_fechaRetiro, Socio p_socio, Libro p_libro) {
         // Crea el préstamo y lo agrega al socio y al libro.
+        // Rechazo silencioso (return false): si falta alguna de las tres piezas, no hay préstamo que hacer.
+        if (p_fechaRetiro == null || p_socio == null || p_libro == null) return false;
+
         // Verificamos primero que el libro no esté prestado.
         if (p_libro.prestado()) return false;
+
+        // El socio decide si puede pedir (tope de libros / no debe préstamos vencidos).
+        if (!p_socio.puedePedir()) return false;
 
         // Creamos un préstamo.
         Prestamo tempPrestamo = new Prestamo(p_fechaRetiro, p_socio, p_libro);

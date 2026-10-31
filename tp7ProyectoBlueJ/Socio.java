@@ -62,13 +62,20 @@ public abstract class Socio {
     */
    
     public String toString (){
-        return "DNI" + this.getDniSocio() + "\t||" + this.getNombre() + 
-                "( " + this.soyDeLaClase() + " ) " + 
-                "Libros Prestados : " + this.cantLibrosPrestados();   
+        // Formato de la consigna: D.N.I.: <<dni>> || <<nombre y apellido>> (Tipo) || Libros Prestados: <<n>>
+        return "D.N.I.: " + this.getDniSocio() + " || " + this.getNombre() +
+                " (" + this.soyDeLaClase() + ")" +
+                " || Libros Prestados: " + this.cantLibrosPrestados();
     }
 
     public boolean puedePedir(){
+        // Evaluación a nivel día: la fecha actual se normaliza a medianoche,
+        // así un préstamo que vence HOY todavía cuenta como a tiempo.
         Calendar fechaActual = new GregorianCalendar();
+        fechaActual.set(Calendar.HOUR_OF_DAY, 0);
+        fechaActual.set(Calendar.MINUTE, 0);
+        fechaActual.set(Calendar.SECOND, 0);
+        fechaActual.set(Calendar.MILLISECOND, 0);
     
         for(Prestamo unPrestamo : this.getPrestamos()){
             if (unPrestamo.getFechaDevolucion() == null &&
