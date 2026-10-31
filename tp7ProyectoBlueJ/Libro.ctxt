@@ -1,5 +1,5 @@
 #BlueJ class context
-#Fri Oct 30 00:18:10 ART 2026
+#Sat Oct 31 12:46:00 ART 2026
 comment0.target=Libro
 comment1.params=p_titulo p_edicion p_editorial p_anio p_prestamos
 comment1.target=Libro(java.lang.String, int, java.lang.String, int, java.util.ArrayList)

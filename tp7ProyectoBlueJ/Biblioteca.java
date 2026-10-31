@@ -6,6 +6,8 @@
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.stream.Collectors;
 
 public class Biblioteca {
     // -------------------
@@ -150,102 +152,101 @@ public class Biblioteca {
     
       // +prestamosVencidos(): ArrayList
     public ArrayList<Prestamo> prestamosVencidos() {
-        Calendar fecha = new GregorianCalendar();
-        ArrayList<Prestamo> prestamosVencido = new ArrayList<>();
-        for(Libro unLibro : this.getLibros()){
-            Prestamo unPrestamo = unLibro.getprestamo();
-            
-        if (unPrestamo != null && unPrestamo.vencido(fecha)) {
-            prestamosVencido.add(unPrestamo);
-        }
-        }
-        return prestamosVencido ;
-        // TODO
         // devuelve una colección con los préstamos vencidos al día de la fecha.
+        Calendar fechaHoy = new GregorianCalendar();
+        
+        ArrayList<Prestamo> prestamosVencidos = new ArrayList<>();
+        
+        for(Libro unLibro : this.getLibros()){
+            ArrayList<Prestamo> unosPrestamos = unLibro.getPrestamos(); 
+            
+            for(Prestamo p : unosPrestamos) {
+                if (p != null && p.vencido(fechaHoy)) {
+                    prestamosVencidos.add(p);
+                }
+            }
+        }
+        
+        return prestamosVencidos;
     }
     
     // +docentesResponsables(): ArrayList
     public ArrayList<Docente> docentesResponsables() {
+        // devuelve un colección con los docentes responsables.
         ArrayList<Docente> docentesResponsables = new ArrayList<>();
         
-        for(Socio unSocio : this.getSocios()){
-             String clase = unSocio.soyDelaClase();
-            if(clase.equalsIgnoreCase("Docente") && unSocio.esResponsable() ){
-            docentesResponsables.add((Docente)unSocio);
+        for (Socio unSocio : this.getSocios()) {
+            if (unSocio.soyDeLaClase().equalsIgnoreCase("Docente")) {
+                Docente unDocente = (Docente) unSocio;
+                docentesResponsables.add(unDocente);
             }
         }
         
-        
         return docentesResponsables;
-        // TODO
-        // devuelve un colección con los docentes responsables.
     }
     
  
     // +quienTieneElLibro(p_libro: Libro): String
     public String quienTieneElLibro(Libro p_libro)throws LibroNoPrestadoException {
-        
-        // TODO
         //  devuelve el nombre del Socio que tiene el libro con el título ingresado, y si no se
         // encuentra prestado lanza una excepción de tipo LibroNoPrestadoException con el mensaje descriptivo “El
         // libro se encuentra en la biblioteca”.
         if(!p_libro.prestado()){
-         throw new LibroNoPrestadoException("El libro  se encuentra en la biblioteca.");
+            throw new LibroNoPrestadoException("El libro se encuentra en la biblioteca.");
         }
-        return "Socio:" + p_libro.getPrestamo().getSocio().getNombre() +" - Libro:"+ p_libro.getTitulo();
+        return p_libro.ultimoPrestamo().getSocio().getNombre();
     }
     
   
     // +listaDeSocios(): String
     public String listaDeSocios() {
+        // formato1; el render de cada socio se delega a Socio.toString(), y el conteo por tipo
+        // se reutiliza de cantidadDeSociosPorTipo() (única fuente de verdad, tolera nuevos tipos).
+        
+        // https://docs.oracle.com/javase/8/docs/api/java/lang/StringBuilder.html
+        StringBuilder listado = new StringBuilder("Lista de Socios:\n");
         int i = 1;
-        String listado = "";
-        int cantDocente = 0;
-        int cantEstudiante = 0;
-        for(Socio unSocio : this.getSocios()){
-         listado += i +")"+ unSocio.toString()+ "\n";
-         i++;
-        if(unSocio.soyDelaClase().equalsIgnoreCase("Docente")){
-        cantDocente ++;
-        }else{
-        cantEstudiante ++;
-        }
-       
+        for (Socio unSocio : this.getSocios())
+            listado.append(i++).append(") ").append(unSocio).append("\n");
+        return listado.append("\n")
+            .append("**************************************\n")
+            .append("Cantidad de Socios del tipo Estudiante: ").append(this.cantidadDeSociosPorTipo("Estudiante")).append("\n")
+            .append("Cantidad de Socios del tipo Docente: ").append(this.cantidadDeSociosPorTipo("Docente")).append("\n")
+            .append("**************************************").toString();
     }
-    return listado + "\n" + 
-        "**************************************************" + "\n" +
-        "Cantidad de Socio Del Tipo Estudiante: " + cantEstudiante  + "\n" +
-        "Cantidad de Socio Del Tipo Docente: " + cantDocente   + "\n" +
-        "**************************************************" ;
-}
    
     
-       // ARIEL HACE ESTA VOS
     // +buscarSocio(p_dni: int): Socio
     public Socio buscarSocio(int p_dni) {
-        // TODO
-        // devuelve el Socio que tiene el dni pasado como parámetro, o null si no lo encuentra.
+        // Devuelve el Socio que tiene el dni pasado como parámetro, o null si no lo encuentra.
+        return this.getSocios().stream().filter(unSocio -> unSocio.getDniSocio() == p_dni)
+                .findFirst().orElse(null);
     }
-    
-    // ARIEL HACE ESTA VOS
+
     // +listaDeTitulos(): String
     public String listaDeTitulos() {
-        // TODO
-        // devuelve un String con la lista de los títulos con los que cuenta la Biblioteca.
+        // Devuelve un String con la lista de los títulos de la Biblioteca, sin repetir.
+        // distinct() sobre un stream ordenado conserva el orden de alta de los libros.
+        return this.getLibros().stream().map(Libro::getTitulo).distinct()
+                .collect(Collectors.joining("\n", "Lista de Titulos:\n", "\n"));
     }
-    
-    // ARIEL HACE ESTA VOS
+
     // +listaDeLibros(): String
     public String listaDeLibros() {
-        // TODO
-        // devuelve un String según formato2.
+        // Devuelve un String según formato2, reutilizando Libro.toString() ("Titulo: ...").
+        String listado = "Lista de Libros:\n";
+        int i = 1;
+        for (Libro unLibro : this.getLibros())
+            listado += i++ + ") " + unLibro + " || Prestado: (" + (unLibro.prestado() ? "Si" : "No") + ")\n";
+            
+        return listado;
     }
-    
-    // ARIEL HACE ESTA VOS
+
     // +listaDeDocentesResponsables(): String
     public String listaDeDocentesResponsables() {
-        // TODO
-        // devuelve un String según formato3.
+        // Devuelve un String según formato3, reutilizando docentesResponsables() y Socio.toString().
+        return "Lista de Docentes Responsables:\n" + this.docentesResponsables().stream()
+                .map(unDocente -> "* " + unDocente).collect(Collectors.joining("\n"));
     }
     
     
