@@ -19,9 +19,23 @@ public class Docente extends Socio {
    
     public String getArea(){ return this.area; }
 
-    public boolean esResponsable(){
-        for (Prestamo p : this.getPrestamos()) {
-            if (p.vencido(Calendar.getInstance())) return false;
+    public boolean esResponsable() {
+        // "Nunca tuvo ni tiene un préstamo vencido":
+        //   - lo que sigue en su poder se evalúa contra HOY;
+        //   - lo ya devuelto se evalúa contra su propia fecha de devolución
+        //     (devolver el mismo día del vencimiento cuenta como a tiempo, consigna).
+        // La evaluación es a nivel día: la fecha evaluada se normaliza a medianoche.
+        for (Prestamo unPrestamo : this.getPrestamos()) {
+            Calendar fechaEvaluar = (unPrestamo.getFechaDevolucion() != null) // expresion ternaria.
+                    ? (Calendar) unPrestamo.getFechaDevolucion().clone() // si existe fecha devolucion, la clono
+                    : Calendar.getInstance();   // si no existe obtengo la fecha del sistema.
+            // limpio la fecha en terminos no relacionados a dias mes y año.
+            fechaEvaluar.set(Calendar.HOUR_OF_DAY, 0);
+            fechaEvaluar.set(Calendar.MINUTE, 0);
+            fechaEvaluar.set(Calendar.SECOND, 0);
+            fechaEvaluar.set(Calendar.MILLISECOND, 0);
+
+            if (unPrestamo.vencido(fechaEvaluar)) return false; // para cada prestamo si esta vencido alguno, no es responsable
         }
         
         return true;

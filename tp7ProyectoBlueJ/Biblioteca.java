@@ -22,15 +22,15 @@ public class Biblioteca {
     // -------------------
     public Biblioteca(String p_nombre, ArrayList<Libro> p_libros,
                 ArrayList<Socio> p_socios) {
-        // Verificación mínima a fin de que estén inicializados las colecciones.
         if (p_libros == null || p_socios == null) {
             this.setLibros(new ArrayList<>());
             this.setSocios(new ArrayList<>());
+        } else {
+            this.setLibros(p_libros);
+            this.setSocios(p_socios);
         }
         
         this.setNombre(p_nombre);
-        this.setLibros(p_libros);
-        this.setSocios(p_socios);
     }
     
     // Constructor inicializar en cero los libros y socios.
@@ -81,8 +81,8 @@ public class Biblioteca {
     
     // +nuevoSocioEstudiante(p_dniSocio: int, p_nombre: String, p_carrera: String): void
     public void nuevoSocioEstudiante(int p_dniSocio, String p_nombre, String p_carrera) {
-        // Creo un socio estudiante
-        Socio tempEstudiante = new Estudiante(p_dniSocio, p_nombre, 0, p_carrera);
+        // Creo un socio estudiante; la consigna fija 20 días de préstamo (vence "20 días después del retiro").
+        Socio tempEstudiante = new Estudiante(p_dniSocio, p_nombre, 20, p_carrera);
         
         // lo agrego a los socios
         boolean agregado = this.agregarSocio(tempEstudiante);
@@ -94,8 +94,8 @@ public class Biblioteca {
     
     // +nuevoSocioDocente(p_dniSocio: int, p_nombre: String, p_area: String): void
     public void nuevoSocioDocente(int p_dniSocio, String p_nombre, String p_area) {
-        // Creo socio docente
-        Socio tempDocente = new Docente(p_dniSocio, p_nombre, 0, p_area);
+        // Creo socio docente; la consigna fija 5 días de préstamo iniciales (luego esResponsable los premia).
+        Socio tempDocente = new Docente(p_dniSocio, p_nombre, 5, p_area);
         
         boolean agregado = this.agregarSocio(tempDocente);
         
@@ -150,23 +150,28 @@ public class Biblioteca {
             .filter(p -> p.soyDeLaClase().equalsIgnoreCase(p_objeto)).count();
     }
     
-      // +prestamosVencidos(): ArrayList
+    // +prestamosVencidos(): ArrayList
     public ArrayList<Prestamo> prestamosVencidos() {
-        // devuelve una colección con los préstamos vencidos al día de la fecha.
+        // devuelve una colección con los préstamos ACTIVOS (aún sin devolver) vencidos al día de la fecha.
+        // evaluación a nivel día: hoy se normaliza a medianoche (lo que vence HOY todavía no está vencido).
         Calendar fechaHoy = new GregorianCalendar();
         
+        // limpieza de hora minuto segundo y milisegundo
+        fechaHoy.set(Calendar.HOUR_OF_DAY, 0);
+        fechaHoy.set(Calendar.MINUTE, 0);
+        fechaHoy.set(Calendar.SECOND, 0);
+        fechaHoy.set(Calendar.MILLISECOND, 0);
+
         ArrayList<Prestamo> prestamosVencidos = new ArrayList<>();
-        
-        for(Libro unLibro : this.getLibros()){
-            ArrayList<Prestamo> unosPrestamos = unLibro.getPrestamos(); 
-            
-            for(Prestamo p : unosPrestamos) {
-                if (p != null && p.vencido(fechaHoy)) {
-                    prestamosVencidos.add(p);
+
+        for (Libro unLibro : this.getLibros()) {
+            for (Prestamo unPrestamo : unLibro.getPrestamos()) {
+                if (unPrestamo.getFechaDevolucion() == null && unPrestamo.vencido(fechaHoy)) {
+                    prestamosVencidos.add(unPrestamo);
                 }
             }
         }
-        
+
         return prestamosVencidos;
     }
     
@@ -178,7 +183,10 @@ public class Biblioteca {
         for (Socio unSocio : this.getSocios()) {
             if (unSocio.soyDeLaClase().equalsIgnoreCase("Docente")) {
                 Docente unDocente = (Docente) unSocio;
-                docentesResponsables.add(unDocente);
+                
+                if (unDocente.esResponsable()) {
+                    docentesResponsables.add(unDocente);
+                }
             }
         }
         
