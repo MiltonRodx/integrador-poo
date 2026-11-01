@@ -1,3 +1,5 @@
+package biblioteca;
+
 
 public class LibroNoPrestadoException extends Exception {
     

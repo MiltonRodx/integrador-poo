@@ -1,3 +1,5 @@
+package biblioteca;
+
 // Clase Biblioteca.
 // Alumnos a cargo de esta clase:
 //   Ariel Sebastian Gomez 45940772,
