@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
@@ -16,21 +17,25 @@
     <children>
         <HBox spacing="8" alignment="CENTER_LEFT">
             <children>
-                <Button text="Alta Libro" onAction="#altaLibro" />
-                <Button text="Baja"       onAction="#bajaLibro" />
+                <Button text="Alta Libro" onAction="#altaLibro" styleClass="accent" />
+                <Button fx:id="btnBaja" text="Dar de baja" onAction="#bajaLibro">
+                    <tooltip><Tooltip text="Elimina el ejemplar seleccionado (la FK prestamo→libro impide borrar con historial)." /></tooltip>
+                </Button>
             </children>
         </HBox>
 
         <TableView fx:id="tablaLibros" VBox.vgrow="ALWAYS">
             <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY" /></columnResizePolicy>
             <columns>
-                <TableColumn fx:id="colTitulo"    text="Titulo"    prefWidth="320" />
-                <TableColumn fx:id="colEdicion"   text="Edicion"   prefWidth="100" />
+                <TableColumn fx:id="colTitulo"    text="Título"    prefWidth="320" />
+                <TableColumn fx:id="colEdicion"   text="Edición"   prefWidth="100" />
                 <TableColumn fx:id="colEditorial" text="Editorial" prefWidth="220" />
-                <TableColumn fx:id="colAnio"      text="Anio"      prefWidth="100" />
+                <TableColumn fx:id="colAnio"      text="Año"      prefWidth="100" />
                 <TableColumn fx:id="colPrestado"  text="Prestado"  prefWidth="120" />
             </columns>
-            <placeholder><Label text="No hay libros en el catalogo." /></placeholder>
+            <placeholder><Label text="No hay libros en el catálogo." /></placeholder>
         </TableView>
+
+        <Label fx:id="msjEstado" />
     </children>
 </VBox>

@@ -9,6 +9,7 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
@@ -39,8 +40,12 @@
 
                 <HBox spacing="8" GridPane.rowIndex="1" GridPane.columnIndex="3">
                     <children>
-                        <Button text="Prestar"   onAction="#prestar" />
-                        <Button text="Devolver"  onAction="#devolver" />
+                        <Button text="Prestar" onAction="#prestar" styleClass="accent">
+                            <tooltip><Tooltip text="Registra el retiro: valida tope de 3 libros y préstamos vencidos." /></tooltip>
+                        </Button>
+                        <Button text="Devolver" onAction="#devolver">
+                            <tooltip><Tooltip text="Registra la devolución de hoy del préstamo seleccionado en la tabla." /></tooltip>
+                        </Button>
                     </children>
                 </HBox>
             </children>
@@ -66,10 +71,12 @@
                 <TableColumn fx:id="colPLibro"     text="Libro"     prefWidth="260" />
                 <TableColumn fx:id="colPRetiro"    text="Retiro"    prefWidth="110" />
                 <TableColumn fx:id="colPVence"     text="Vence"     prefWidth="110" />
-                <TableColumn fx:id="colPDevolucion" text="Devolucion" prefWidth="110" />
+                <TableColumn fx:id="colPDevolucion" text="Devolución" prefWidth="110" />
                 <TableColumn fx:id="colPEstado"    text="Estado"    prefWidth="110" />
             </columns>
-            <placeholder><Label text="No hay prestamos en este filtro." /></placeholder>
+            <placeholder><Label text="No hay préstamos en este filtro." /></placeholder>
         </TableView>
+
+        <Label fx:id="msjEstado" />
     </children>
 </VBox>
