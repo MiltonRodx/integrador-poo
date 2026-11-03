@@ -25,6 +25,7 @@
 - [Estructura del proyecto](#-estructura-del-proyecto)
 - [Tecnologías](#-tecnologías)
 - [Persistencia SQLite](#-persistencia-sqlite)
+- [Interfaz gráfica](#-interfaz-gráfica)
 - [Cómo correrlo](#-cómo-correrlo)
 - [Reglas de negocio](#-reglas-de-negocio-y-decisiones-de-diseño)
 - [Demo: salida real](#-demo-salida-real-de-gestionbiblioteca)
@@ -161,8 +162,9 @@ tp7ProyectoBlueJ/
     ├── Libro.java                 ← ficha de préstamos del ejemplar (+ id persistente)
     ├── Prestamo.java              ← retiro, devolución, socio y libro (+ id persistente)
     ├── LibroNoPrestadoException.java ← excepción de negocio
-    ├── GestionBiblioteca.java     ← clase main con el escenario completo
+    ├── GestionBiblioteca.java     ← clase main: escenario + menu interactivo
     ├── GestionPersistencia.java   ← demo del CRUD sobre SQLite
+    ├── SesionBiblioteca.java      ← sesion compartida consola/GUI (abrir, siembra, guardar, recargar)
     └── persistencia/              ← capa de persistencia (paquete biblioteca.persistencia)
         ├── ConexionBD.java        ← singleton de conexión + DDL auto-migrado
         ├── DAOException.java      ← excepción unchecked de la capa
@@ -170,7 +172,18 @@ tp7ProyectoBlueJ/
         ├── SocioDAO.java          ← CRUD socio (discriminador Docente/Estudiante)
         ├── PrestamoDAO.java       ← CRUD préstamo (+ reposición en fichas)
         └── BibliotecaDAO.java     ← fachada guardar()/cargar() del agregado raíz
+
++ biblioteca/gui/                  ← capa visual (paquete biblioteca.gui)
+    ├── App.java                   ← Application: tema Primer claro, sesión, escena, icono
+    ├── Launcher.java              ← entrada "no-JavaFX" (habilita classpath plano y BlueJ)
+    ├── MainWindow.fxml            ← TabPane: Socios / Libros / Préstamos / Informes
+    ├── SociosController / LibrosController / PrestamosController / InformesController
+    ├── Socios.fxml / Libros.fxml / Prestamos.fxml / Informes.fxml
+    ├── Dialogos.java              ← formularios y alertas reutilizables
+    └── icono.png                  ← icono de ventana (capibara bibliotecario)
 ```
+
+> La lista del `gui/` es descriptiva (los archivos `.fxml` y el icono son recursos junto a sus controllers).
 
 ---
 
@@ -178,7 +191,7 @@ tp7ProyectoBlueJ/
 
 - **Java 21** (OpenJDK) + **BlueJ** — núcleo POO del práctico.
 - **SQLite + JDBC** — capa de persistencia.
-- **JavaFX + AtlantaFX** — GUI con estilos CSS empaquetados (en progreso).
+- **JavaFX 21 LTS + AtlantaFX (Primer claro)** — GUI completa con 4 pestañas sobre la misma sesión de datos que la consola.
 
 ---
 
@@ -206,6 +219,23 @@ Capa `biblioteca.persistencia` con CRUD completo sobre SQLite (patrón DAO + con
 
 ---
 
+## 🖥 Interfaz gráfica
+
+GUI JavaFX + tema **AtlantaFX "Primer claro"**, sobre la **misma sesión de datos** que el menú de consola (`SesionBiblioteca`): lo que se da de alta en la GUI queda en `biblioteca.db` y viceversa. Cada operación de escritura persiste en el momento.
+
+| Pestaña | Qué ofrece |
+|---|---|
+| **Socios** | tabla (D.N.I., nombre, tipo, libros en poder, días), alta docente/estudiante, búsqueda por D.N.I., baja y premio de días (solo docentes) |
+| **Libros** | alta de ejemplares y baja (bloqueada si tiene historial de préstamos), estado `Prestado: Si/No` |
+| **Préstamos** | retiro (socio + libros disponibles + fecha), devolución, y tabla con filtro Activos/Vencidos/Todos; los rechazos muestran el motivo (tope 3, vencidos, libro ocupado) |
+| **Informes** | los 3 formatos exactos de la consigna en texto monoespaciado, títulos sin repetir, vencidos y contadores por tipo |
+
+**Correr la GUI**: desde `tp7ProyectoBlueJ` ejecutar `./gui.sh` (Linux, o `gui.bat` en Windows): compila a `classes/`, copia los recursos y lanza la ventana. Desde **BlueJ** (con los jars de `libs/` cargados en *Tools → Preferences → Libraries*): click derecho sobre `Launcher` → `void main(String[] args)` — el launcher "no-JavaFX" es necesario porque JavaFX exige module-path para arrancar una clase que extiende `Application`, y el proyecto trabaja por classpath.
+
+**Dependencias versionadas en `libs/`**: `sqlite-jdbc 3.54.1.0`, `javafx-{base,graphics,controls,fxml}-21.0.13` (nativos `linux` y `win`) y `atlantafx-base 2.1.0` (bytecode Java 21 exacto — la 3.0.0 exige Java 25).
+
+---
+
 ## 🚀 Cómo correrlo
 
 **Con BlueJ:** abrir el proyecto `tp7ProyectoBlueJ`, compilar el paquete `biblioteca` y ejecutar el `main` de `GestionBiblioteca` (click derecho sobre la clase → `void main(String[] args)`).
@@ -225,8 +255,13 @@ java -cp "classes;libs/sqlite-jdbc-3.54.1.0.jar" biblioteca.GestionBiblioteca
 java -cp "classes;libs/sqlite-jdbc-3.54.1.0.jar" biblioteca.GestionPersistencia          # 1.a vez: siembra; siguientes: recupera estado
 java -cp "classes;libs/sqlite-jdbc-3.54.1.0.jar" biblioteca.GestionPersistencia reset    # borrar todo y re-sembrar
 
-# En Linux/macOS el separador de classpath es ":".
+# En Linux/macOS el separador de classpath es ":"
+
+# GUI completa (JavaFX + AtlantaFX): compila y abre la ventana
+./gui.sh      # Linux
+gui.bat       # (apretar en terminal de Windows)
 ```
+*GUI también desde BlueJ: click derecho sobre `Launcher` → `void main(String[] args)` (previa carga de los jars de `libs/`).*
 
 **En BlueJ:** cargar el driver una sola vez en *Tools → Preferences → Libraries* y seleccionar `tp7ProyectoBlueJ/libs/sqlite-jdbc-3.54.1.0.jar`; luego click derecho sobre `GestionPersistencia` → `void main(String[] args)`.
 
@@ -300,8 +335,8 @@ Cantidad de Socios del tipo Docente: 3
 
 ## 🧭 Roadmap
 
-- [ ] **Persistencia con SQLite**: ✔ conexión (+ DDL auto-migrado), DAOs con CRUD completo (insert/update/delete/find) y demo `GestionPersistencia`.
-- [ ] **GUI con JavaFX + AtlantaFX**: interfaz gráfica sobre la capa DAO con estilos CSS empaquetados.
+- [x] **Persistencia con SQLite**: ✔ conexión (+ DDL auto-migrado), DAOs con CRUD completo (insert/update/delete/find) y demo `GestionPersistencia`.
+- [x] **GUI con JavaFX + AtlantaFX**: 4 pestañas (Socios/Libros/Préstamos/Informes) sobre `SesionBiblioteca`, tema Primer claro y persistencia viva.
 - [ ] **Empaquetado final**: distribución del proyecto con las tres capas integradas.
 
 ---

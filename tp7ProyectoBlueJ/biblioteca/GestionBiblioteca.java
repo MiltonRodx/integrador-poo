@@ -4,8 +4,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Scanner;
 
-import biblioteca.persistencia.BibliotecaDAO;
-import biblioteca.persistencia.ConexionBD;
 import biblioteca.persistencia.DAOException;
 
 /**
@@ -25,9 +23,7 @@ public class GestionBiblioteca {
     private static final String NOMBRE_INSTITUCION = "Biblioteca UNLP";
 
     private static Scanner consola = new Scanner(System.in);
-    private static ConexionBD conexionBD;
-    private static BibliotecaDAO dao;
-    private static Biblioteca biblioteca;
+    private static SesionBiblioteca sesion;
 
     public static void main(String[] args) throws LibroNoPrestadoException {
         if (args.length > 0 && args[0].equalsIgnoreCase("escenario")) {
@@ -43,93 +39,44 @@ public class GestionBiblioteca {
 
     /** Abre la base y recarga el estado persistido (o arranca con estado vacio). */
     private static void abrirBase() {
-        conexionBD = ConexionBD.instanciar("biblioteca.db");
-        dao = new BibliotecaDAO(conexionBD);
-
-        if (dao.existeBiblioteca(NOMBRE_INSTITUCION)) {
-            biblioteca = dao.cargar(NOMBRE_INSTITUCION);
-            System.out.println("[BD] Estado recargado: " + biblioteca.getLibros().size()
-                    + " libros, " + biblioteca.getSocios().size() + " socios.");
-        } else {
-            biblioteca = new Biblioteca(NOMBRE_INSTITUCION);
+        // La pregunta de siembra se reparte ANTES (si la base es nueva) para
+        // que SesionBiblioteca reciba el modo decidido; los prints quedan
+        // identicos a la version que abria/sembraba manualmente.
+        boolean hayEstado = SesionBiblioteca.existeBibliotecaEn("biblioteca.db", NOMBRE_INSTITUCION);
+        boolean sembrar = false;
+        if (!hayEstado) {
             System.out.print("[BD] Base nueva. \u00bfSembrar los datos de la consigna? (S/N): ");
             String respuesta = leerLinea();
-            if (respuesta.equalsIgnoreCase("S") || respuesta.equalsIgnoreCase("Si")) {
-                sembrarCatalogoDeLaConsigna();
-            } else {
+            sembrar = respuesta.equalsIgnoreCase("S") || respuesta.equalsIgnoreCase("Si");
+            if (!sembrar) {
                 System.out.println("[BD] Catalogo vacio: de alta los datos desde el menu.");
             }
         }
-    }
 
-    /**
-     * Siembra en la BD el mismo escenario de datos del TP7 (Perez/Fernandez/...),
-     * para abrir el menu con un estado real en lugar de vacio. Los prestamos
-     * reproducen el historial del escenario: uno vencido activo, uno devuelto
-     * tarde, uno devuelto a tiempo, y prestamos activos desde hoy.
-     */
-    private static void sembrarCatalogoDeLaConsigna() {
-        biblioteca.nuevoLibro("Programando con JAVA", 2, "El Ateneo", 2014);
-        biblioteca.nuevoLibro("Longman. Diccionario Pocket", 1, "Longman", 2010);
-        biblioteca.nuevoLibro("Vivir para contarla", 1, "Debolsillo", 2003);
-        biblioteca.nuevoLibro("JAVA. Como Programar", 3, "Pearson", 2016);
-        biblioteca.nuevoLibro("JAVA. Como Programar", 1, "Pearson", 2006);
-        biblioteca.nuevoLibro("Longman. Diccionario Pocket", 2, "Longman", 2014);
+        sesion = new SesionBiblioteca("biblioteca.db", NOMBRE_INSTITUCION, sembrar);
+        Biblioteca biblioteca = sesion.getBiblioteca();
 
-        biblioteca.nuevoSocioDocente(14524782, "Juan Perez", "Sistemas");
-        biblioteca.nuevoSocioDocente(17982110, "Juan Fernandez", "Matematica");
-        biblioteca.nuevoSocioDocente(10912002, "Maria Alegre", "Fisica");
-        biblioteca.nuevoSocioEstudiante(28987498, "Francisco Paenza", "Fisica");
-        biblioteca.nuevoSocioEstudiante(31987123, "Cesar Milstein", "Quimica");
-
-        Socio perez     = biblioteca.buscarSocio(14524782);
-        Socio fernandez = biblioteca.buscarSocio(17982110);
-        Socio paenza    = biblioteca.buscarSocio(28987498);
-        Socio milstein  = biblioteca.buscarSocio(31987123);
-
-        // Paenza retira el 05/10 y NUNCA devuelve -> prestamo vencido y activo.
-        biblioteca.prestarLibro(fecha(2026, 10, 5), paenza, biblioteca.getLibros().get(5));
-
-        // Fernandez devolvio TARDE (retiro 10/10, vencia 15/10) -> no responsable.
-        biblioteca.prestarLibro(fecha(2026, 10, 10), fernandez, biblioteca.getLibros().get(1));
-        devolverEnSiembra(biblioteca.getLibros().get(1));
-
-        // Perez devolvio A TIEMPO (retiro 27/10, vencia 01/11) -> si responsable.
-        biblioteca.prestarLibro(fecha(2026, 10, 27), perez, biblioteca.getLibros().get(4));
-        devolverEnSiembra(biblioteca.getLibros().get(4));
-
-        // Prestamos activos sanos de hoy: Perez 1, Milstein al tope (3).
-        biblioteca.prestarLibro(hoy(), perez, biblioteca.getLibros().get(0));
-        biblioteca.prestarLibro(hoy(), milstein, biblioteca.getLibros().get(1));
-        biblioteca.prestarLibro(hoy(), milstein, biblioteca.getLibros().get(2));
-        biblioteca.prestarLibro(hoy(), milstein, biblioteca.getLibros().get(3));
-
-        persistir();
-        System.out.println("[BD] Sembrado: " + biblioteca.getLibros().size()
-                + " libros, " + biblioteca.getSocios().size() + " socios e historial de prestamos.");
-    }
-
-    /** Devolucion tolerante dentro de la siembra (el prestamo siempre esta activo ahi). */
-    private static void devolverEnSiembra(Libro p_libro) {
-        try {
-            biblioteca.devolverLibro(p_libro);
-        } catch (LibroNoPrestadoException e) {
-            // no deberia ocurrir en la siembra; se ignora a proposito
+        if (hayEstado) {
+            System.out.println("[BD] Estado recargado: " + sesion.getBiblioteca().getLibros().size()
+                    + " libros, " + sesion.getBiblioteca().getSocios().size() + " socios.");
+        } else if (sembrar) {
+            System.out.println("[BD] Sembrado: " + sesion.getBiblioteca().getLibros().size()
+                    + " libros, " + sesion.getBiblioteca().getSocios().size() + " socios e historial de prestamos.");
         }
     }
 
     /** Guarda el estado (upsert por identidad) y cierra la conexion. */
     private static void cerrarBase() {
-        if (dao != null) {
-            dao.guardar(biblioteca);
+        if (sesion != null) {
+            sesion.guardar();
             System.out.println("[BD] Estado final guardado.");
-            conexionBD.cerrar();
+            sesion.cerrar();
         }
     }
 
     /** Persistencia automatica tras cada operacion de escritura. */
     private static void persistir() {
-        dao.guardar(biblioteca);
+        sesion.guardar();
     }
 
     /** Bucle principal del menu interactivo. */
@@ -150,7 +97,7 @@ public class GestionBiblioteca {
     }
 
     private static void imprimirMenu() {
-        System.out.println("\n========= " + biblioteca.getNombre() + " =========");
+        System.out.println("\n========= " + sesion.getBiblioteca().getNombre() + " =========");
         System.out.println("                        LIBROS");
         System.out.println(" 1) Alta de libro            2) Lista de libros         3) Lista de t\u00edtulos");
         System.out.println("                        SOCIOS");
@@ -169,11 +116,11 @@ public class GestionBiblioteca {
     private static void ejecutarOpcion(int p_opcion) {
         switch (p_opcion) {
             case 1: altaLibro(); break;
-            case 2: System.out.println(biblioteca.listaDeLibros()); break;
-            case 3: System.out.println(biblioteca.listaDeTitulos()); break;
+            case 2: System.out.println(sesion.getBiblioteca().listaDeLibros()); break;
+            case 3: System.out.println(sesion.getBiblioteca().listaDeTitulos()); break;
             case 4: altaDocente(); break;
             case 5: altaEstudiante(); break;
-            case 6: System.out.println(biblioteca.listaDeSocios()); break;
+            case 6: System.out.println(sesion.getBiblioteca().listaDeSocios()); break;
             case 7: buscarSocio(); break;
             case 8: sociosPorTipo(); break;
             case 9: bajaSocio(); break;
@@ -181,12 +128,12 @@ public class GestionBiblioteca {
             case 11: devolver(); break;
             case 12: listarPrestamosVencidos(); break;
             case 13: quienTieneElLibro(); break;
-            case 14: System.out.println(biblioteca.listaDeDocentesResponsables()); break;
+            case 14: System.out.println(sesion.getBiblioteca().listaDeDocentesResponsables()); break;
             case 15: premiarDocente(); break;
             case 16: persistir(); System.out.println("[BD] Estado guardado."); break;
-            case 17: biblioteca = dao.cargar(NOMBRE_INSTITUCION); System.out.println(
-                    "[BD] Recargado: " + biblioteca.getLibros().size() + " libros, "
-                    + biblioteca.getSocios().size() + " socios."); break;
+            case 17: Biblioteca recargada = sesion.recargar(); System.out.println(
+                    "[BD] Recargado: " + recargada.getLibros().size() + " libros, "
+                    + recargada.getSocios().size() + " socios."); break;
             case 18: bajaLibro(); break;
             case 0: break;
             default: System.out.println("Opcion inexistente.");
@@ -207,9 +154,9 @@ public class GestionBiblioteca {
         int anio = leerEntero("Anio de edicion: ", 1000, 3000);
         if (anio == 0) { System.out.println("Operacion cancelada."); return; }
 
-        biblioteca.nuevoLibro(titulo, edicion, editorial, anio);
+        sesion.getBiblioteca().nuevoLibro(titulo, edicion, editorial, anio);
         persistir(); // el DAO INSERTa y le devuelve el id a Libro
-        Libro creado = biblioteca.getLibros().get(biblioteca.getLibros().size() - 1);
+        Libro creado = sesion.getBiblioteca().getLibros().get(sesion.getBiblioteca().getLibros().size() - 1);
         System.out.println("Libro guardado con id = " + creado.getId());
     }
 
@@ -223,8 +170,8 @@ public class GestionBiblioteca {
                     + libro.getPrestamos().size() + " prestamo(s) asociados (FK).");
             return;
         }
-        dao.getLibroDAO().delete(libro);
-        biblioteca.quitarLibro(libro); // coherencia memoria <-> BD
+        sesion.getDao().getLibroDAO().delete(libro);
+        sesion.getBiblioteca().quitarLibro(libro); // coherencia memoria <-> BD
         System.out.println("Libro dado de baja: " + libro.getTitulo());
     }
 
@@ -240,7 +187,7 @@ public class GestionBiblioteca {
         String area = leerTextoObligatorio("Area: ");
         if (area == null) { System.out.println("Operacion cancelada."); return; }
 
-        biblioteca.nuevoSocioDocente(dni, nombre, area);
+        sesion.getBiblioteca().nuevoSocioDocente(dni, nombre, area);
         persistir();
         System.out.println("Docente dado de alta (dias de prestamo iniciales: 5).");
     }
@@ -254,7 +201,7 @@ public class GestionBiblioteca {
         String carrera = leerTextoObligatorio("Carrera: ");
         if (carrera == null) { System.out.println("Operacion cancelada."); return; }
 
-        biblioteca.nuevoSocioEstudiante(dni, nombre, carrera);
+        sesion.getBiblioteca().nuevoSocioEstudiante(dni, nombre, carrera);
         persistir();
         System.out.println("Estudiante dado de alta (dias de prestamo iniciales: 20).");
     }
@@ -262,20 +209,20 @@ public class GestionBiblioteca {
     private static void buscarSocio() {
         System.out.println("-- Busqueda por DNI --");
         int dni = leerEntero("DNI: ", 1, Integer.MAX_VALUE);
-        Socio socio = biblioteca.buscarSocio(dni);
+        Socio socio = sesion.getBiblioteca().buscarSocio(dni);
         System.out.println(socio != null ? socio.toString() : "No existe un socio con ese DNI.");
     }
 
     private static void sociosPorTipo() {
         String tipo = leerTipoSocio();
-        int cantidad = biblioteca.cantidadDeSociosPorTipo(tipo);
+        int cantidad = sesion.getBiblioteca().cantidadDeSociosPorTipo(tipo);
         System.out.println("Cantidad de socios del tipo " + tipo + ": " + cantidad);
     }
 
     private static void bajaSocio() {
         System.out.println("-- Baja de socio --");
         int dni = leerEntero("DNI: ", 1, Integer.MAX_VALUE);
-        Socio socio = biblioteca.buscarSocio(dni);
+        Socio socio = sesion.getBiblioteca().buscarSocio(dni);
         if (socio == null) {
             System.out.println("No existe un socio con ese DNI.");
             return;
@@ -286,8 +233,8 @@ public class GestionBiblioteca {
                     + socio.getPrestamos().size() + " prestamo(s) asociados (FK).");
             return;
         }
-        dao.getSocioDAO().delete(socio);
-        biblioteca.quitarSocio(socio);
+        sesion.getDao().getSocioDAO().delete(socio);
+        sesion.getBiblioteca().quitarSocio(socio);
         System.out.println("Socio dado de baja: " + socio.getNombre());
     }
 
@@ -302,7 +249,7 @@ public class GestionBiblioteca {
         if (libro == null) return;
         Calendar fechaRetiro = leerFechaOpcional("Fecha de retiro");
 
-        boolean realizado = biblioteca.prestarLibro(fechaRetiro, socio, libro);
+        boolean realizado = sesion.getBiblioteca().prestarLibro(fechaRetiro, socio, libro);
         if (realizado) {
             persistir(); // INSERT del prestamo + posibles UPDATEs de estado del socio/libro
             System.out.println("Prestamo registrado: '" + libro.getTitulo() + "' para "
@@ -320,7 +267,7 @@ public class GestionBiblioteca {
         Libro libro = elegirLibro();
         if (libro == null) return;
         try {
-            biblioteca.devolverLibro(libro); // lanza la excepcion de negocio si no estaba prestado
+            sesion.getBiblioteca().devolverLibro(libro); // lanza la excepcion de negocio si no estaba prestado
             persistir();                     // UPDATE de la fecha de devolucion
             System.out.println("Devolucion registrada para: " + libro.getTitulo());
         } catch (LibroNoPrestadoException e) {
@@ -330,7 +277,7 @@ public class GestionBiblioteca {
 
     private static void listarPrestamosVencidos() {
         System.out.println("-- Prestamos vencidos a la fecha --");
-        java.util.ArrayList<Prestamo> vencidos = biblioteca.prestamosVencidos();
+        java.util.ArrayList<Prestamo> vencidos = sesion.getBiblioteca().prestamosVencidos();
         if (vencidos.isEmpty()) {
             System.out.println("No hay prestamos vencidos.");
             return;
@@ -345,7 +292,7 @@ public class GestionBiblioteca {
         Libro libro = elegirLibro();
         if (libro == null) return;
         try {
-            String nombre = biblioteca.quienTieneElLibro(libro); // lanza la excepcion si esta en la biblioteca
+            String nombre = sesion.getBiblioteca().quienTieneElLibro(libro); // lanza la excepcion si esta en la biblioteca
             System.out.println("El libro '" + libro.getTitulo() + "' lo tiene: " + nombre);
         } catch (LibroNoPrestadoException e) {
             System.out.println("ERROR: " + e.getMessage());
@@ -358,7 +305,7 @@ public class GestionBiblioteca {
     private static void premiarDocente() {
         System.out.println("-- Premio al docente responsable (+dias de prestamo) --");
         int dni = leerEntero("DNI del docente: ", 1, Integer.MAX_VALUE);
-        Socio socio = biblioteca.buscarSocio(dni);
+        Socio socio = sesion.getBiblioteca().buscarSocio(dni);
         if (socio == null) {
             System.out.println("No existe un socio con ese DNI.");
             return;
@@ -431,7 +378,7 @@ public class GestionBiblioteca {
             System.out.println("Operacion cancelada.");
             return -1;
         }
-        if (biblioteca.buscarSocio(dni) != null) {
+        if (sesion.getBiblioteca().buscarSocio(dni) != null) {
             System.out.println("Ya existe un socio con ese DNI.");
             return -1;
         }
@@ -454,7 +401,7 @@ public class GestionBiblioteca {
     private static Socio leerSocioExistente() {
         int dni = leerEntero("DNI del socio (0 para cancelar): ", 0, Integer.MAX_VALUE);
         if (dni == 0) return null;
-        Socio socio = biblioteca.buscarSocio(dni);
+        Socio socio = sesion.getBiblioteca().buscarSocio(dni);
         if (socio == null) {
             System.out.println("No existe un socio con ese DNI.");
             return null;
@@ -464,18 +411,18 @@ public class GestionBiblioteca {
 
     /** Lista los libros y toma la eleccion por numero (1-based). */
     private static Libro elegirLibro() {
-        if (biblioteca.getLibros().isEmpty()) {
+        if (sesion.getBiblioteca().getLibros().isEmpty()) {
             System.out.println("El catalogo esta vacio.");
             return null;
         }
-        System.out.println(biblioteca.listaDeLibros());
+        System.out.println(sesion.getBiblioteca().listaDeLibros());
         int numero = leerEntero("Numero del libro (0 para cancelar): ", 0,
-                biblioteca.getLibros().size());
+                sesion.getBiblioteca().getLibros().size());
         if (numero == 0) {
             System.out.println("Operacion cancelada.");
             return null;
         }
-        return biblioteca.getLibros().get(numero - 1);
+        return sesion.getBiblioteca().getLibros().get(numero - 1);
     }
 
     /** Enter = hoy; dia mes anio = fecha elegida (retroactiva para probar vencidos). */
@@ -483,7 +430,7 @@ public class GestionBiblioteca {
         System.out.print(p_prompt + " [Enter]=hoy, o ingrese dia mes anio: ");
         String linea = leerLinea();
         if (linea.isEmpty()) {
-            return hoy(); // reutiliza el helper de hoy normalizado
+            return SesionBiblioteca.hoy(); // helper compartido de hoy normalizado
         }
         String[] partes = linea.split("\\s+");
         try {
@@ -491,30 +438,11 @@ public class GestionBiblioteca {
             int p_mes = Integer.parseInt(partes[1]);
             int p_anio = Integer.parseInt(partes[2]);
             if (p_dia >= 1 && p_dia <= 31 && p_mes >= 1 && p_mes <= 12) {
-                return fecha(p_anio, p_mes, p_dia);
+                return SesionBiblioteca.fecha(p_anio, p_mes, p_dia);
             }
         } catch (Exception e) { /* re-pregunta */ }
         System.out.println("    Fecha invalida. Formato: dia mes anio (ej: 25 10 2026). Intente de nuevo.");
         return leerFechaOpcional(p_prompt);
-    }
-
-    /** Fecha a medianoche: mismo criterio de dia completo que usan las reglas del negocio. */
-    private static GregorianCalendar fecha(int p_anio, int p_mes, int p_dia) {
-        GregorianCalendar fechaCal = new GregorianCalendar(p_anio, p_mes - 1, p_dia);
-        fechaCal.set(Calendar.HOUR_OF_DAY, 0);
-        fechaCal.set(Calendar.MINUTE, 0);
-        fechaCal.set(Calendar.SECOND, 0);
-        fechaCal.set(Calendar.MILLISECOND, 0);
-        return fechaCal;
-    }
-
-    private static Calendar hoy() {
-        Calendar hoy = Calendar.getInstance();
-        hoy.set(Calendar.HOUR_OF_DAY, 0);
-        hoy.set(Calendar.MINUTE, 0);
-        hoy.set(Calendar.SECOND, 0);
-        hoy.set(Calendar.MILLISECOND, 0);
-        return hoy;
     }
 
     // =========================================================================
@@ -554,30 +482,30 @@ public class GestionBiblioteca {
 
         // ------------------- Escenario de prestamos -------------------
         // Paenza retira el 05/10 y no devuelve: es su 3er prestamo VENCIDO activo.
-        bibliotecaEscenario.prestarLibro(fecha(2026, 10, 5), paenza, longman2014);
+        bibliotecaEscenario.prestarLibro(SesionBiblioteca.fecha(2026, 10, 5), paenza, longman2014);
 
         // Fernandez retira el 10/10 y devuelve HOY: vencio el 15/10, devolvio TARDE.
-        bibliotecaEscenario.prestarLibro(fecha(2026, 10, 10), fernandez, longman2010);
+        bibliotecaEscenario.prestarLibro(SesionBiblioteca.fecha(2026, 10, 10), fernandez, longman2010);
         bibliotecaEscenario.devolverLibro(longman2010);
 
         // Perez retira el 27/10 y devuelve HOY: vencia el 01/11, devolvio A TIEMPO.
-        bibliotecaEscenario.prestarLibro(fecha(2026, 10, 27), perez, java2006);
+        bibliotecaEscenario.prestarLibro(SesionBiblioteca.fecha(2026, 10, 27), perez, java2006);
         bibliotecaEscenario.devolverLibro(java2006);
 
         // Perez se lleva HOY "Programando con JAVA" (permite responder la pregunta 4).
-        bibliotecaEscenario.prestarLibro(fecha(2026, 10, 31), perez, programandoConJava);
+        bibliotecaEscenario.prestarLibro(SesionBiblioteca.fecha(2026, 10, 31), perez, programandoConJava);
 
         // Milstein se lleva HOY 3 libros distintos (activo sano, al tope).
-        bibliotecaEscenario.prestarLibro(fecha(2026, 10, 31), milstein, longman2010);
-        bibliotecaEscenario.prestarLibro(fecha(2026, 10, 31), milstein, contarla);
-        bibliotecaEscenario.prestarLibro(fecha(2026, 10, 31), milstein, java2016);
+        bibliotecaEscenario.prestarLibro(SesionBiblioteca.fecha(2026, 10, 31), milstein, longman2010);
+        bibliotecaEscenario.prestarLibro(SesionBiblioteca.fecha(2026, 10, 31), milstein, contarla);
+        bibliotecaEscenario.prestarLibro(SesionBiblioteca.fecha(2026, 10, 31), milstein, java2016);
 
         // Rechazos de prestarLibro (la biblioteca no crea el prestamo):
         System.out.println("-- Rechazos de prestamo --");
         System.out.println("Milstein (ya tiene 3 libros) intenta llevarse otro:   "
-            + bibliotecaEscenario.prestarLibro(fecha(2026, 10, 31), milstein, java2006));   // false: tope del estudiante
+            + bibliotecaEscenario.prestarLibro(SesionBiblioteca.fecha(2026, 10, 31), milstein, java2006));   // false: tope del estudiante
         System.out.println("Paenza (tiene un vencido) intenta llevarse otro:      "
-            + bibliotecaEscenario.prestarLibro(fecha(2026, 10, 31), paenza, java2006));     // false: prestamo vencido
+            + bibliotecaEscenario.prestarLibro(SesionBiblioteca.fecha(2026, 10, 31), paenza, java2006));     // false: prestamo vencido
 
         // Premio a la responsabilidad: Perez devolvio siempre a tiempo -> +5 dias de prestamo.
         Docente perezDocente = (Docente) perez;

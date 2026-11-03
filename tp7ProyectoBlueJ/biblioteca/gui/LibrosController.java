@@ -71,17 +71,25 @@ public class LibrosController {
         }
     }
 
-    /** Baja del libro seleccionado; se bloquea si esta prestado. */
+    /** Baja del libro seleccionado; FK de prestamos: sin historial asociado, DELETE real en BD. */
     @FXML
     private void bajaLibro() {
         Libro elegido = this.tablaLibros.getSelectionModel().getSelectedItem();
         if (elegido == null) { Dialogos.aviso("Seleccione un libro en la tabla."); return; }
-        if (elegido.prestado()) {
+        if (!elegido.getPrestamos().isEmpty()) {
+            // Igual que el menu de consola: la FK prestamo -> libro impide borrar con historial.
             Dialogos.aviso("\"" + elegido.getTitulo() + "\" (edicion " + elegido.getEdicion()
-                + ") esta prestado: no puede darse de baja.");
+                + ") no puede darse de baja: tiene " + elegido.getPrestamos().size()
+                + " prestamo(s) asociados (FK).");
             return;
         }
-        this.sesion.getBiblioteca().quitarLibro(elegido);
+        try {
+            this.sesion.getDao().getLibroDAO().delete(elegido);   // DELETE real en la BD
+            this.sesion.getBiblioteca().quitarLibro(elegido);     // coherencia memoria <-> BD
+        } catch (biblioteca.persistencia.DAOException e) {
+            Dialogos.error("La base impide la baja.\n" + e.getMessage());
+            return;
+        }
         this.sesion.guardar();
         this.sesion.publicar();
     }

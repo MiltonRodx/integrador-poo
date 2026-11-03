@@ -97,17 +97,24 @@ public class SociosController {
         }
     }
 
-    /** Baja del socio seleccionado; se bloquea si conserva libros prestados. */
+    /** Baja del socio seleccionado; FK de prestamos: sin historial asociado, DELETE real en BD. */
     @FXML
     private void baja() {
         Socio elegido = this.tablaSocios.getSelectionModel().getSelectedItem();
         if (elegido == null) { Dialogos.aviso("Seleccione un socio en la tabla."); return; }
-        if (elegido.cantLibrosPrestados() > 0) {
+        if (!elegido.getPrestamos().isEmpty()) {
+            // Igual que el menu de consola: la FK prestamo -> socio impide borrar con historial.
             Dialogos.aviso(elegido.getNombre() + " no puede darse de baja: tiene "
-                + elegido.cantLibrosPrestados() + " libro(s) en su poder.");
+                + elegido.getPrestamos().size() + " prestamo(s) asociados (FK).");
             return;
         }
-        this.sesion.getBiblioteca().quitarSocio(elegido);
+        try {
+            this.sesion.getDao().getSocioDAO().delete(elegido);   // DELETE real en la BD
+            this.sesion.getBiblioteca().quitarSocio(elegido);     // coherencia memoria <-> BD
+        } catch (biblioteca.persistencia.DAOException e) {
+            Dialogos.error("La base impide la baja.\n" + e.getMessage());
+            return;
+        }
         this.sesion.guardar();
         this.sesion.publicar();
     }
