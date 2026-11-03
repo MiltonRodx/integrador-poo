@@ -150,7 +150,8 @@ tp7ProyectoBlueJ/
 ├── libs/
 │   └── sqlite-jdbc-3.54.1.0.jar   ← driver JDBC de SQLite (runtime)
 ├── sql/
-│   └── esquema.sql                ← documentación del esquema (referencia)
+│   ├── esquema.sql                ← documentación del esquema (referencia)
+│   └── consultar.jsh              ← consulta rápida de la base con jshell
 ├── biblioteca.db                  ← base generada al correr (gitignored)
 └── biblioteca/                    ← paquete de trabajo (consigna: "biblioteca")
     ├── Biblioteca.java            ← admin de libros/socios, informes y listados

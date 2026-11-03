@@ -142,7 +142,7 @@ public class GestionBiblioteca {
             System.out.println();
             try {
                 ejecutarOpcion(opcion);
-            } catch (LibroNoPrestadoException | DAOException e) {
+            } catch (DAOException e) {
                 System.out.println("ERROR: " + e.getMessage());
             }
         } while (opcion != 0);
@@ -166,7 +166,7 @@ public class GestionBiblioteca {
         System.out.println(" 0) Salir");
     }
 
-    private static void ejecutarOpcion(int p_opcion) throws LibroNoPrestadoException {
+    private static void ejecutarOpcion(int p_opcion) {
         switch (p_opcion) {
             case 1: altaLibro(); break;
             case 2: System.out.println(biblioteca.listaDeLibros()); break;
@@ -478,17 +478,12 @@ public class GestionBiblioteca {
         return biblioteca.getLibros().get(numero - 1);
     }
 
-    /** Enter = hoy; aaaa m d = fecha elegida (retrodatos para probar vencidos). */
+    /** Enter = hoy; dia mes anio = fecha elegida (retroactiva para probar vencidos). */
     private static Calendar leerFechaOpcional(String p_prompt) {
-        System.out.print(p_prompt + " [Enter]=hoy, o ingrese  dia mes anio: ");
+        System.out.print(p_prompt + " [Enter]=hoy, o ingrese dia mes anio: ");
         String linea = leerLinea();
         if (linea.isEmpty()) {
-            Calendar hoy = Calendar.getInstance();
-            hoy.set(Calendar.HOUR_OF_DAY, 0);
-            hoy.set(Calendar.MINUTE, 0);
-            hoy.set(Calendar.SECOND, 0);
-            hoy.set(Calendar.MILLISECOND, 0);
-            return hoy;
+            return hoy(); // reutiliza el helper de hoy normalizado
         }
         String[] partes = linea.split("\\s+");
         try {
