@@ -23,5 +23,12 @@
 hs_err_pid*
 replay_pid*
 
+# Base de datos local (persistencia SQLite)
+*.db
+
 
 consigna-poo.md
+# sqlite3 CLI local (descarga de sqlitemanual, no versionar binarios)
+sqlite3.dll
+sqlite3.def
+sqlite3.exe

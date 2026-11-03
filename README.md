@@ -24,6 +24,7 @@
 - [Diagrama UML](#-diagrama-uml)
 - [Estructura del proyecto](#-estructura-del-proyecto)
 - [Tecnologías](#-tecnologías)
+- [Persistencia SQLite](#-persistencia-sqlite)
 - [Cómo correrlo](#-cómo-correrlo)
 - [Reglas de negocio](#-reglas-de-negocio-y-decisiones-de-diseño)
 - [Demo: salida real](#-demo-salida-real-de-gestionbiblioteca)
@@ -146,15 +147,28 @@ classDiagram
 ```text
 tp7ProyectoBlueJ/
 ├── package.bluej                  ← metadatos del proyecto BlueJ
+├── libs/
+│   └── sqlite-jdbc-3.54.1.0.jar   ← driver JDBC de SQLite (runtime)
+├── sql/
+│   └── esquema.sql                ← documentación del esquema (referencia)
+├── biblioteca.db                  ← base generada al correr (gitignored)
 └── biblioteca/                    ← paquete de trabajo (consigna: "biblioteca")
     ├── Biblioteca.java            ← admin de libros/socios, informes y listados
     ├── Socio.java                 ← abstracta: dni, nombre, días y préstamos
     ├── Docente.java               ← area, esResponsable() y premio de días
     ├── Estudiante.java            ← carrera y tope de 3 libros
-    ├── Libro.java                 ← ficha de préstamos del ejemplar
-    ├── Prestamo.java              ← retiro, devolución, socio y libro
+    ├── Libro.java                 ← ficha de préstamos del ejemplar (+ id persistente)
+    ├── Prestamo.java              ← retiro, devolución, socio y libro (+ id persistente)
     ├── LibroNoPrestadoException.java ← excepción de negocio
-    └── GestionBiblioteca.java     ← clase main con el escenario completo
+    ├── GestionBiblioteca.java     ← clase main con el escenario completo
+    ├── GestionPersistencia.java   ← demo del CRUD sobre SQLite
+    └── persistencia/              ← capa de persistencia (paquete biblioteca.persistencia)
+        ├── ConexionBD.java        ← singleton de conexión + DDL auto-migrado
+        ├── DAOException.java      ← excepción unchecked de la capa
+        ├── LibroDAO.java          ← CRUD libro
+        ├── SocioDAO.java          ← CRUD socio (discriminador Docente/Estudiante)
+        ├── PrestamoDAO.java       ← CRUD préstamo (+ reposición en fichas)
+        └── BibliotecaDAO.java     ← fachada guardar()/cargar() del agregado raíz
 ```
 
 ---
@@ -163,7 +177,31 @@ tp7ProyectoBlueJ/
 
 - **Java 21** (OpenJDK) + **BlueJ** — núcleo POO del práctico.
 - **SQLite + JDBC** — capa de persistencia.
-- **JavaFX + AtlantaFX** — GUI con estilos CSS empaquetados.
+- **JavaFX + AtlantaFX** — GUI con estilos CSS empaquetados (en progreso).
+
+---
+
+## 💾 Persistencia SQLite
+
+Capa `biblioteca.persistencia` con CRUD completo sobre SQLite (patrón DAO + conexión singleton), pensada para que la GUI de JavaFX la consuma tal cual.
+
+**Esquema** (se auto-crea al abrir la base; referencia documental en `sql/esquema.sql`):
+
+| Tabla | Contenido | Detalles |
+|---|---|---|
+| `biblioteca` | registro raíz | `nombre` (pk text) |
+| `libro` | ejemplares | `id` surrogate (autoincrement) |
+| `socio` | docentes y estudiantes en una tabla plana | columna discriminador `tipo` + `area`/`carrera` nulos según tipo |
+| `prestamo` | préstamos | fecha en epoch millis a medianoche; `fecha_devolucion NULL` = activo |
+
+**Decisiones**:
+
+- **`ConexionBD`** singleton: abre la base, habilita `PRAGMA foreign_keys` y ejecuta el DDL si falta. Los errores JDBC se envuelven en `DAOException` (unchecked) para no contaminar las firmas.
+- **Identidad persistente**: `Libro` y `Prestamo` ganaron un campo `id` (`-1` = sin persistir); el DAO inserta y le devuelve el `rowid` autogenerado. `Socio` usa su DNI como clave natural.
+- **Upsert por identidad** en `BibliotecaDAO.guardar()`: nuevo objeto → `INSERT`, objeto ya persistido → `UPDATE` (así el premio de días al docente y la devolución de préstamos se persisten re-ejecutando el mismo flujo).
+- **`PrestamoDAO.findAll(libros, socios)`** reconstruye el grafo: re-pone cada préstamo en la ficha del libro y del socio, tal como los crea `prestarLibro()` en vivo, para que el negocio siga operando sobre objetos cargados de BD.
+- **Reglas de negocio en la base**: FK `prestamo→socio` y `prestamo→libro` (impide borrar con dependencias) y un índice parcial único que garantiza **un solo préstamo activo por ejemplar**.
+- **Demo**: `GestionPersistencia` — primera corrida siembra (CREATE), segundas corridas leen el estado persistido (READ) y agregan operaciones de UPDATE y DELETE sobre él; `reset` borra las 3 tablas y re-siembra.
 
 ---
 
@@ -171,12 +209,25 @@ tp7ProyectoBlueJ/
 
 **Con BlueJ:** abrir el proyecto `tp7ProyectoBlueJ`, compilar el paquete `biblioteca` y ejecutar el `main` de `GestionBiblioteca` (click derecho sobre la clase → `void main(String[] args)`).
 
-**Por línea de comandos** (JDK 21+), desde la raíz del repositorio:
+**Por línea de comandos** (JDK 21+), desde `tp7ProyectoBlueJ`:
 
 ```bash
-javac -d classes tp7ProyectoBlueJ/biblioteca/*.java
-java -cp classes biblioteca.GestionBiblioteca
+javac -d classes biblioteca/*.java biblioteca/persistencia/*.java
+
+# Escenario de la consigna (salida fija del TP7, no toca la base de datos)
+java -cp classes biblioteca.GestionBiblioteca escenario
+
+# Menu interactivo: todas las operaciones con persistencia automatica en SQLite
+java -cp "classes;libs/sqlite-jdbc-3.54.1.0.jar" biblioteca.GestionBiblioteca
+
+# Demo de persistencia (CRUD logueado por escritura)
+java -cp "classes;libs/sqlite-jdbc-3.54.1.0.jar" biblioteca.GestionPersistencia          # 1.a vez: siembra; siguientes: recupera estado
+java -cp "classes;libs/sqlite-jdbc-3.54.1.0.jar" biblioteca.GestionPersistencia reset    # borrar todo y re-sembrar
+
+# En Linux/macOS el separador de classpath es ":".
 ```
+
+**En BlueJ:** cargar el driver una sola vez en *Tools → Preferences → Libraries* y seleccionar `tp7ProyectoBlueJ/libs/sqlite-jdbc-3.54.1.0.jar`; luego click derecho sobre `GestionPersistencia` → `void main(String[] args)`.
 
 ---
 
@@ -248,8 +299,8 @@ Cantidad de Socios del tipo Docente: 3
 
 ## 🧭 Roadmap
 
-- [ ] **Persistencia con SQLite**: conexión de base de datos (`database connect`) y migración del modelo.
-- [ ] **GUI con JavaFX + AtlantaFX**: interfaz gráfica con estilos CSS empaquetados.
+- [ ] **Persistencia con SQLite**: ✔ conexión (+ DDL auto-migrado), DAOs con CRUD completo (insert/update/delete/find) y demo `GestionPersistencia`.
+- [ ] **GUI con JavaFX + AtlantaFX**: interfaz gráfica sobre la capa DAO con estilos CSS empaquetados.
 - [ ] **Empaquetado final**: distribución del proyecto con las tres capas integradas.
 
 ---

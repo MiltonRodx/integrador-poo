@@ -9,6 +9,8 @@ public class Prestamo {
     private Calendar fechaDevolucion;
     private Socio socio;
     private Libro libro;
+    // Identidad persistente: la asigna la capa DAO al insertar (-1 = todavia sin persistir).
+    private int id = -1;
 
     public Prestamo(Calendar p_fechaRetiro, Socio p_socio, Libro p_libro){
         this.setFechaRetiro(p_fechaRetiro);
@@ -32,6 +34,11 @@ public class Prestamo {
     public Socio getSocio(){ return this.socio; }
 
     public Libro getLibro(){ return this.libro; }
+
+    public int getId(){ return this.id; }
+
+    /** Solo para la capa de persistencia: reconstruye la identidad almacenada en la BD. */
+    public void setId(int p_id){ this.id = p_id; }
 
     public void registrarFechaDevolucion(Calendar p_fecha){
         if (p_fecha == null){

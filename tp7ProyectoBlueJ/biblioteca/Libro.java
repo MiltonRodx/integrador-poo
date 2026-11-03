@@ -8,7 +8,9 @@ public class Libro {
     private int edicion;
     private String editorial;
     private int anio;
-    private ArrayList<Prestamo> prestamos; 
+    private ArrayList<Prestamo> prestamos;
+    // Identidad persistente: la asigna la capa DAO al insertar (-1 = todavia sin persistir).
+    private int id = -1;
     
     public Libro(String p_titulo, int p_edicion, String p_editorial, int p_anio , ArrayList<Prestamo> p_prestamos){
         this.setTitulo(p_titulo);
@@ -45,6 +47,11 @@ public class Libro {
     public String getEditorial() { return this.editorial; }
     
     public int getAnio() { return this.anio; }
+
+    public int getId() { return this.id; }
+
+    /** Solo para la capa de persistencia: reconstruye la identidad almacenada en la BD. */
+    public void setId(int p_id) { this.id = p_id; }
     
     public boolean agregarPrestamo(Prestamo p_prestamo) { return this.getPrestamos().add(p_prestamo); }
     
