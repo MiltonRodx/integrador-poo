@@ -33,6 +33,7 @@
         </HBox>
 
         <TableView fx:id="tablaSocios" VBox.vgrow="ALWAYS">
+            <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY" /></columnResizePolicy>
             <columns>
                 <TableColumn fx:id="colDni"        text="D.N.I."   prefWidth="120" />
                 <TableColumn fx:id="colNombre"     text="Nombre"   prefWidth="280" />

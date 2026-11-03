@@ -26,7 +26,7 @@ import javafx.stage.Stage;
 public class App extends Application {
 
     /** Clave institucional compartida con el modo consola (misma fila en biblioteca.db). */
-    public static final String CLAVE_INSTITUCION = "Biblioteca UNLP";
+    public static final String CLAVE_INSTITUCION = "Biblioteca FaCENA - UNNE";
 
     private SesionBiblioteca sesion;
 

@@ -22,6 +22,7 @@
         </HBox>
 
         <TableView fx:id="tablaLibros" VBox.vgrow="ALWAYS">
+            <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY" /></columnResizePolicy>
             <columns>
                 <TableColumn fx:id="colTitulo"    text="Titulo"    prefWidth="320" />
                 <TableColumn fx:id="colEdicion"   text="Edicion"   prefWidth="100" />

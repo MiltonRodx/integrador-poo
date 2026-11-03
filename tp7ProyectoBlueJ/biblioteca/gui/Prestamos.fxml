@@ -60,6 +60,7 @@
         </HBox>
 
         <TableView fx:id="tablaPrestamos" VBox.vgrow="ALWAYS">
+            <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY" /></columnResizePolicy>
             <columns>
                 <TableColumn fx:id="colPSocio"     text="Socio"     prefWidth="220" />
                 <TableColumn fx:id="colPLibro"     text="Libro"     prefWidth="260" />
