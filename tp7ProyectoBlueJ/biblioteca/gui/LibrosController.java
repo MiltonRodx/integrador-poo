@@ -76,6 +76,10 @@ public class LibrosController {
     private void bajaLibro() {
         Libro elegido = this.tablaLibros.getSelectionModel().getSelectedItem();
         if (elegido == null) { Dialogos.aviso("Seleccione un libro en la tabla."); return; }
+        // --- NUEVO: confirmacion destructiva ---
+        if (!Dialogos.confirm("¿Desea dar de baja el libro " + elegido.getTitulo() + "?")) {
+            return; // usuario cancelo la baja
+        }
         if (!elegido.getPrestamos().isEmpty()) {
             // Igual que el menu de consola: la FK prestamo -> libro impide borrar con historial.
             Dialogos.aviso("\"" + elegido.getTitulo() + "\" (edicion " + elegido.getEdicion()

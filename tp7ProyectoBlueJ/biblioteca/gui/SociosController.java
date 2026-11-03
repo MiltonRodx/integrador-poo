@@ -102,6 +102,10 @@ public class SociosController {
     private void baja() {
         Socio elegido = this.tablaSocios.getSelectionModel().getSelectedItem();
         if (elegido == null) { Dialogos.aviso("Seleccione un socio en la tabla."); return; }
+        // --- NUEVO: confirmacion destructiva ---
+        if (!Dialogos.confirm("¿Desea dar de baja al socio " + elegido.getNombre() + "?")) {
+            return; // usuario cancelo la baja
+        }
         if (!elegido.getPrestamos().isEmpty()) {
             // Igual que el menu de consola: la FK prestamo -> socio impide borrar con historial.
             Dialogos.aviso(elegido.getNombre() + " no puede darse de baja: tiene "

@@ -63,6 +63,14 @@ public class Dialogos {
         mostrar(Alert.AlertType.INFORMATION, "Informacion", p_mensaje);
     }
 
+    public static boolean confirm(String p_mensaje) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmar");
+        alert.setHeaderText(null);
+        alert.setContentText(p_mensaje);
+        Optional<ButtonType> result = alert.showAndWait();
+        return result.isPresent() && result.get() == ButtonType.OK;
+    }
     private static void mostrar(Alert.AlertType p_tipo, String p_titulo, String p_mensaje) {
         Alert alerta = new Alert(p_tipo, p_mensaje, ButtonType.OK);
         alerta.setHeaderText(p_titulo);
