@@ -108,6 +108,9 @@ public class ConexionBD {
     public void cerrar() {
         try {
             this.conexion.close();
+            // Singleton: deja la referencia en null para permitir una proxima
+            // instanciar(ruta) en la misma JVM (resetea el singleton perezoso).
+            referencia = null;
             System.out.println("[BD] Conexion cerrada.");
         } catch (SQLException e) {
             throw new DAOException("No se pudo cerrar la conexion SQLite", e);

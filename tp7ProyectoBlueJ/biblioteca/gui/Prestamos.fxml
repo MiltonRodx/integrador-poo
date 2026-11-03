@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="biblioteca.gui.PrestamosController"
+      spacing="10">
+    <padding><Insets top="12" right="12" bottom="12" left="12" /></padding>
+
+    <children>
+        <GridPane hgap="8" vgap="8">
+            <columnConstraints>
+                <ColumnConstraints />
+                <ColumnConstraints minWidth="320" />
+                <ColumnConstraints />
+                <ColumnConstraints minWidth="320" />
+            </columnConstraints>
+            <children>
+                <Label text="Socio:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+                <ComboBox fx:id="comboSocios" GridPane.rowIndex="0" GridPane.columnIndex="1" maxWidth="Infinity" />
+
+                <Label text="Libro disponible:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+                <ComboBox fx:id="comboLibros" GridPane.rowIndex="1" GridPane.columnIndex="1" maxWidth="Infinity" />
+
+                <Label text="Fecha de retiro:" GridPane.rowIndex="0" GridPane.columnIndex="2" />
+                <DatePicker fx:id="fechaRetiro" GridPane.rowIndex="0" GridPane.columnIndex="3" maxWidth="Infinity" />
+
+                <HBox spacing="8" GridPane.rowIndex="1" GridPane.columnIndex="3">
+                    <children>
+                        <Button text="Prestar"   onAction="#prestar" />
+                        <Button text="Devolver"  onAction="#devolver" />
+                    </children>
+                </HBox>
+            </children>
+        </GridPane>
+
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <children>
+                <Label text="Filtro:" />
+                <RadioButton fx:id="radioActivos"  text="Activos" selected="true">
+                    <toggleGroup><ToggleGroup fx:id="filtroPrestamos" /></toggleGroup>
+                </RadioButton>
+                <RadioButton fx:id="radioVencidos" text="Vencidos" toggleGroup="$filtroPrestamos"
+                             onAction="#recargar" />
+                <RadioButton fx:id="radioTodos"    text="Todos"  toggleGroup="$filtroPrestamos"
+                             onAction="#recargar" />
+            </children>
+        </HBox>
+
+        <TableView fx:id="tablaPrestamos" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="colPSocio"     text="Socio"     prefWidth="220" />
+                <TableColumn fx:id="colPLibro"     text="Libro"     prefWidth="260" />
+                <TableColumn fx:id="colPRetiro"    text="Retiro"    prefWidth="110" />
+                <TableColumn fx:id="colPVence"     text="Vence"     prefWidth="110" />
+                <TableColumn fx:id="colPDevolucion" text="Devolucion" prefWidth="110" />
+                <TableColumn fx:id="colPEstado"    text="Estado"    prefWidth="110" />
+            </columns>
+            <placeholder><Label text="No hay prestamos en este filtro." /></placeholder>
+        </TableView>
+    </children>
+</VBox>

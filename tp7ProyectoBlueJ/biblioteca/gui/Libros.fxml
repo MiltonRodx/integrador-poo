@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="biblioteca.gui.LibrosController"
+      spacing="10">
+    <padding><Insets top="12" right="12" bottom="12" left="12" /></padding>
+
+    <children>
+        <HBox spacing="8" alignment="CENTER_LEFT">
+            <children>
+                <Button text="Alta Libro" onAction="#altaLibro" />
+                <Button text="Baja"       onAction="#bajaLibro" />
+            </children>
+        </HBox>
+
+        <TableView fx:id="tablaLibros" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="colTitulo"    text="Titulo"    prefWidth="320" />
+                <TableColumn fx:id="colEdicion"   text="Edicion"   prefWidth="100" />
+                <TableColumn fx:id="colEditorial" text="Editorial" prefWidth="220" />
+                <TableColumn fx:id="colAnio"      text="Anio"      prefWidth="100" />
+                <TableColumn fx:id="colPrestado"  text="Prestado"  prefWidth="120" />
+            </columns>
+            <placeholder><Label text="No hay libros en el catalogo." /></placeholder>
+        </TableView>
+    </children>
+</VBox>
