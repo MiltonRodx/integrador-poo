@@ -26,6 +26,7 @@
 - [Tecnologías](#-tecnologías)
 - [Persistencia SQLite](#-persistencia-sqlite)
 - [Interfaz gráfica](#-interfaz-gráfica)
+- [Informe técnico completo 📄](docs/informe-tecnico.md) — arquitectura, persistencia y GUI explicadas capa por capa (para la defensa)
 - [Cómo correrlo](#-cómo-correrlo)
 - [Reglas de negocio](#-reglas-de-negocio-y-decisiones-de-diseño)
 - [Demo: salida real](#-demo-salida-real-de-gestionbiblioteca)
