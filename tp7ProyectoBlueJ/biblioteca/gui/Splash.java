@@ -31,7 +31,7 @@ import javafx.util.Duration;
  * - Stage TRANSPARENT sin bordes: solo se ve la "tarjeta" azul con el libro.
  * - Perspectiva 3D real: Scene con depthBuffer + PerspectiveCamera y una
  *   Rotate sobre el eje Y con pivote en el lomo (la tapa gira en profundidad).
- * - Duracion ~1.5 segundos; al terminar entrega el control a App mediante
+ * - Duracion ~2.5 segundos; al terminar entrega el control a App mediante
  *   el Runnable alListo (aqui App arma y muestra la ventana principal).
  * - Click en cualquier parte para saltar la animacion.
  */
@@ -166,28 +166,29 @@ public class Splash {
             Interpolator.EASE_OUT);
 
         Timeline linea = new Timeline(
-            //      0 - 90ms: la tarjeta aparece suavemente (libro cerrado)
+            //      0 - 120ms: la tarjeta aparece suavemente (libro cerrado)
             new KeyFrame(Duration.millis(0),
                 new KeyValue(this.tarjeta.opacityProperty(), 0.0),
                 cerrado),
-            new KeyFrame(Duration.millis(90),
+            new KeyFrame(Duration.millis(120),
                 new KeyValue(this.tarjeta.opacityProperty(), 1.0,
                     Interpolator.EASE_OUT)),
-            //    150 - 900ms: LA TAPA SE ABRE (el momento 3D)
-            new KeyFrame(Duration.millis(150), cerrado),
-            new KeyFrame(Duration.millis(900), abierto),
-            //    850 - 1200ms: titulos suben mientras el libro termina de abrirse
-            new KeyFrame(Duration.millis(850),
+            //    250 - 1450ms: LA TAPA SE ABRE (el momento 3D, con pausa)
+            new KeyFrame(Duration.millis(250), cerrado),
+            new KeyFrame(Duration.millis(1450), abierto),
+            //   1350 - 1900ms: titulos suben mientras el libro termina de abrirse
+            new KeyFrame(Duration.millis(1350),
                 new KeyValue(p_titulo.opacityProperty(), 0.0),
                 new KeyValue(p_titulo.translateYProperty(), 12),
                 new KeyValue(p_subtitulo.opacityProperty(), 0.0)),
-            new KeyFrame(Duration.millis(1200),
+            new KeyFrame(Duration.millis(1900),
                 new KeyValue(p_titulo.opacityProperty(), 1.0),
                 new KeyValue(p_titulo.translateYProperty(), 0.0,
                     Interpolator.EASE_OUT),
                 new KeyValue(p_subtitulo.opacityProperty(), 1.0)),
-            //   1550ms: marca de fin (OnFinished del Timeline -> terminar())
-            new KeyFrame(Duration.millis(1550)));
+            //   2200ms: marca de fin (OnFinished del Timeline -> terminar(),
+            //   que le suma ~300ms de fundido de salida: ~2.5s en total)
+            new KeyFrame(Duration.millis(2200)));
         return linea;
     }
 
@@ -199,7 +200,7 @@ public class Splash {
             this.linea.stop();
         }
 
-        FadeTransition salida = new FadeTransition(Duration.millis(260), this.tarjeta);
+        FadeTransition salida = new FadeTransition(Duration.millis(300), this.tarjeta);
         salida.setToValue(0.0);
         salida.setOnFinished(e -> {
             this.ventana.close();
