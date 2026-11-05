@@ -42,14 +42,30 @@ public class App extends Application {
     }
 
     /**
-     * Arma y muestra la ventana unica.
+     * Arma y muestra la ventana unica, previa al splash.
+     *
+     * Muestra el Splash (libro 3D que se abre, ~1.5 s o click para saltarlo) y
+     * pase el control a la ventana principal recien al terminar la animacion.
+     */
+    @Override
+    public void start(Stage p_stage) throws Exception {
+        new Splash(() -> {
+            try {
+                this.armaVentana(p_stage);
+            } catch (Exception e) {
+                throw new RuntimeException("Error al armar la ventana: " + e.getMessage(), e);
+            }
+        }).mostrar();
+    }
+
+    /**
+     * Prepara el contenido de la ventana unica.
      *
      * Abre la sesion de datos en la base compartida con la consola, carga
      * MainWindow.fxml con un controllerFactory que inyecta ESA sesion en
      * los 4 controllers, y fija tamano (1024x640), icono y titulo.
      */
-    @Override
-    public void start(Stage p_stage) throws Exception {
+    private void armaVentana(Stage p_stage) throws Exception {
         this.sesion = new SesionBiblioteca("biblioteca.db", CLAVE_INSTITUCION);
 
         FXMLLoader cargador = new FXMLLoader(App.class.getResource("MainWindow.fxml"));
