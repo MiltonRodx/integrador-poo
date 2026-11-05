@@ -20,8 +20,14 @@ public class InformesController {
     @FXML private Label lblDocentes;
     @FXML private Label lblVencidos;
 
+    /** Sesion compartida (misma base que consola), inyectada por App.start(). */
     public InformesController(SesionBiblioteca p_sesion) { this.sesion = p_sesion; }
 
+    /**
+     * Cableado JavaFX automatico: letra monoespaciada para respetar las
+     * columnas de los formatos de la consigna, suscripcion al estado de la
+     * sesion y primer refresco de contadores.
+     */
     @FXML
     private void initialize() {
         // monoespaciada: los formatos de la consigna son de consola (columnas alineadas)
@@ -38,9 +44,16 @@ public class InformesController {
         this.lblVencidos.setText(String.valueOf(b.prestamosVencidos().size()));
     }
 
+    /** Informe formato1: socios con totales por tipo. */
     @FXML private void informeSocios()      { mostrar(this.sesion.getBiblioteca().listaDeSocios()); }
+
+    /** Informe formato2: ejemplares con estado de prestamo. */
     @FXML private void informeLibros()      { mostrar(this.sesion.getBiblioteca().listaDeLibros()); }
+
+    /** Titulos sin repetir (los ejemplares si pueden duplicarse). */
     @FXML private void informeTitulos()     { mostrar(this.sesion.getBiblioteca().listaDeTitulos()); }
+
+    /** Informe formato3: docentes responsables de hoy. */
     @FXML private void informeResponsables(){ mostrar(this.sesion.getBiblioteca().listaDeDocentesResponsables()); }
 
     /** Informe de vencidos activos: encabezado con la cantidad + cada prestamo. */
@@ -55,6 +68,7 @@ public class InformesController {
         mostrar(informe.toString());
     }
 
+    /** Volca el informe elegido en el area de texto central. */
     private void mostrar(String p_texto) {
         this.areaInforme.setText(p_texto);
     }

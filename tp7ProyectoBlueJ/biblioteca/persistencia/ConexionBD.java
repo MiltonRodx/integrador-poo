@@ -17,7 +17,19 @@ import java.sql.Statement;
  */
 public class ConexionBD {
 
-    /** DDL centralizado aca: una unica fuente de verdad del esquema (ver sql/esquema.sql). */
+    /**
+     * DDL centralizado: una unica fuente de verdad del esquema (ver sql/esquema.sql).
+     *
+     * Decisiones de diseño que viven en la base:
+     *  - libro y prestamo usan id AUTOINCREMENT (identidad surrogate);
+     *    socio usa su DNI como clave natural (ya es unica en el dominio).
+     *  - socio es tabla plana: Docentes y Estudiantes comparten la tabla y
+     *    se distinguen por la columna tipo (patron single-table inheritance);
+     *    area/carrera quedan NULL segun el tipo (las CHECK protege el literal).
+     *  - las fechas van como epoch millis a medianoche (evaluacion a nivel dia).
+     *  - el indice parcial unico impide DOS prestamos ACTIVOS del mismo
+     *    ejemplar: es la regla de negocio critica reforzada a nivel base.
+     */
     private static final String DDL = """
          CREATE TABLE IF NOT EXISTS biblioteca (
             nombre TEXT PRIMARY KEY
@@ -87,7 +99,17 @@ public class ConexionBD {
     // Metodos especificos.
     // -------------------
 
-    /** Primera llamada: abre la base (y migra el esquema) en la ruta dada. */
+    /**
+     * Abre la base la PRIMERA vez (conexion + esquema en una pasada).
+     *
+     * Si ya habia una referencia activa devuelve esa (el singleton perezoso
+     * ignora la ruta nueva). synchronized: protege el arranque en multiples
+     * hilos de la GUI.
+     *
+     * @param p_rutaBD ruta del archivo SQLite (relativa al workdir actual)
+     * @return la conexion unica
+     * @throws DAOException si falta el driver o falla la apertura/conexion
+     */
     public static synchronized ConexionBD instanciar(String p_rutaBD) {
         if (referencia == null) {
             referencia = new ConexionBD(p_rutaBD);
@@ -95,7 +117,12 @@ public class ConexionBD {
         return referencia;
     }
 
-    /** Llamadas posteriores: devuelve la conexion ya abierta. */
+    /**
+     * Devuelve la referencia ya instanciada sin abrir nada (llamadas posteriores).
+     *
+     * @return la conexion unica activa
+     * @throws DAOException si nunca se llamo a instanciar(ruta) en esta JVM
+     */
     public static ConexionBD getInstancia() {
         if (referencia == null) {
             throw new DAOException("La conexion no fue instanciada: llamar antes a instanciar(ruta).");
@@ -103,8 +130,18 @@ public class ConexionBD {
         return referencia;
     }
 
+    /** Entrega la conexion JDBC unica que comparten todos los DAOs. */
     public Connection get() { return this.conexion; }
 
+    /**
+     * Cierra la conexion SQLite (fin de la aplicacion o de la demo).
+     *
+     * Resetea la referencia del singleton, lo que permite volver a llamar
+     * instanciar(ruta) en la misma JVM (asi lo usa la GUI para liberar en
+     * stop() y la prueba del CRUD que re-abre).
+     *
+     * @throws DAOException si el close() de JDBC falla
+     */
     public void cerrar() {
         try {
             this.conexion.close();

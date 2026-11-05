@@ -7,10 +7,15 @@ package biblioteca.persistencia;
  */
 public class DAOException extends RuntimeException {
 
+    /** Crea la excepcion con el mensaje descriptivo del error de persistencia. */
     public DAOException(String p_message) {
         super(p_message);
     }
 
+    /**
+     * Crea la excepcion envolviendo la causa tecnica original (SQLException,
+     * ClassNotFoundException...), conservando la pila completa para debug.
+     */
     public DAOException(String p_message, Throwable p_causa) {
         super(p_message, p_causa);
     }

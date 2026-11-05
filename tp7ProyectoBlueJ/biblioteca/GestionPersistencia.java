@@ -21,6 +21,15 @@ public class GestionPersistencia {
 
     private static final String NOMBRE_BIBLIOTECA = "Biblioteca UNLP";
 
+    /**
+     * Demo del CRUD completo (CREATE / READ / UPDATE / DELETE) sobre la
+     * base, dejando log por consola de cada operacion.
+     *
+     * Sin argumentos: reutiliza el estado persistido de la corrida previa;
+     * con "reset" borra TODAS las tablas y arranca desde la siembra.
+     *
+     * @param args argumentos de la linea de comandos ("reset" o vacio)
+     */
     public static void main(String[] args) {
         ConexionBD conexion = ConexionBD.instanciar("biblioteca.db");
         BibliotecaDAO dao = new BibliotecaDAO(conexion);

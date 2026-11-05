@@ -44,8 +44,14 @@ public class PrestamosController {
     @FXML private javafx.scene.control.RadioButton radioVencidos;
     @FXML private javafx.scene.control.RadioButton radioTodos;
 
+    /** Sesion compartida (misma base que consola), inyectada por App.start(). */
     public PrestamosController(SesionBiblioteca p_sesion) { this.sesion = p_sesion; }
 
+    /**
+     * Cableado JavaFX automatico: converters de los combos (como se ven los
+     * objetos en pantalla), bind de las columnas, fecha de retiro en HOY y
+     * suscripcion al estado de la sesion con primer recarga.
+     */
     @FXML
     private void initialize() {
         // El socio se muestra "nombre (tipo)"; el libro, "titulo (edicion N)"
@@ -174,6 +180,7 @@ public class PrestamosController {
         return todos;
     }
 
+    /** Ejemplares prestables hoy: los que NO tienen prestamo activo. */
     private ArrayList<Libro> librosDisponibles() {
         ArrayList<Libro> disponibles = new ArrayList<>();
         for (Libro unLibro : this.sesion.getBiblioteca().getLibros()) {
@@ -213,6 +220,7 @@ public class PrestamosController {
             + p_fecha.get(Calendar.DAY_OF_MONTH);
     }
 
+    /** Visualiza el socio como "nombre (tipo)" en el ComboBox. */
     private StringConverter<Socio> converterSocio() {
         return new StringConverter<>() {
             @Override public String toString(Socio socio) {
@@ -222,6 +230,7 @@ public class PrestamosController {
         };
     }
 
+    /** Visualiza el ejemplar como "titulo (edicion N)" en el ComboBox. */
     private StringConverter<Libro> converterLibro() {
         return new StringConverter<>() {
             @Override public String toString(Libro libro) {

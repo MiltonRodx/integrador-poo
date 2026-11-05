@@ -22,6 +22,7 @@ public class PrestamoDAO {
 
     private final ConexionBD conexion;
 
+    /** Guarda la conexion del singleton; los metodos la consultan por operacion. */
     public PrestamoDAO(ConexionBD p_conexion) {
         this.conexion = p_conexion;
     }
@@ -29,6 +30,18 @@ public class PrestamoDAO {
     // -------------------------
     // CREATE
     // -------------------------
+    /**
+     * INSERTa un prestamo nuevo con referencias por CLAVE (no por objeto).
+     *
+     * Guarda socio_dni y libro_id (claves ya persistidas de los padres),
+     * las fechas como epoch millis a medianoche, y fecha_devolucion NULL
+     * para el prestamo activo. SQLite devuelve el rowid autogenerado y el
+     * DAO se lo inyecta en el objeto (getId() pasa de -1 a su id real).
+     *
+     * @param p_prestamo prestamo creado por Biblioteca.prestarLibro (id = -1)
+     * @throws DAOException si falla el INSERT (ej. viola el indice unico
+     *         de un solo prestamo activo por ejemplar)
+     */
     public void insert(Prestamo p_prestamo) {
         String sql = "INSERT INTO prestamo (socio_dni, libro_id, fecha_retiro, fecha_devolucion)"
                 + " VALUES (?, ?, ?, ?)";
@@ -108,6 +121,16 @@ public class PrestamoDAO {
     // -------------------------
     // UPDATE
     // -------------------------
+    /**
+     * UPDATE del prestamo: solo cambia su fecha de devolucion.
+     *
+     * Las claves (socio/libro/retiro) son inmutables: un prestamo no se
+     * migra de socio ni de libro. Guardar fecha_devolucion NULL significa
+     * volver al estado "activo".
+     *
+     * @param p_prestamo prestamo persistido cuya devolucion se registra
+     * @throws DAOException si falla el UPDATE
+     */
     public void update(Prestamo p_prestamo) {
         // Un prestamo solo cambia en su fecha de devolucion (y a futuro sus claves son inmutables).
         String sql = "UPDATE prestamo SET fecha_devolucion = ? WHERE id = ?";
@@ -127,6 +150,15 @@ public class PrestamoDAO {
     // -------------------------
     // DELETE
     // -------------------------
+    /**
+     * DELETE de un prestamo por su id.
+     *
+     * No borra registros con hijos: prestamo es el nodo final del grafo, la
+     * FK esta de su lado apuntando a socio y libro.
+     *
+     * @param p_prestamo prestamo a eliminar
+     * @throws DAOException si falla el DELETE
+     */
     public void delete(Prestamo p_prestamo) {
         String sql = "DELETE FROM prestamo WHERE id = ?";
         try (PreparedStatement ps = this.conexion.get().prepareStatement(sql)) {
@@ -137,6 +169,14 @@ public class PrestamoDAO {
         }
     }
 
+    /**
+     * DELETE masivo de la tabla prestamo (lo usa la demo con "reset").
+     *
+     * Va PRIMERO en el reset: es la tabla hija, la FK exige borrarla
+     * antes que socio y libro.
+     *
+     * @throws DAOException si falla el borrado
+     */
     public void deleteAll() {
         try (Statement stmt = this.conexion.get().createStatement()) {
             stmt.executeUpdate("DELETE FROM prestamo");
@@ -148,6 +188,13 @@ public class PrestamoDAO {
     // -------------------------
     // Helpers internos
     // -------------------------
+    /**
+     * Resuelve el objeto libro a partir de su id persistente.
+     *
+     * @param p_libros libros ya cargados (por id)
+     * @param p_id id del registro de prestamo
+     * @return el libro correspondiente, o null si no matchea (huerfano)
+     */
     private Libro buscarLibro(ArrayList<Libro> p_libros, int p_id) {
         for (Libro unLibro : p_libros) {
             if (unLibro.getId() == p_id) {
@@ -157,6 +204,13 @@ public class PrestamoDAO {
         return null;
     }
 
+    /**
+     * Resuelve el objeto socio a partir de su DNI.
+     *
+     * @param p_socios socios ya cargados (por dni)
+     * @param p_dni dni del registro de prestamo
+     * @return el socio correspondiente, o null si no matchea (huerfano)
+     */
     private Socio buscarSocio(ArrayList<Socio> p_socios, int p_dni) {
         for (Socio unSocio : p_socios) {
             if (unSocio.getDniSocio() == p_dni) {

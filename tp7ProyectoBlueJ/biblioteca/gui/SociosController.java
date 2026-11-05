@@ -29,8 +29,14 @@ public class SociosController {
     @FXML private TableColumn<Socio, Integer> colDias;
     @FXML private TextField campoBusqueda;
 
+    /** Sesion compartida (misma base que consola), inyectada por App.start(). */
     public SociosController(SesionBiblioteca p_sesion) { this.sesion = p_sesion; }
 
+    /**
+     * Cableado JavaFX automatico: bind de columnas (las beans del TP no son
+     * Property, se envuelven en ReadOnlyObjectWrapper) + suscripcion al
+     * estado de la sesion + primer recarga de la tabla.
+     */
     @FXML
     private void initialize() {
         // Cell value factories tipadas (las beans del TP no son Property, se usa wrapper)

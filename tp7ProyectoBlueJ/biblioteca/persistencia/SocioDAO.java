@@ -19,6 +19,7 @@ public class SocioDAO {
 
     private final ConexionBD conexion;
 
+    /** Guarda la conexion del singleton; los metodos la consultan por operacion. */
     public SocioDAO(ConexionBD p_conexion) {
         this.conexion = p_conexion;
     }
@@ -26,6 +27,17 @@ public class SocioDAO {
     // -------------------------
     // CREATE
     // -------------------------
+    /**
+     * INSERTa un socio nuevo (Docente o Estudiante) con el patron "tabla plana".
+     *
+     * Escribe area SOLO si es Docente y carrera SOLO si es Estudiante
+     * (la columna del otro tipo queda NULL); el discriminador tipo sale de
+     * soyDeLaClase(). La clave primaria es el DNI del objeto: NO se genera
+     * en la base.
+     *
+     * @param p_socio socio nuevo a persistir
+     * @throws DAOException si falla el INSERT (ej. DNI duplicado)
+     */
     public void insert(Socio p_socio) {
         String sql = "INSERT INTO socio (dni, nombre, tipo, dias_prestamos, area, carrera)"
                 + " VALUES (?, ?, ?, ?, ?, ?)";
@@ -45,6 +57,13 @@ public class SocioDAO {
     // -------------------------
     // READ
     // -------------------------
+    /**
+     * Busca un socio por su DNI (clave natural / primaria).
+     *
+     * @param p_dni D.N.I. buscado
+     * @return el socio reconstruido (Docente o Estudiante segun tipo), o null
+     * @throws DAOException si falla la consulta
+     */
     public Socio findByDni(int p_dni) {
         String sql = "SELECT * FROM socio WHERE dni = ?";
         try (PreparedStatement ps = this.conexion.get().prepareStatement(sql)) {
@@ -57,6 +76,15 @@ public class SocioDAO {
         }
     }
 
+    /**
+     * Lista todos los socios ordenados por DNI.
+     *
+     * Cada fila se reconstruye en su subclase concreta (mapear). No repone
+     * prestamos: eso lo hace PrestamoDAO.findAll(libros, socios) despues.
+     *
+     * @return los socios de la tabla, ordenados por DNI
+     * @throws DAOException si falla la consulta
+     */
     public ArrayList<Socio> findAll() {
         String sql = "SELECT * FROM socio ORDER BY dni";
         ArrayList<Socio> socios = new ArrayList<>();
@@ -74,6 +102,16 @@ public class SocioDAO {
     // -------------------------
     // UPDATE
     // -------------------------
+    /**
+     * UPDATEa un socio por DNI.
+     *
+     * En la practica solo dias_prestamos cambia (premio al docente);
+     * area/carrera viajan igual y el discriminador no deberia variar, pero
+     * el UPDATE completo mantiene memoria y fila espejo.
+     *
+     * @param p_socio socio con DNI existente y datos actuales de memoria
+     * @throws DAOException si falla el UPDATE
+     */
     public void update(Socio p_socio) {
         // dias_prestamos puede cambiar (premio al docente responsable), area/carrera no.
         String sql = "UPDATE socio SET nombre = ?, tipo = ?, dias_prestamos = ?, area = ?, carrera = ?"
@@ -94,6 +132,15 @@ public class SocioDAO {
     // -------------------------
     // DELETE
     // -------------------------
+    /**
+     * DELETE de un socio por su DNI.
+     *
+     * La FK prestamo -> socio frena el borrado si el socio tiene historial;
+     * menu y GUI revisan eso ANTES de pedir la baja.
+     *
+     * @param p_socio socio a eliminar
+     * @throws DAOException si falla el DELETE (incluye la FK con historial)
+     */
     public void delete(Socio p_socio) {
         // FK prestamo.socio_dni bloquea el borrado si el socio tiene prestamos asociados.
         String sql = "DELETE FROM socio WHERE dni = ?";
@@ -105,6 +152,11 @@ public class SocioDAO {
         }
     }
 
+    /**
+     * DELETE masivo de la tabla socio (lo usa la demo con "reset").
+     *
+     * @throws DAOException si falla el borrado
+     */
     public void deleteAll() {
         try (Statement stmt = this.conexion.get().createStatement()) {
             stmt.executeUpdate("DELETE FROM socio");

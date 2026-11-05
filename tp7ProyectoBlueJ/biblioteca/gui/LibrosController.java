@@ -24,8 +24,13 @@ public class LibrosController {
     @FXML private TableColumn<Libro, Integer> colAnio;
     @FXML private TableColumn<Libro, String> colPrestado;
 
+    /** Sesion compartida (misma base que consola), inyectada por App.start(). */
     public LibrosController(SesionBiblioteca p_sesion) { this.sesion = p_sesion; }
 
+    /**
+     * Cableado JavaFX automatico: bind de columnas (con ReadOnlyObjectWrapper)
+     * + suscripcion al estado de la sesion + primer recarga de la tabla.
+     */
     @FXML
     private void initialize() {
         colTitulo.setCellValueFactory(dato -> new ReadOnlyObjectWrapper<>(dato.getValue().getTitulo()));

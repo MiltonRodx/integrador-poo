@@ -30,11 +30,24 @@ public class App extends Application {
 
     private SesionBiblioteca sesion;
 
+    /**
+     * Preparacion JavaFX: fija el tema ANTES de construir la UI.
+
+     * Sin este paso los controles no heredarian el estilo AtlantaFX
+     * (Primer claro), que se define al arrancar la escena.
+     */
     @Override
     public void init() {
         Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
     }
 
+    /**
+     * Arma y muestra la ventana unica.
+     *
+     * Abre la sesion de datos en la base compartida con la consola, carga
+     * MainWindow.fxml con un controllerFactory que inyecta ESA sesion en
+     * los 4 controllers, y fija tamano (1024x640), icono y titulo.
+     */
     @Override
     public void start(Stage p_stage) throws Exception {
         this.sesion = new SesionBiblioteca("biblioteca.db", CLAVE_INSTITUCION);
@@ -56,11 +69,20 @@ public class App extends Application {
         p_stage.show();
     }
 
+    /** Cierre de la ventana: libera la conexion SQLite en forma ordenada. */
     @Override
     public void stop() {
         if (this.sesion != null) this.sesion.cerrar();
     }
 
+    /**
+     * Entrada JavaFX "pura" (solo valida si se arranca por module-path).
+     *
+     * En este proyecto la entrada real es {@link Launcher},
+     * que delega aca sin exigir module-path.
+     *
+     * @param args argumentos estandar de Application.launch
+     */
     public static void main(String[] args) {
         launch(args);
     }

@@ -52,6 +52,11 @@ public class SesionBiblioteca {
         }
     }
 
+    /**
+     * Estado actual de la sesion: el agregado que se opera y persiste.
+     *
+     * @return la biblioteca cargada de la base (o nueva/sembrada)
+     */
     public Biblioteca getBiblioteca() { return this.biblioteca; }
 
     /** Acceso a los DAOs para las bajas (fk: DELETE explicito, igual que el menu). */

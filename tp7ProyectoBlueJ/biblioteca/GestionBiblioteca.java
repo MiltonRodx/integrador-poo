@@ -25,6 +25,16 @@ public class GestionBiblioteca {
     private static Scanner consola = new Scanner(System.in);
     private static SesionBiblioteca sesion;
 
+    /**
+     * Punto de entrada: elige modo segun el primer argumento.
+     *
+     * Con "escenario" corre el escenario fijo que pide el enunciado del
+     * TP7 (sin tocar la base); en cualquier otro caso abre el menu
+     * interactivo persistente.
+     *
+     * @param args argumentos de la linea de comandos
+     * @throws LibroNoPrestadoException si el escenario intenta devolver un libro no prestado
+     */
     public static void main(String[] args) throws LibroNoPrestadoException {
         if (args.length > 0 && args[0].equalsIgnoreCase("escenario")) {
             escenarioConsigna();
@@ -96,6 +106,7 @@ public class GestionBiblioteca {
         cerrarBase();
     }
 
+    /** Muestra las 19 opciones agrupadas por seccion (llamada una y otra vez). */
     private static void imprimirMenu() {
         System.out.println("\n========= " + sesion.getBiblioteca().getNombre() + " =========");
         System.out.println("                        LIBROS");
@@ -113,6 +124,7 @@ public class GestionBiblioteca {
         System.out.println(" 0) Salir");
     }
 
+    /** Despachador del menu: mapea el numero de opcion a su operacion. */
     private static void ejecutarOpcion(int p_opcion) {
         switch (p_opcion) {
             case 1: altaLibro(); break;
@@ -143,6 +155,7 @@ public class GestionBiblioteca {
     // -------------------------------------------------------------------------
     // Opciones: LIBROS
     // -------------------------------------------------------------------------
+    /** Opcion 1: formulario de alta de libro en consola, persistido al instante. */
     private static void altaLibro() {
         System.out.println("-- Alta de libro --");
         String titulo = leerTextoObligatorio("Titulo: ");
@@ -160,6 +173,7 @@ public class GestionBiblioteca {
         System.out.println("Libro guardado con id = " + creado.getId());
     }
 
+    /** Opcion 18: baja fisica de un ejemplar (bloqueada si tiene prestamos: FK). */
     private static void bajaLibro() {
         System.out.println("-- Baja de libro --");
         Libro libro = elegirLibro();
@@ -178,6 +192,7 @@ public class GestionBiblioteca {
     // -------------------------------------------------------------------------
     // Opciones: SOCIOS
     // -------------------------------------------------------------------------
+    /** Opcion 4: alta de un socio docente (5 dias de prestamo iniciales). */
     private static void altaDocente() {
         System.out.println("-- Alta de socio docente --");
         int dni = leerDniNuevo();
@@ -192,6 +207,7 @@ public class GestionBiblioteca {
         System.out.println("Docente dado de alta (dias de prestamo iniciales: 5).");
     }
 
+    /** Opcion 5: alta de un socio estudiante (20 dias de prestamo iniciales). */
     private static void altaEstudiante() {
         System.out.println("-- Alta de socio estudiante --");
         int dni = leerDniNuevo();
@@ -206,6 +222,7 @@ public class GestionBiblioteca {
         System.out.println("Estudiante dado de alta (dias de prestamo iniciales: 20).");
     }
 
+    /** Opcion 7: busqueda por D.N.I. (render del socio o aviso de inexistente). */
     private static void buscarSocio() {
         System.out.println("-- Busqueda por DNI --");
         int dni = leerEntero("DNI: ", 1, Integer.MAX_VALUE);
@@ -213,12 +230,14 @@ public class GestionBiblioteca {
         System.out.println(socio != null ? socio.toString() : "No existe un socio con ese DNI.");
     }
 
+    /** Opcion 8: contador de socios del tipo indicado (Docente/Estudiante). */
     private static void sociosPorTipo() {
         String tipo = leerTipoSocio();
         int cantidad = sesion.getBiblioteca().cantidadDeSociosPorTipo(tipo);
         System.out.println("Cantidad de socios del tipo " + tipo + ": " + cantidad);
     }
 
+    /** Opcion 9: baja fisica de un socio (bloqueada si tiene prestamos: FK). */
     private static void bajaSocio() {
         System.out.println("-- Baja de socio --");
         int dni = leerEntero("DNI: ", 1, Integer.MAX_VALUE);
@@ -241,6 +260,7 @@ public class GestionBiblioteca {
     // -------------------------------------------------------------------------
     // Opciones: PRESTAMOS
     // -------------------------------------------------------------------------
+    /** Opcion 10: retiro de un libro (rechazos de negocio impresos con motivo). */
     private static void prestar() {
         System.out.println("-- Prestar un libro --");
         Socio socio = leerSocioExistente();
@@ -262,6 +282,7 @@ public class GestionBiblioteca {
         }
     }
 
+    /** Opcion 11: devolucion de un libro (captura la excepcion de negocio). */
     private static void devolver() {
         System.out.println("-- Devolver un libro --");
         Libro libro = elegirLibro();
@@ -275,6 +296,7 @@ public class GestionBiblioteca {
         }
     }
 
+    /** Opcion 12: informe de prestamos ACTIVOS vencidos a la fecha. */
     private static void listarPrestamosVencidos() {
         System.out.println("-- Prestamos vencidos a la fecha --");
         java.util.ArrayList<Prestamo> vencidos = sesion.getBiblioteca().prestamosVencidos();
@@ -287,6 +309,7 @@ public class GestionBiblioteca {
         }
     }
 
+    /** Opcion 13: pregunta quien tiene el libro (excepcion si esta en la biblioteca). */
     private static void quienTieneElLibro() {
         System.out.println("-- \u00bfQuien tiene el libro? --");
         Libro libro = elegirLibro();
@@ -302,6 +325,7 @@ public class GestionBiblioteca {
     // -------------------------------------------------------------------------
     // Opciones: DOCENTES
     // -------------------------------------------------------------------------
+    /** Opcion 15: premio de dias SOLO a docentes (persiste dias_prestamos). */
     private static void premiarDocente() {
         System.out.println("-- Premio al docente responsable (+dias de prestamo) --");
         int dni = leerEntero("DNI del docente: ", 1, Integer.MAX_VALUE);
@@ -340,6 +364,15 @@ public class GestionBiblioteca {
         }
     }
 
+    /**
+     * Lee un entero re-preguntando hasta recibir un valor valido entre
+     * p_min y p_max.
+     *
+     * @param p_prompt texto de consola que antecede a la entrada
+     * @param p_min minimo aceptado (inclusive)
+     * @param p_max maximo aceptado (inclusive)
+     * @return el entero leido; con stdin agotada devuelve 0 (0 = salir/cancelar)
+     */
     private static int leerEntero(String p_prompt, int p_min, int p_max) {
         while (true) {
             System.out.print(p_prompt);
@@ -357,6 +390,12 @@ public class GestionBiblioteca {
         }
     }
 
+    /**
+     * Lee texto no vacio re-preguntando hasta obtener algo util.
+     *
+     * @param p_prompt texto de consola que antecede a la entrada
+     * @return el texto leido; con stdin agotada devuelve null (canceles el alta)
+     */
     private static String leerTextoObligatorio(String p_prompt) {
         while (true) {
             System.out.print(p_prompt);
@@ -372,6 +411,12 @@ public class GestionBiblioteca {
     }
 
     /** DNI garantizado nuevo (evita el PK repetido de la tabla socio). */
+    /**
+     * Lee un DNI garantizado NUEVO (no registrado): evita el choque de la
+     * clave primaria de la tabla socio al persistir.
+     *
+     * @return el DNI a dar de alta, o -1 si se cancela / esta repetido
+     */
     private static int leerDniNuevo() {
         int dni = leerEntero("DNI (0 para cancelar): ", 0, Integer.MAX_VALUE);
         if (dni == 0) {
@@ -385,6 +430,11 @@ public class GestionBiblioteca {
         return dni;
     }
 
+    /**
+     * Lee el tipo de socio normalizado al literal de los listados.
+     *
+     * @return "Docente" o "Estudiante"; con stdin agotada devuelve ""
+     */
     private static String leerTipoSocio() {
         while (true) {
             System.out.print("Tipo (Docente/Estudiante): ");
@@ -398,6 +448,11 @@ public class GestionBiblioteca {
         }
     }
 
+    /**
+     * Verifica que el DNI ingresado exista (para prestar o consultar).
+     *
+     * @return el socio encontrado, o null si no existe / se cancela
+     */
     private static Socio leerSocioExistente() {
         int dni = leerEntero("DNI del socio (0 para cancelar): ", 0, Integer.MAX_VALUE);
         if (dni == 0) return null;

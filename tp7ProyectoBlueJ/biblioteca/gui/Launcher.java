@@ -16,6 +16,11 @@ import javafx.application.Application;
  */
 public class Launcher {
 
+    /**
+     * Arranca el ciclo de vida JavaFX sobre la clase App.
+     *
+     * @param args argumentos que se reenvian al Application start
+     */
     public static void main(String[] args) {
         Application.launch(App.class, args);
     }

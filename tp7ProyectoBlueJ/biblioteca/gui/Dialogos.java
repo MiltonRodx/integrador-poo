@@ -45,24 +45,33 @@ public class Dialogos {
         return dialogo.showAndWait();
     }
 
+    /** Construye el array de valores a partir de los campos escritos. */
     private static String[] valoresDe(TextField[] p_campos) {
         String[] valores = new String[p_campos.length];
         for (int i = 0; i < p_campos.length; i++) valores[i] = p_campos[i].getText().trim();
         return valores;
     }
 
+    /** Alerta roja de error (ej. dato invalido en un formulario). */
     public static void error(String p_mensaje) {
         mostrar(Alert.AlertType.ERROR, "Error", p_mensaje);
     }
 
+    /** Alerta de advertencia (ej. D.N.I. ya existente). */
     public static void aviso(String p_mensaje) {
         mostrar(Alert.AlertType.WARNING, "Atencion", p_mensaje);
     }
 
+    /** Alerta informativa (ej. confirmacion de operacion exitosa). */
     public static void informacion(String p_mensaje) {
         mostrar(Alert.AlertType.INFORMATION, "Informacion", p_mensaje);
     }
 
+    /**
+     * Alerta de confirmacion destructiva (bajas): true solo con OK.
+     *
+     * @return true si el usuario confirmo con OK
+     */
     public static boolean confirm(String p_mensaje) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmar");
@@ -71,6 +80,7 @@ public class Dialogos {
         Optional<ButtonType> result = alert.showAndWait();
         return result.isPresent() && result.get() == ButtonType.OK;
     }
+    /** Alerta generica bloqueante usada por error/aviso/informacion. */
     private static void mostrar(Alert.AlertType p_tipo, String p_titulo, String p_mensaje) {
         Alert alerta = new Alert(p_tipo, p_mensaje, ButtonType.OK);
         alerta.setHeaderText(p_titulo);

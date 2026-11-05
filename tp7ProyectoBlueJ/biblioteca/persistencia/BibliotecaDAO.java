@@ -25,6 +25,11 @@ public class BibliotecaDAO {
     private final SocioDAO socioDAO;
     private final PrestamoDAO prestamoDAO;
 
+    /**
+     * Arma la fachada con los tres DAOs de tabla.
+     *
+     * @param p_conexion conexion unica abierta por {@link ConexionBD}
+     */
     public BibliotecaDAO(ConexionBD p_conexion) {
         this.conexion = p_conexion;
         this.libroDAO = new LibroDAO(p_conexion);
@@ -32,15 +37,29 @@ public class BibliotecaDAO {
         this.prestamoDAO = new PrestamoDAO(p_conexion);
     }
 
+    /** @return el DAO de la tabla libro (altas/bajas directas del menu y GUI). */
     public LibroDAO getLibroDAO() { return this.libroDAO; }
 
+    /** @return el DAO de la tabla socio (bajas directas con FK). */
     public SocioDAO getSocioDAO() { return this.socioDAO; }
 
+    /** @return el DAO de la tabla prestamo. */
     public PrestamoDAO getPrestamoDAO() { return this.prestamoDAO; }
 
     // -------------------------------------------------------------------------
     // Sincronizacion (upsert por identidad persistente)
     // -------------------------------------------------------------------------
+    /**
+     * Sincroniza el estado en memoria con la base (upsert por identidad).
+     *
+     * El ORDEN respeta las FKs: primero biblioteca, luego libros (los
+     * prestamos necesitan su id), despues socios (necesitan su dni) y al
+     * final los prestamos. INSERT para objetos con id = -1, UPDATE para los
+     * ya persistidos. Las bajas van por DELETE explicito del DAO
+     * correspondiente: este metodo NO borra filas ausentes del grafo.
+     *
+     * @param p_biblioteca agregado raiz completo, tal como esta en memoria
+     */
     public void guardar(Biblioteca p_biblioteca) {
         this.guardarBiblioteca(p_biblioteca);
 
@@ -77,6 +96,18 @@ public class BibliotecaDAO {
     // -------------------------------------------------------------------------
     // Reconstruccion del agregado
     // -------------------------------------------------------------------------
+    /**
+     * Reconstruye el agregado Biblioteca desde la base.
+     *
+     * Si el registro institucional no existe es la primera ejecucion:
+     * devuelve una biblioteca nueva ya creada en la base, lista para
+     * operar y guardar. Si existe, combina los findAll de los tres DAOs y
+     * PrestamoDAO.findAll(libros, socios) repone cada prestamo en la ficha
+     * de su libro y de su socio, tal como los crea prestarLibro en vivo.
+     *
+     * @param p_nombre nombre institucional del registro raiz
+     * @return el agregado completo listo para operar el negocio
+     */
     public Biblioteca cargar(String p_nombre) {
         if (!this.existeBiblioteca(p_nombre)) {
             Biblioteca nueva = new Biblioteca(p_nombre);
@@ -95,7 +126,7 @@ public class BibliotecaDAO {
     // -------------------------------------------------------------------------
     // Tabla biblioteca
     // -------------------------------------------------------------------------
-    /** Crea el registro de la biblioteca si todavia no existe (idempotente). */
+    /** Consulta si ya existe el registro raiz con ese nombre institucional. */
     public boolean existeBiblioteca(String p_nombre) {
         String sql = "SELECT nombre FROM biblioteca WHERE nombre = ?";
         try (PreparedStatement ps = this.conexion.get().prepareStatement(sql)) {
@@ -108,6 +139,15 @@ public class BibliotecaDAO {
         }
     }
 
+    /**
+     * INSERT idempotente del registro raiz biblioteca.
+     *
+     * INSERT OR IGNORE: si el nombre institucional ya existe la fila no se
+     * toca (llamar dos veces no duplica).
+     *
+     * @param p_biblioteca biblioteca cuyo nombre se registra
+     * @throws DAOException si falla el INSERT
+     */
     private void guardarBiblioteca(Biblioteca p_biblioteca) {
         String sql = "INSERT OR IGNORE INTO biblioteca (nombre) VALUES (?)";
         try (PreparedStatement ps = this.conexion.get().prepareStatement(sql)) {
