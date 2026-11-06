@@ -1,11 +1,13 @@
 package biblioteca.gui;
 
+import atlantafx.base.theme.PrimerDark;
 import atlantafx.base.theme.PrimerLight;
 import biblioteca.SesionBiblioteca;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
@@ -39,6 +41,30 @@ public class App extends Application {
     @Override
     public void init() {
         Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
+    }
+
+    /**
+     * Conecta el toggle claro/oscuro de la barra superior.
+     *
+     * Al activarlo cambia el tema AtlantaFX (PrimerLight <-> PrimerDark en
+     * runtime) y marca la raiz con la clase "dark" para los retoques de
+     * tema.css. El CSS del toggle vive en tema.css.
+     */
+    private void armoToggleTema(Scene p_escena) {
+        ToggleButton toggle = (ToggleButton) p_escena.getRoot().lookup("#toggleTema");
+        if (toggle == null) return;   // sin toggle en el FXML, queda el tema fijo.
+
+        toggle.selectedProperty().addListener((p_obs, p_antes, p_ahora) -> {
+            if (p_ahora) {
+                p_escena.getRoot().getStyleClass().add("dark");
+                toggle.setText("\u2600 Claro");
+                Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
+            } else {
+                p_escena.getRoot().getStyleClass().remove("dark");
+                toggle.setText("\uD83C\uDF19 Oscuro");
+                Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
+            }
+        });
     }
 
     /**
@@ -79,6 +105,8 @@ public class App extends Application {
         Parent raiz = cargador.load();
 
         Scene escena = new Scene(raiz, 1024, 640);
+        escena.getStylesheets().add(App.class.getResource("tema.css").toExternalForm());
+        this.armoToggleTema(escena);
         p_stage.getIcons().add(new Image(App.class.getResourceAsStream("icono.png")));
         p_stage.setTitle("Biblioteca FaCENA - UNNE");
         p_stage.setScene(escena);

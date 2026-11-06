@@ -14,6 +14,7 @@ CP="$CP:libs/sqlite-jdbc-3.54.1.0.jar"
 
 javac -cp "$CP" -d classes biblioteca/*.java biblioteca/persistencia/*.java biblioteca/gui/*.java
 cp biblioteca/gui/*.fxml biblioteca/gui/*.png classes/biblioteca/gui/
+cp biblioteca/gui/tema.css classes/biblioteca/gui/
 
 CP="classes:$CP"
 

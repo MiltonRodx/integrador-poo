@@ -1,0 +1,44 @@
+/*
+ * tema.css: ajustes propios por encima del tema base AtlantaFX
+ * (PrimerLight / PrimerDark, fijo desde App.init()).
+ *
+ * Solo contiene estilo cosmético del toggle claro/oscuro y algunos
+ * retoques para el modo oscuro (clase "dark" sobre la raiz).
+ */
+
+/* Barra superior que contiene el toggle. */
+.barra-tema {
+    -fx-background-color: transparent;
+}
+
+/* Toggle claro/oscuro: pildora compacta. */
+.switch-tema {
+    -fx-background-color: -color-bg-default;
+    -fx-border-color: -color-border-default;
+    -fx-border-width: 1;
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-padding: 4 14 4 14;
+    -fx-cursor: hand;
+    -fx-font-size: 12px;
+}
+
+.switch-tema:hover {
+    -fx-border-color: -color-accent-emphasis;
+    -fx-text-fill: -color-fg-muted;
+}
+
+/* Estado activo = modo oscuro encendido. */
+.switch-tema:selected {
+    -fx-background-color: -color-accent-emphasis;
+    -fx-border-color: -color-accent-emphasis;
+    -fx-text-fill: -color-emphasis;
+}
+
+/*
+ * Retoques para el modo oscuro: el panel superior de la barra pasa a
+ * fondo explicito para no quedar en un gris distinto al resto.
+ */
+.dark .barra-tema {
+    -fx-background-color: -color-bg-default;
+}
