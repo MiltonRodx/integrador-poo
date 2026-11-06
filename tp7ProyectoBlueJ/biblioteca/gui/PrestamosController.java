@@ -9,11 +9,15 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.util.StringConverter;
 
@@ -43,6 +47,11 @@ public class PrestamosController {
     @FXML private javafx.scene.control.RadioButton radioActivos;
     @FXML private javafx.scene.control.RadioButton radioVencidos;
     @FXML private javafx.scene.control.RadioButton radioTodos;
+    @FXML private TextField campoFiltro;
+
+    /** Búsqueda en vivo (por encima del filtro Activos/Vencidos/Todos). */
+    private final ObservableList<Prestamo> fuentePrestamos = FXCollections.observableArrayList();
+    private final FilteredList<Prestamo> filtradosPrestamos = new FilteredList<>(this.fuentePrestamos);
 
     /** Sesion compartida (misma base que consola), inyectada por App.start(). */
     public PrestamosController(SesionBiblioteca p_sesion) { this.sesion = p_sesion; }
@@ -75,6 +84,12 @@ public class PrestamosController {
         // por defecto: retiro de hoy (la fecha viaja a medianoche)
         this.fechaRetiro.setValue(LocalDate.now());
 
+        // Busqueda en vivo: mientras se escribe, la tabla se filtra sola
+        // (se apila sobre el radio Activos/Vencidos/Todos).
+        this.tablaPrestamos.setItems(this.filtradosPrestamos);
+        this.campoFiltro.textProperty().addListener(
+            (p_obs, p_viejo, p_nuevo) -> this.filtroPrestamos(p_nuevo));
+
         this.sesion.suscribir(this::recargar);
         recargar();
     }
@@ -95,7 +110,15 @@ public class PrestamosController {
                 visibles.add(unPrestamo);
             }
         }
-        this.tablaPrestamos.getItems().setAll(visibles);
+        this.fuentePrestamos.setAll(visibles);
+    }
+
+    /** Predicado de busqueda en vivo: nombre del socio o titulo del libro. */
+    private void filtroPrestamos(String p_texto) {
+        String texto = p_texto.trim().toLowerCase();
+        this.filtradosPrestamos.setPredicate(unPrestamo -> texto.isEmpty()
+            || unPrestamo.getSocio().getNombre().toLowerCase().contains(texto)
+            || unPrestamo.getLibro().getTitulo().toLowerCase().contains(texto));
     }
 
     /** Registra el retiro con las validaciones de la consigna. */

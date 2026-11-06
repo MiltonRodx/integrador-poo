@@ -3,10 +3,14 @@ package biblioteca.gui;
 import biblioteca.Libro;
 import biblioteca.SesionBiblioteca;
 import java.util.Optional;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 
 /**
  * Pestaña Libros: alta de ejemplares (los titulos pueden repetir: son
@@ -23,6 +27,11 @@ public class LibrosController {
     @FXML private TableColumn<Libro, String> colEditorial;
     @FXML private TableColumn<Libro, Integer> colAnio;
     @FXML private TableColumn<Libro, String> colPrestado;
+    @FXML private TextField campoFiltro;
+
+    /** Búsqueda en vivo: la tabla muestra la vista filtrada, la fuente guarda todo. */
+    private final ObservableList<Libro> fuenteLibros = FXCollections.observableArrayList();
+    private final FilteredList<Libro> filtradosLibros = new FilteredList<>(this.fuenteLibros);
 
     /** Sesion compartida (misma base que consola), inyectada por App.start(). */
     public LibrosController(SesionBiblioteca p_sesion) { this.sesion = p_sesion; }
@@ -40,13 +49,28 @@ public class LibrosController {
         colPrestado.setCellValueFactory(dato -> new ReadOnlyObjectWrapper<>(
             dato.getValue().prestado() ? "Si" : "No"));
 
+        // Busqueda en vivo: mientras se escribe, la tabla se filtra sola.
+        this.tablaLibros.setItems(this.filtradosLibros);
+        this.campoFiltro.textProperty().addListener(
+            (p_obs, p_viejo, p_nuevo) -> this.filtroLibros(p_nuevo));
+
         this.sesion.suscribir(this::recargar);
         recargar();
     }
 
     /** Recarga la tabla desde el estado actual de la biblioteca. */
     public void recargar() {
-        this.tablaLibros.getItems().setAll(this.sesion.getBiblioteca().getLibros());
+        this.fuenteLibros.setAll(this.sesion.getBiblioteca().getLibros());
+    }
+
+    /** Predicado de busqueda en vivo: titulo, editorial, anio o edicion. */
+    private void filtroLibros(String p_texto) {
+        String texto = p_texto.trim().toLowerCase();
+        this.filtradosLibros.setPredicate(libro -> texto.isEmpty()
+            || libro.getTitulo().toLowerCase().contains(texto)
+            || libro.getEditorial().toLowerCase().contains(texto)
+            || String.valueOf(libro.getAnio()).contains(texto)
+            || String.valueOf(libro.getEdicion()).contains(texto));
     }
 
     /** Alta de libro: dialogo de 4 campos + validacion de enteros. */

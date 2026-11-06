@@ -5,12 +5,14 @@ import biblioteca.Estudiante;
 import biblioteca.SesionBiblioteca;
 import biblioteca.Socio;
 import java.util.Optional;
-import javafx.collections.FXCollections; // no? remove if unused
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 
 /**
  * Pestaña Socios: tabla completa, altas de docente/estudiante, busqueda por
@@ -29,6 +31,10 @@ public class SociosController {
     @FXML private TableColumn<Socio, Integer> colDias;
     @FXML private TextField campoBusqueda;
 
+    /** Búsqueda en vivo: la tabla muestra la vista filtrada, la fuente guarda todo. */
+    private final ObservableList<Socio> fuenteSocios = FXCollections.observableArrayList();
+    private final FilteredList<Socio> filtradosSocios = new FilteredList<>(this.fuenteSocios);
+
     /** Sesion compartida (misma base que consola), inyectada por App.start(). */
     public SociosController(SesionBiblioteca p_sesion) { this.sesion = p_sesion; }
 
@@ -46,13 +52,27 @@ public class SociosController {
         colPrestados.setCellValueFactory(dato -> new ReadOnlyObjectWrapper<>(dato.getValue().cantLibrosPrestados()));
         colDias.setCellValueFactory(dato -> new ReadOnlyObjectWrapper<>(dato.getValue().getDiasPrestamos()));
 
+        // Busqueda en vivo: mientras se escribe, la tabla se filtra sola.
+        this.tablaSocios.setItems(this.filtradosSocios);
+        this.campoBusqueda.textProperty().addListener(
+            (p_obs, p_viejo, p_nuevo) -> this.filtroSocios(p_nuevo));
+
         this.sesion.suscribir(this::recargar);
         recargar();
     }
 
     /** Recarga la tabla desde el estado actual de la biblioteca. */
     public void recargar() {
-        this.tablaSocios.getItems().setAll(this.sesion.getBiblioteca().getSocios());
+        this.fuenteSocios.setAll(this.sesion.getBiblioteca().getSocios());
+    }
+
+    /** Predicado de busqueda en vivo: D.N.I., nombre o tipo (sin acentos/caso exacto, contains). */
+    private void filtroSocios(String p_texto) {
+        String texto = p_texto.trim().toLowerCase();
+        this.filtradosSocios.setPredicate(socio -> texto.isEmpty()
+            || String.valueOf(socio.getDniSocio()).contains(texto)
+            || socio.getNombre().toLowerCase().contains(texto)
+            || socio.soyDeLaClase().toLowerCase().contains(texto));
     }
 
     @FXML private void altaDocente()    { alta("docente"); }
@@ -96,6 +116,7 @@ public class SociosController {
             int dni = Integer.parseInt(this.campoBusqueda.getText().trim());
             Socio encontrado = this.sesion.getBiblioteca().buscarSocio(dni);
             if (encontrado == null) { Dialogos.aviso("No hay socio con D.N.I. " + dni + "."); return; }
+            this.campoBusqueda.clear();   // quito el filtro para que la fila sea visible
             this.tablaSocios.getSelectionModel().select(encontrado);
             this.tablaSocios.scrollTo(encontrado);
         } catch (NumberFormatException sinNumero) {

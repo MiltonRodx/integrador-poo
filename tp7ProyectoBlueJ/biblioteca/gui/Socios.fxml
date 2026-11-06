@@ -32,8 +32,8 @@
 
         <HBox spacing="8" alignment="CENTER_LEFT">
             <children>
-                <TextField fx:id="campoBusqueda" promptText="D.N.I. a buscar" onAction="#buscarPorDni"
-                           prefWidth="240" />
+                <TextField fx:id="campoBusqueda" promptText="Buscar socio: D.N.I., nombre o tipo" onAction="#buscarPorDni"
+                           prefWidth="280" />
                 <Button text="Buscar por D.N.I." onAction="#buscarPorDni" />
             </children>
         </HBox>

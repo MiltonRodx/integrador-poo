@@ -8,6 +8,7 @@
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -61,6 +62,8 @@
                              onAction="#recargar" />
                 <RadioButton fx:id="radioTodos"    text="Todos"  toggleGroup="$filtroPrestamos"
                              onAction="#recargar" />
+                <javafx.scene.layout.Region HBox.hgrow="ALWAYS" />
+                <TextField fx:id="campoFiltro" promptText="Buscar socio o libro" prefWidth="240" />
             </children>
         </HBox>
 
