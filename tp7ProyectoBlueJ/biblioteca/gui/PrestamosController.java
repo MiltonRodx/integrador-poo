@@ -1,14 +1,11 @@
 package biblioteca.gui;
 
-import biblioteca.Estudiante;
 import biblioteca.Libro;
 import biblioteca.Prestamo;
 import biblioteca.SesionBiblioteca;
 import biblioteca.Socio;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -23,16 +20,21 @@ import javafx.util.StringConverter;
 
 /**
  * Pestaña Préstamos: registro de retiros (combo socio + combo de libros
- * disponibles + fecha de retiro), devolución del prestamo seleccionado y
- * tabla con filtro Activos / Vencidos / Todos.
+ * disponibles + fecha de retiro), tabla con filtro Activos / Vencidos /
+ * Todos, busqueda en vivo y PILDORA de estado por fila (En plazo / Por
+ * vencer / Vencido / Devuelto) con menu "..." para devolver.
  *
- * Si el prestamo se rechaza se muestra un dialogo con el MOTIVO, replicando
- * en orden las mismas revisiones que hace Biblioteca.prestarLibro().
- * Cada operacion de escritura persiste con sesion.guardar().
+ * Las reglas de negocio se preguntan al modelo y la escritura pasa por
+ * ServicioPrestamos (aporte de la compañera: persistencia con rollback).
+ * Si el prestamo se rechaza se muestra un dialogo con el MOTIVO, en el mismo
+ * orden de revisiones que Biblioteca.prestarLibro().
  */
 public class PrestamosController {
 
     private final SesionBiblioteca sesion;
+    private final ConversorDeFechas conversorDeFechas;
+    private final ReglasDePlazo reglasDePlazo;
+    private final ServicioPrestamos servicioPrestamos;
 
     @FXML private ComboBox<Socio> comboSocios;
     @FXML private ComboBox<Libro> comboLibros;
@@ -43,7 +45,8 @@ public class PrestamosController {
     @FXML private TableColumn<Prestamo, String> colPRetiro;
     @FXML private TableColumn<Prestamo, String> colPVence;
     @FXML private TableColumn<Prestamo, String> colPDevolucion;
-    @FXML private TableColumn<Prestamo, String> colPEstado;
+    @FXML private TableColumn<Prestamo, EstadoPrestamo> colPEstado;
+    @FXML private TableColumn<Prestamo, Prestamo> colPAcciones;
     @FXML private javafx.scene.control.RadioButton radioActivos;
     @FXML private javafx.scene.control.RadioButton radioVencidos;
     @FXML private javafx.scene.control.RadioButton radioTodos;
@@ -53,13 +56,19 @@ public class PrestamosController {
     private final ObservableList<Prestamo> fuentePrestamos = FXCollections.observableArrayList();
     private final FilteredList<Prestamo> filtradosPrestamos = new FilteredList<>(this.fuentePrestamos);
 
-    /** Sesion compartida (misma base que consola), inyectada por App.start(). */
-    public PrestamosController(SesionBiblioteca p_sesion) { this.sesion = p_sesion; }
+    /** Sesion compartida (misma base que consola) + consultas, inyectados por App. */
+    public PrestamosController(SesionBiblioteca p_sesion, ConsultasBiblioteca p_consultas) {
+        this.sesion = p_sesion;
+        this.conversorDeFechas = new ConversorDeFechas();
+        this.reglasDePlazo = new ReglasDePlazo(this.conversorDeFechas);
+        this.servicioPrestamos = new ServicioPrestamos(p_sesion, this.conversorDeFechas,
+            this.reglasDePlazo);
+    }
 
     /**
-     * Cableado JavaFX automatico: converters de los combos (como se ven los
-     * objetos en pantalla), bind de las columnas, fecha de retiro en HOY y
-     * suscripcion al estado de la sesion con primer recarga.
+     * Cableado JavaFX automatico: converters de los combos, bind de las
+     * columnas (estado con pildora y menu de acciones por fila), fecha de
+     * retiro en HOY y suscripcion al estado de la sesion.
      */
     @FXML
     private void initialize() {
@@ -72,14 +81,24 @@ public class PrestamosController {
         colPLibro.setCellValueFactory(dato -> new ReadOnlyObjectWrapper<>(
             dato.getValue().getLibro().getTitulo()));
         colPRetiro.setCellValueFactory(dato -> new ReadOnlyObjectWrapper<>(
-            formato(dato.getValue().getFechaRetiro())));
+            this.conversorDeFechas.aTextoCorto(
+                this.conversorDeFechas.aLocalDate(dato.getValue().getFechaRetiro()))));
         colPVence.setCellValueFactory(dato -> new ReadOnlyObjectWrapper<>(
-            formato(vence(dato.getValue()))));
+            this.conversorDeFechas.aTextoCorto(
+                this.reglasDePlazo.calcularFechaDeVencimiento(dato.getValue()))));
         colPDevolucion.setCellValueFactory(dato -> new ReadOnlyObjectWrapper<>(
             dato.getValue().getFechaDevolucion() == null ? "-"
-                : formato(dato.getValue().getFechaDevolucion())));
+                : this.conversorDeFechas.aTextoCorto(this.conversorDeFechas.aLocalDate(
+                    dato.getValue().getFechaDevolucion()))));
+
+        // Estado: clasificacion del servicio, dibujada como pildora de color
         colPEstado.setCellValueFactory(dato -> new ReadOnlyObjectWrapper<>(
-            estado(dato.getValue())));
+            this.servicioPrestamos.estadoDe(dato.getValue())));
+        colPEstado.setCellFactory(columna -> new CeldaEstadoPrestamo());
+
+        // Acciones: menu "..." por fila (devolver directamente esa fila)
+        colPAcciones.setCellValueFactory(dato -> new ReadOnlyObjectWrapper<>(dato.getValue()));
+        colPAcciones.setCellFactory(columna -> new CeldaAccionesPrestamo(this::devolverEl));
 
         // por defecto: retiro de hoy (la fecha viaja a medianoche)
         this.fechaRetiro.setValue(LocalDate.now());
@@ -103,7 +122,8 @@ public class PrestamosController {
         ArrayList<Prestamo> visibles = new ArrayList<>();
         for (Prestamo unPrestamo : todos) {
             boolean activo = unPrestamo.getFechaDevolucion() == null;
-            boolean vencido = activo && unPrestamo.vencido(hoyMedianoche());
+            boolean vencido = this.servicioPrestamos.estadoDe(unPrestamo)
+                == EstadoPrestamo.VENCIDO;
             if ((this.radioTodos != null && this.radioTodos.isSelected())
                     || (this.radioActivos.isSelected() && activo)
                     || (this.radioVencidos.isSelected() && vencido)) {
@@ -121,7 +141,7 @@ public class PrestamosController {
             || unPrestamo.getLibro().getTitulo().toLowerCase().contains(texto));
     }
 
-    /** Registra el retiro con las validaciones de la consigna. */
+    /** Registra el retiro: valida el modelo y persiste via ServicioPrestamos. */
     @FXML
     private void prestar() {
         Socio socio = this.comboSocios.getValue();
@@ -132,59 +152,36 @@ public class PrestamosController {
             Dialogos.aviso("Elija socio, libro disponible y fecha de retiro.");
             return;
         }
-
-        String motivo = motivoDeRechazo(socio, libro);
-        if (motivo != null) {
-            Dialogos.error("No se puede registrar el prestamo.\n\n" + motivo);
-            return;
+        try {
+            this.servicioPrestamos.registrarPrestamo(socio, libro, fecha);
+        } catch (PrestamoRechazadoException e) {
+            Dialogos.error("No se puede registrar el prestamo.\n\n" + e.getMessage());
+        } catch (ErrorDePersistenciaException e) {
+            Dialogos.error("Problema con la base de datos:\n\n" + e.getMessage());
         }
-
-        Calendar retiro = new GregorianCalendar(fecha.getYear(), fecha.getMonthValue() - 1,
-            fecha.getDayOfMonth());   // medianoche del dia elegido
-        boolean prestado = this.sesion.getBiblioteca().prestarLibro(retiro, socio, libro);
-        if (!prestado) { // no deberia ocurrir: el motivo ya fue revisado
-            Dialogos.error("El prestamo fue rechazado por el modelo.");
-            return;
-        }
-        this.sesion.guardar();
-        this.sesion.publicar();
     }
 
-    /**
-     * Motivo de rechazo (null = se puede prestar). Mismo ORDEN de revisiones
-     * que Biblioteca.prestarLibro(): libro prestado primero, luego puedePedir().
-     */
-    private String motivoDeRechazo(Socio p_socio, Libro p_libro) {
-        if (p_libro.prestado()) {
-            return "El libro \"" + p_libro.getTitulo() + "\" ya esta prestado.";
-        }
-        if (!p_socio.puedePedir()) {
-            if (p_socio instanceof Estudiante && p_socio.cantLibrosPrestados() >= 3) {
-                return p_socio.getNombre() + " ya tiene 3 libros en su poder "
-                    + "(tope para estudiantes).";
-            }
-            return p_socio.getNombre() + " tiene prestamos vencidos: no puede pedir "
-                + "hasta devolverlos.";
-        }
-        return null;   // puede pedir
-    }
-
-    /** Devuelve el prestamo seleccionado (fecha de devolucion = hoy, por el modelo). */
+    /** Devuelve el prestamo seleccionado en la tabla (boton "Devolver"). */
     @FXML
     private void devolver() {
         Prestamo elegido = this.tablaPrestamos.getSelectionModel().getSelectedItem();
         if (elegido == null) { Dialogos.aviso("Seleccione un prestamo en la tabla."); return; }
-        if (elegido.getFechaDevolucion() != null) {
+        devolverEl(elegido);
+    }
+
+    /** Devuelve UN prestamo dado (lo usa el menu "..." de cada fila). */
+    private void devolverEl(Prestamo p_elegido) {
+        if (p_elegido == null) return;
+        if (p_elegido.getFechaDevolucion() != null) {
             Dialogos.aviso("Ese prestamo ya fue devuelto el "
-                + formato(elegido.getFechaDevolucion()) + ".");
+                + this.conversorDeFechas.aTextoCorto(
+                    this.conversorDeFechas.aLocalDate(p_elegido.getFechaDevolucion())) + ".");
             return;
         }
         try {
-            this.sesion.getBiblioteca().devolverLibro(elegido.getLibro());
-            this.sesion.guardar();
-            this.sesion.publicar();
-        } catch (biblioteca.LibroNoPrestadoException e) {
-            Dialogos.error(e.getMessage());
+            this.servicioPrestamos.registrarDevolucion(p_elegido);
+        } catch (ErrorDePersistenciaException e) {
+            Dialogos.error("Problema con la base de datos:\n\n" + e.getMessage());
         }
     }
 
@@ -210,37 +207,6 @@ public class PrestamosController {
             if (!unLibro.prestado()) disponibles.add(unLibro);
         }
         return disponibles;
-    }
-
-    /** Fecha de vencimiento = retiro + dias de prestamo del socio. */
-    private Calendar vence(Prestamo p_prestamo) {
-        Calendar vence = (Calendar) p_prestamo.getFechaRetiro().clone();
-        vence.add(Calendar.DAY_OF_MONTH, p_prestamo.getSocio().getDiasPrestamos());
-        return vence;
-    }
-
-    /** Estado para la tabla: Devuelto / VENCIDO / A tiempo (evaluacion a nivel dia). */
-    private String estado(Prestamo p_prestamo) {
-        if (p_prestamo.getFechaDevolucion() != null) return "Devuelto";
-        return p_prestamo.vencido(hoyMedianoche()) ? "VENCIDO" : "A tiempo";
-    }
-
-    /** Hoy, normalizado a medianoche (misma regla que el modelo). */
-    private GregorianCalendar hoyMedianoche() {
-        GregorianCalendar fecha = new GregorianCalendar();
-        fecha.set(GregorianCalendar.HOUR_OF_DAY, 0);
-        fecha.set(GregorianCalendar.MINUTE, 0);
-        fecha.set(GregorianCalendar.SECOND, 0);
-        fecha.set(GregorianCalendar.MILLISECOND, 0);
-        return fecha;
-    }
-
-    /** Formato de la consigna para fechas: anio/mes/dia. */
-    private static String formato(Calendar p_fecha) {
-        if (p_fecha == null) return "-";
-        return p_fecha.get(Calendar.YEAR) + "/"
-            + (p_fecha.get(Calendar.MONTH) + 1) + "/"
-            + p_fecha.get(Calendar.DAY_OF_MONTH);
     }
 
     /** Visualiza el socio como "nombre (tipo)" en el ComboBox. */

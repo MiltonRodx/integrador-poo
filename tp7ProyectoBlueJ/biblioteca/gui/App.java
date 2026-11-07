@@ -14,9 +14,11 @@ import javafx.stage.Stage;
 /**
  * Punto de entrada de la GUI.
  *
- * - Ventana unica con TabPane de 4 pestañas: Socios / Libros / Prestamos / Informes.
- * - Tema AtlantaFX "Primer claro": se aplica en init(), ANTES de construir UI.
- * - SesionBiblioteca: abre/carga la base una vez y la comparte con los 4
+ * - Ventana unica con TabPane de 5 pestañas: Socios / Libros / Prestamos /
+ *   Informes / Estadisticas.
+ * - Tema AtlantaFX "Primer claro" (o "Primer oscuro" con el toggle): se aplica
+ *   en init(), ANTES de construir UI.
+ * - SesionBiblioteca: abre/carga la base una vez y la comparte con los
  *   controllers (creados por el controllerFactory del FXMLLoader).
  * - stop(): al cerrar la ventana se libera la conexion SQLite.
  *
@@ -95,11 +97,21 @@ public class App extends Application {
         this.sesion = new SesionBiblioteca("biblioteca.db", CLAVE_INSTITUCION);
 
         FXMLLoader cargador = new FXMLLoader(App.class.getResource("MainWindow.fxml"));
+        // Servicios compartidos (aporte de la compañera): consultas de lectura
+        // para todos, y el panel de estadisticas vive solo de ellas.
+        ConsultasBiblioteca consultas = new ConsultasBiblioteca(this.sesion);
+        ConversorDeFechas conversorDeFechas = new ConversorDeFechas();
+        ReglasDePlazo reglasDePlazo = new ReglasDePlazo(conversorDeFechas);
+        ServicioEstadisticas servicioEstadisticas =
+            new ServicioEstadisticas(consultas, reglasDePlazo);
         cargador.setControllerFactory(tipo -> {
             if (tipo == SociosController.class)    return new SociosController(this.sesion);
             if (tipo == LibrosController.class)    return new LibrosController(this.sesion);
-            if (tipo == PrestamosController.class) return new PrestamosController(this.sesion);
+            if (tipo == PrestamosController.class) return new PrestamosController(this.sesion, consultas);
             if (tipo == InformesController.class)  return new InformesController(this.sesion);
+            if (tipo == PanelEstadisticasController.class) {
+                return new PanelEstadisticasController(servicioEstadisticas, consultas);
+            }
             throw new IllegalStateException("Controller inesperado: " + tipo);
         });
         Parent raiz = cargador.load();

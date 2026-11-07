@@ -75,7 +75,8 @@
                 <TableColumn fx:id="colPRetiro"    text="Retiro"    prefWidth="110" />
                 <TableColumn fx:id="colPVence"     text="Vence"     prefWidth="110" />
                 <TableColumn fx:id="colPDevolucion" text="Devolución" prefWidth="110" />
-                <TableColumn fx:id="colPEstado"    text="Estado"    prefWidth="110" />
+                <TableColumn fx:id="colPEstado"    text="Estado"    prefWidth="112" />
+                <TableColumn fx:id="colPAcciones"  text="⋯"         prefWidth="48" />
             </columns>
             <placeholder><Label text="No hay préstamos en este filtro." /></placeholder>
         </TableView>
