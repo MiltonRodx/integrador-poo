@@ -27,7 +27,7 @@
             <VBox>
                 <Label text="Libros" styleClass="titulo-estadistica"/>
                 <Label fx:id="etiquetaLibros" styleClass="valor-estadistica"/>
-                <Label fx:id="etiquetaLibrosDetalle" styleClass="detalle-estadistica" text=" "/>
+                <Label fx:id="etiquetaLibrosDetalle" styleClass="detalle-estadistica" text=" " wrapText="true"/>
             </VBox>
         </HBox>
 
@@ -38,7 +38,7 @@
             <VBox>
                 <Label text="Socios" styleClass="titulo-estadistica"/>
                 <Label fx:id="etiquetaSocios" styleClass="valor-estadistica"/>
-                <Label fx:id="etiquetaSociosDetalle" styleClass="detalle-estadistica" text=" "/>
+                <Label fx:id="etiquetaSociosDetalle" styleClass="detalle-estadistica" text=" " wrapText="true"/>
             </VBox>
         </HBox>
 
@@ -49,7 +49,7 @@
             <VBox>
                 <Label text="Activos" styleClass="titulo-estadistica"/>
                 <Label fx:id="etiquetaActivos" styleClass="valor-estadistica"/>
-                <Label fx:id="etiquetaActivosDetalle" styleClass="detalle-estadistica" text=" "/>
+                <Label fx:id="etiquetaActivosDetalle" styleClass="detalle-estadistica" text=" " wrapText="true"/>
             </VBox>
         </HBox>
 
@@ -60,7 +60,7 @@
             <VBox>
                 <Label text="Vencidos" styleClass="titulo-estadistica"/>
                 <Label fx:id="etiquetaVencidos" styleClass="valor-estadistica"/>
-                <Label fx:id="etiquetaVencidosDetalle" styleClass="detalle-estadistica" text=" "/>
+                <Label fx:id="etiquetaVencidosDetalle" styleClass="detalle-estadistica" text=" " wrapText="true"/>
             </VBox>
         </HBox>
     </HBox>

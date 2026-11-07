@@ -55,15 +55,14 @@ public class PanelEstadisticasController {
         this.etiquetaFecha.setText("Estado al " + this.conversorDeFechas.aTextoCorto(LocalDate.now()));
 
         this.etiquetaLibros.setText(String.valueOf(est.totalLibros()));
-        this.etiquetaLibrosDetalle.setText(
-            est.librosDisponibles() + " disponible(s) para préstamo");
+        this.etiquetaLibrosDetalle.setText(est.librosDisponibles() + " disponibles");
 
         this.etiquetaSocios.setText(String.valueOf(est.totalSocios()));
         this.etiquetaSociosDetalle.setText(
             est.sociosDocentes() + " docentes, " + est.sociosEstudiantes() + " estudiantes");
 
         this.etiquetaActivos.setText(String.valueOf(est.prestamosActivos()));
-        this.etiquetaActivosDetalle.setText("libros en poder de los socios");
+        this.etiquetaActivosDetalle.setText("con préstamo vigente");
 
         this.etiquetaVencidos.setText(String.valueOf(est.prestamosVencidos()));
         this.etiquetaVencidosDetalle.setText(est.prestamosVencidos() > 0
