@@ -15,53 +15,30 @@ public class BibliotecaDAO
     private SocioDAO socioDAO;
     private PrestamoDAO prestamoDAO;
 
-    public BibliotecaDAO(ConexionBD p_conexionBD)
-    {
+    public BibliotecaDAO(ConexionBD p_conexionBD) {
         this.setConexionBD(p_conexionBD);
         this.setLibroDAO(new LibroDAO(p_conexionBD));
         this.setSocioDAO(new SocioDAO(p_conexionBD));
         this.setPrestamoDAO(new PrestamoDAO(p_conexionBD, this.getLibroDAO()));
     }
 
-    private void setConexionBD(ConexionBD p_conexionBD)
-    {
+    private void setConexionBD(ConexionBD p_conexionBD) {
         this.conexionBD = p_conexionBD;
     }
 
-    private void setLibroDAO(LibroDAO p_libroDAO)
-    {
-        this.libroDAO = p_libroDAO;
-    }
+    private void setLibroDAO(LibroDAO p_libroDAO) { this.libroDAO = p_libroDAO; }
 
-    private void setSocioDAO(SocioDAO p_socioDAO)
-    {
-        this.socioDAO = p_socioDAO;
-    }
+    private void setSocioDAO(SocioDAO p_socioDAO) { this.socioDAO = p_socioDAO; }
 
-    private void setPrestamoDAO(PrestamoDAO p_prestamoDAO)
-    {
-        this.prestamoDAO = p_prestamoDAO;
-    }
+    private void setPrestamoDAO(PrestamoDAO p_prestamoDAO) { this.prestamoDAO = p_prestamoDAO; }
 
-    public ConexionBD getConexionBD()
-    {
-        return this.conexionBD;
-    }
+    public ConexionBD getConexionBD() { return this.conexionBD; }
 
-    public LibroDAO getLibroDAO()
-    {
-        return this.libroDAO;
-    }
+    public LibroDAO getLibroDAO() { return this.libroDAO; }
 
-    public SocioDAO getSocioDAO()
-    {
-        return this.socioDAO;
-    }
+    public SocioDAO getSocioDAO() { return this.socioDAO; }
 
-    public PrestamoDAO getPrestamoDAO()
-    {
-        return this.prestamoDAO;
-    }
+    public PrestamoDAO getPrestamoDAO() { return this.prestamoDAO; }
 
     public void crearTablas() throws SQLException
     {
@@ -105,8 +82,7 @@ public class BibliotecaDAO
             "PRAGMA table_info(Prestamo)"
         );
 
-        while(resultado.next())
-        {
+        while(resultado.next()) {
             if(resultado.getString("name").equals("diasPrestamo"))
             {
                 existeColumna = true;
@@ -115,8 +91,7 @@ public class BibliotecaDAO
 
         resultado.close();
 
-        if(!existeColumna)
-        {
+        if(!existeColumna) {
             sentencia.execute(
                 "ALTER TABLE Prestamo ADD COLUMN diasPrestamo INTEGER"
             );
@@ -135,8 +110,7 @@ public class BibliotecaDAO
         // indice no se puede crear sobre una base que ya trae ese problema.
         this.repararPrestamosDuplicados(sentencia);
 
-        try
-        {
+        try {
             // Regla de integridad: un libro no puede tener mas de UN
             // préstamo activo a la vez. El índice es parcial: solo aplica
             // a filas con fechaDevolucion NULL (es decir, sin devolver).
@@ -146,9 +120,7 @@ public class BibliotecaDAO
                 "ON Prestamo (idLibro) " +
                 "WHERE fechaDevolucion IS NULL"
             );
-        }
-        catch(SQLException error)
-        {
+        } catch(SQLException error) {
             // Si la base ya trae datos viejos con mas de un prestamo activo
             // para el mismo libro, el índice no se puede crear. Se avisa
             // pero la app sigue: la migración jamás rompe los datos que
@@ -213,6 +185,7 @@ public class BibliotecaDAO
 
         try
         {
+            // ?????????????????????????????????????????????????????????? wtf
             conflicto = p_sentencia.executeQuery(
                 "SELECT P.idPrestamo, L.titulo, S.nombre, P.fechaRetiro, " +
                 "(" +
@@ -296,13 +269,12 @@ public class BibliotecaDAO
     }
 
     public Biblioteca cargarBiblioteca(String p_nombre)
-        throws SQLException, ParseException
-    {
+        throws SQLException, ParseException   {
         ArrayList<Libro> libros = this.getLibroDAO().obtenerTodos();
         ArrayList<Socio> socios = this.getSocioDAO().obtenerTodos();
 
         this.getPrestamoDAO().cargarPrestamos(socios, libros);
 
-        return new Biblioteca(p_nombre, socios, libros);
+        return new Biblioteca(p_nombre, libros, socios);
     }
 }

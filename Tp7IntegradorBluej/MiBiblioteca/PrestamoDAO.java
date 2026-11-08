@@ -254,12 +254,17 @@ public class PrestamoDAO
                     );
                 }
 
+                // La consigna: el prestamo nace solo con fecha de retiro
                 Prestamo unPrestamo = new Prestamo(
                     fechaRetiro,
-                    fechaDevolucion,
                     unSocio,
                     unLibro
                 );
+
+                if(fechaGuardada != null)
+                {
+                    unPrestamo.registrarFechaDevolucion(fechaDevolucion);
+                }
 
                 unSocio.agregarPrestamo(unPrestamo);
                 unLibro.agregarPrestamo(unPrestamo);

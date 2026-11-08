@@ -141,7 +141,7 @@ public class GestionBiblioteca {
                         fechaRetiro.add(Calendar.DAY_OF_MONTH, -diasTranscurridos);
 
                         boolean prestamoRealizado = biblioteca.prestarLibro(
-                            fechaRetiro, null, socio, libro
+                            fechaRetiro , socio, libro
                         );
 
                         if(prestamoRealizado){

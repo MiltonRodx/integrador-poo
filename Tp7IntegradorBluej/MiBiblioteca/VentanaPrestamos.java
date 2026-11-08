@@ -360,7 +360,6 @@ private void registrarPrestamo()
     // Registrar el prestamo
     boolean prestado = this.biblioteca.prestarLibro(
         fecha,
-        null,
         socio,
         libro
     );

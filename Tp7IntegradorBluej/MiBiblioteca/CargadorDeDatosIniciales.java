@@ -27,13 +27,6 @@ public class CargadorDeDatosIniciales {
         this.biblioteca.nuevoLibro("JAVA. Como Programar", 1, "Pearson", 2006);
         this.biblioteca.nuevoLibro("Longman. Diccionario Pocket", 2, "Longman", 2014);
 
-        this.biblioteca.nuevoLibro("Programando con JAVA", 2, "El Ateneo", 2014);
-        this.biblioteca.nuevoLibro("Longman. Diccionario Pocket", 1, "Longman", 2010);
-        this.biblioteca.nuevoLibro("Vivir para contarla", 1, "Debolsillo", 2003);
-        this.biblioteca.nuevoLibro("JAVA. Como Programar", 3, "Pearson", 2016);
-        this.biblioteca.nuevoLibro("JAVA. Como Programar", 1, "Pearson", 2006);
-        this.biblioteca.nuevoLibro("Longman. Diccionario Pocket", 2, "Longman", 2014);
-
         // Guarda los libros en la BD
         for(Libro libro : this.biblioteca.getLibros()){
             this.bibliotecaDAO.getLibroDAO().agregar(libro);
@@ -51,11 +44,6 @@ public class CargadorDeDatosIniciales {
         // Guarda los socios en la BD
         for(Socio socio : this.biblioteca.getSocios()){
         this.bibliotecaDAO.getSocioDAO().agregar(socio);
-        }
-
-        // Guarda los socios en la BD
-        for(Socio socio : this.biblioteca.getSocios()){
-            this.bibliotecaDAO.getSocioDAO().agregar(socio);
         }
 
         // Busqueda de socios
@@ -79,12 +67,18 @@ public class CargadorDeDatosIniciales {
         this.registrarPrestamo(this.fecha(2026, 11, 3), null, maria, libros.get(4));
     }
 
-    private void registrarPrestamo(Calendar p_fechaRetiro, Calendar p_fechaDevolucion, Socio p_socio, Libro p_libro) throws SQLException {
-        boolean prestamoRealizado = this.biblioteca.prestarLibro(p_fechaRetiro, p_fechaDevolucion, p_socio, p_libro);
+    private void registrarPrestamo(Calendar p_fechaRetiro, Calendar p_fechaDevolucion, Socio p_socio, Libro p_libro) throws SQLException, LibroNoPrestadoException {
+        // Retira siguiendo la regla de la consigna: se autoriza el préstamo
+        boolean prestamoRealizado = this.biblioteca.prestarLibro(p_fechaRetiro, p_socio, p_libro);
 
         if(prestamoRealizado){
-            ArrayList<Prestamo> prestamos = p_socio.getPrestamos();
-            Prestamo nuevoPrestamo = prestamos.get(prestamos.size() - 1);
+            Prestamo nuevoPrestamo = p_libro.ultimoPrestamo();
+
+            // Si el préstamo fue devuelto antes de cargarse, se asienta la fecha actual.
+            if(p_fechaDevolucion != null){
+                nuevoPrestamo.registrarFechaDevolucion(p_fechaDevolucion);
+            }
+
             this.bibliotecaDAO.getPrestamoDAO().agregar(nuevoPrestamo);
         }
     }

@@ -18,8 +18,7 @@ public class VentanaListaSocios extends JPanel
 
     public VentanaListaSocios(
         Biblioteca p_biblioteca,
-        VentanaPrincipal p_ventanaPrincipal)
-    {
+        VentanaPrincipal p_ventanaPrincipal) {
         this.biblioteca = p_biblioteca;
         this.ventanaPrincipal = p_ventanaPrincipal;
 
@@ -29,8 +28,7 @@ public class VentanaListaSocios extends JPanel
         this.crearInterfaz();
     }
 
-    private void crearInterfaz()
-    {
+    private void crearInterfaz() {
         JPanel panelPrincipal = new JPanel(new BorderLayout(20, 20));
         panelPrincipal.setBackground(Color.WHITE);
         panelPrincipal.setBorder(
