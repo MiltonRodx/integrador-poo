@@ -31,8 +31,6 @@ replay_pid*
 tp7ProyectoBlueJ/classes/
 classes/
 
-# Base de datos local (persistencia SQLite)
-*.db
 
 # sqlite3 CLI local: binario descargado, no versionar
 sqlite3.dll
