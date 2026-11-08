@@ -53,12 +53,14 @@ public class VentanaCatalogo extends JPanel
         JLabel titulo = new JLabel("Nuestro catalogo");
         titulo.setFont(new Font("Arial", Font.BOLD, 30));
         titulo.setForeground(new Color(15, 30, 60));
+        titulo.setHorizontalAlignment(SwingConstants.CENTER);
 
         JLabel descripcion = new JLabel(
             "Cada libro guarda una historia esperando ser descubierta."
         );
         descripcion.setFont(new Font("Arial", Font.PLAIN, 16));
         descripcion.setForeground(new Color(100, 110, 125));
+        descripcion.setHorizontalAlignment(SwingConstants.CENTER);
 
         JPanel panelEncabezado = new JPanel(new GridLayout(2, 1, 5, 5));
         panelEncabezado.setBackground(Color.WHITE);
@@ -144,6 +146,7 @@ public class VentanaCatalogo extends JPanel
         JLabel titulo = new JLabel(p_titulo);
         titulo.setFont(new Font("Arial", Font.BOLD, 21));
         titulo.setForeground(new Color(15, 30, 60));
+        titulo.setHorizontalAlignment(SwingConstants.CENTER);
         titulo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel descripcion = new JLabel(

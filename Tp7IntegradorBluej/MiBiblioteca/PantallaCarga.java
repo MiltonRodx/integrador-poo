@@ -15,8 +15,7 @@ public class PantallaCarga extends JFrame
 
     private final Runnable alFinalizar;
 
-    public PantallaCarga(Runnable p_alFinalizar)
-    {
+    public PantallaCarga(Runnable p_alFinalizar) {
         this.alFinalizar = p_alFinalizar;
 
         this.salteado = false;
@@ -70,19 +69,15 @@ public class PantallaCarga extends JFrame
         this.escuchar(this);
         this.setVisible(true);
 
-        temporizador = new Timer(5000, evento -> {
-            this.saltar();
-        });
+        temporizador = new Timer(5000, evento -> { this.saltar(); });
 
         temporizador.setRepeats(false);
         temporizador.start();
     }
 
     // Cierra el splash y abre la GUI; si ya se despidio, no vuelve a pasar
-    private void saltar()
-    {
-        if(this.salteado)
-        {
+    private void saltar() {
+        if(this.salteado) {
             return;
         }
 
@@ -94,8 +89,7 @@ public class PantallaCarga extends JFrame
 
     // Escuchar el click (o tecla) en TODOS los componentes del splash,
     // asi se salta aunque se clique sobre el titulo o la barra
-    private void escuchar(Container p_contenedor)
-    {
+    private void escuchar(Container p_contenedor) {
         p_contenedor.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent evento) {
                 saltar();

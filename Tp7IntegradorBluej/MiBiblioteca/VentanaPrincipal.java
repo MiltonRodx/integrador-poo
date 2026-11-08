@@ -4,8 +4,7 @@ package MiBiblioteca;
 import javax.swing.*;
 import java.awt.*;
 
-public class VentanaPrincipal extends JFrame
-{
+public class VentanaPrincipal extends JFrame {
     private JPanel panelPrincipal;
     private JPanel panelMenu;
     private JPanel panelContenido;
@@ -114,9 +113,11 @@ public class VentanaPrincipal extends JFrame
         tituloSuperior = new JLabel(biblioteca.getNombre());
         tituloSuperior.setFont(new Font("Arial", Font.BOLD, 24));
         tituloSuperior.setForeground(gestorTemas.getColorTexto());
+        tituloSuperior.setHorizontalAlignment(SwingConstants.CENTER);
 
         subtituloSuperior = new JLabel(
-            "Cada lectura abre un mundo y enciende nuevas esperanzas"
+            "Equipo: Los NullPointerException"
+            //"Cada lectura abre un mundo y enciende nuevas esperanzas"
         );
 
         subtituloSuperior.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -487,15 +488,21 @@ public class VentanaPrincipal extends JFrame
             )
         );
 
-        JLabel titulo = new JLabel(p_titulo);
+        JLabel titulo = new JLabel(p_titulo, SwingConstants.CENTER);
+        
+        
         titulo.setFont(new Font("Arial", Font.BOLD, 19));
         titulo.setForeground(gestorTemas.getColorTexto());
         titulo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel descripcion = new JLabel(
             "<html><div style='text-align:center; width:180px;'>"
-            + p_descripcion + "</div></html>"
+            + p_descripcion + "</div></html>",
+            SwingConstants.CENTER
         );
+        
+        descripcion.setHorizontalAlignment(SwingConstants.CENTER);
+        descripcion.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         descripcion.setFont(new Font("Arial", Font.PLAIN, 13));
         descripcion.setForeground(
