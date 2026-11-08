@@ -1,4 +1,4 @@
-package biblioteca.swing;
+package biblioteca.gui;
 
 import biblioteca.Estudiante;
 import biblioteca.Libro;

@@ -1,4 +1,4 @@
-package biblioteca.swing;
+package biblioteca.gui;
 
 /** No se pudo completar una operacion de escritura contra la base SQLite. */
 public class ErrorDePersistenciaException extends RuntimeException {

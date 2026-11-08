@@ -1,4 +1,4 @@
-package biblioteca.swing;
+package biblioteca.gui;
 
 import java.time.LocalDate;
 import java.time.ZoneId;

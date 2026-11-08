@@ -1,4 +1,4 @@
-package biblioteca.swing;
+package biblioteca.gui;
 
 import biblioteca.Prestamo;
 import biblioteca.Socio;

@@ -1,4 +1,4 @@
-package biblioteca.swing;
+package biblioteca.gui;
 
 /** Los numeros que muestra el panel de estadisticas. */
 public record EstadisticasBiblioteca(

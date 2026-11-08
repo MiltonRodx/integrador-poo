@@ -1,4 +1,4 @@
-package biblioteca.swing;
+package biblioteca.gui;
 
 /** Estado visible de un prestamo, con el texto y la clase CSS de su etiqueta. */
 public enum EstadoPrestamo {
