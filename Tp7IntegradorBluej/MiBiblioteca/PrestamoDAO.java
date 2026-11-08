@@ -10,8 +10,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class PrestamoDAO
-{
+public class PrestamoDAO {
     private ConexionBD conexionBD;
     private LibroDAO libroDAO;
 
@@ -71,8 +70,7 @@ public class PrestamoDAO
 
         String fechaDevolucion = null;
 
-        if(p_prestamo.estaDevuelto())
-        {
+        if(p_prestamo.estaDevuelto()) {
             fechaDevolucion = formato.format(
                 p_prestamo.getFechaDevolucion().getTime()
             );
@@ -92,13 +90,11 @@ public class PrestamoDAO
         sentencia.setInt(5, p_diasPrestamo);
 
         sentencia.executeUpdate();
-
         sentencia.close();
     }
 
     public int obtenerDiasPrestamo(Prestamo p_prestamo)
-        throws SQLException
-    {
+        throws SQLException {
         Connection conexion = this.getConexionBD().conectar();
 
         SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
@@ -151,8 +147,7 @@ public class PrestamoDAO
         // la base queda como estaba y el error sube al llamador.
         this.getConexionBD().enTransaccion(new TrabajoBD()
         {
-            public void ejecutar(Connection p_conexion) throws SQLException
-            {
+            public void ejecutar(Connection p_conexion) throws SQLException {
                 filasActualizadas[0] =
                     actualizarDevolucion(p_prestamo, p_conexion);
             }
@@ -216,18 +211,13 @@ public class PrestamoDAO
             Socio unSocio = null;
             Libro unLibro = null;
 
-            for(Socio socio : socios)
-            {
+            for(Socio socio : socios) {
                 if(socio.getDniSocio() == dni)
-                {
                     unSocio = socio;
-                }
             }
 
-            for(Libro libro : libros)
-            {
-                if(this.getLibroDAO().obtenerIdentificador(libro) == idLibro)
-                {
+            for(Libro libro : libros) {
+                if (this.getLibroDAO().obtenerIdentificador(libro) == idLibro) {
                     unLibro = libro;
                 }
             }

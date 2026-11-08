@@ -19,18 +19,19 @@ public class GestorTemas
     private Color colorBoton;
     private Color colorBotonHover;
     private Color colorBotonPresionado;
-
-    public GestorTemas()
-    {
+    
+    private void setTemaActual(int cant) { this.temaActual = cant; }
+    public int getTemaActual() { return this.temaActual; }
+    
+    // Constructor
+    public GestorTemas() {
         this.cargarColores();
     }
 
-    public void cambiarTema()
-    {
-        temaActual++;
+    public void cambiarTema() {
+        this.setTemaActual(this.getTemaActual() + 1);
 
-        if(temaActual > 3)
-        {
+        if(temaActual > 3) {
             temaActual = 0;
         }
 
@@ -99,36 +100,15 @@ public class GestorTemas
         }
     }
 
-    public Color getColorMenu()
-    {
-        return colorMenu;
-    }
+    // Getters
+    public Color getColorMenu() { return colorMenu; }
+    public Color getColorFondo() { return colorFondo; }
+    public Color getColorEncabezado() { return colorEncabezado; }
+    public Color getColorTexto() { return colorTexto; }
+    public Color getColorTarjeta() { return colorTarjeta; }
+    public Color getColorTextoSecundario() { return colorTextoSecundario; }
 
-    public Color getColorFondo()
-    {
-        return colorFondo;
-    }
-
-    public Color getColorEncabezado()
-    {
-        return colorEncabezado;
-    }
-
-    public Color getColorTexto()
-    {
-        return colorTexto;
-    }
-
-    public Color getColorTarjeta()
-    {
-        return colorTarjeta;
-    }
-
-    public Color getColorTextoSecundario()
-    {
-        return colorTextoSecundario;
-    }
-
+    
     public void aplicarTema(Container contenedor)
     {
         Component[] componentes = contenedor.getComponents();
@@ -240,13 +220,7 @@ public class GestorTemas
         return luminosidad > 220;
     }
     
-    public Color getColorBotonHover()
-{
-    return colorBotonHover;
-}
+    public Color getColorBotonHover() { return colorBotonHover; }
 
-public Color getColorBotonPresionado()
-{
-    return colorBotonPresionado;
-}
+    public Color getColorBotonPresionado() { return colorBotonPresionado; }
 }

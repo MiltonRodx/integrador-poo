@@ -38,7 +38,9 @@ public class GestionBiblioteca {
             System.out.println("10. Listar socios");
             System.out.println("11. Listar libros");
             System.out.println("12. Listar titulos");
-            System.out.println("13. Salir");
+            System.out.println("13. Eliminar socio");
+            System.out.println("0. Salir");
+            
             System.out.println("Ingrese una opcion:");
 
             respuesta = teclado.nextInt();
@@ -309,6 +311,37 @@ public class GestionBiblioteca {
                     break;
 
                 case 13:
+                    System.out.println("Titulo del socio a eliminar (o DNI):");
+                    String dniInput = teclado.nextLine();
+                    int dni = 0;
+                    try {
+                        dni = Integer.parseInt(dniInput);
+                    } catch (NumberFormatException e) {
+                        System.out.println("DNI invalido. Debe ser un numero.");
+                        break;
+                    }
+                    Socio socioEncontrado = biblioteca.buscarSocio(dni);
+                    if (socioEncontrado == null) {
+                        System.out.println("No se encontro un socio con DNI: " + dniInput);
+                        break;
+                    }
+                    // Verifico que NO tenga prestamos activos
+                    boolean tieneActivos = socioEncontrado.getPrestamos().stream()
+                            .anyMatch(p -> !p.estaDevuelto());
+                    if (tieneActivos) {
+                        System.out.println("No se puede eliminar al socio " + socioEncontrado.getNombre()
+                                + ": tiene " + socioEncontrado.cantLibrosPrestados()
+                                + " libro(s) prestado(s) activo(s).");
+                        break;
+                    }
+                    boolean eliminado = biblioteca.quitarSocio(socioEncontrado);
+                    if (eliminado) {
+                        System.out.println("Socio eliminado correctamente: " + socioEncontrado.getNombre());
+                    } else {
+                        System.out.println("Error: no se pudo eliminar el socio.");
+                    }
+                    break;
+                case 14:
                     System.out.println("Saliendo del sistema...");
                     break;
 

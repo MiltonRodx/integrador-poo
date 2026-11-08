@@ -22,8 +22,7 @@ public class VentanaPrincipal extends JFrame
 
     private GestorTemas gestorTemas;
 
-    public VentanaPrincipal(Biblioteca p_biblioteca, BibliotecaDAO p_bibliotecaDAO)
-    {
+    public VentanaPrincipal(Biblioteca p_biblioteca, BibliotecaDAO p_bibliotecaDAO) {
         this.biblioteca = p_biblioteca;
         this.bibliotecaDAO = p_bibliotecaDAO;
 
@@ -62,16 +61,12 @@ public class VentanaPrincipal extends JFrame
                 });
             });
         }
-        catch(Exception error)
-        {
-            System.out.println(
-                "No se pudo iniciar la aplicacion: " + error.getMessage()
-            );
+        catch (Exception error) {
+            System.out.println("No se pudo iniciar la aplicacion: " + error.getMessage());
         }
     }
 
-    private void crearInterfaz()
-    {
+    private void crearInterfaz() {
         panelPrincipal = new JPanel(new BorderLayout());
         panelPrincipal.setBackground(gestorTemas.getColorFondo());
 
@@ -79,7 +74,7 @@ public class VentanaPrincipal extends JFrame
         panelMenu = new JPanel(new GridLayout(8, 1, 5, 12));
         panelMenu.setBackground(gestorTemas.getColorMenu());
         panelMenu.setPreferredSize(new Dimension(230, 0));
-        panelMenu.setBorder(
+        panelMenu.setBorder( 
             BorderFactory.createEmptyBorder(30, 15, 30, 15)
         );
 
@@ -360,6 +355,11 @@ public class VentanaPrincipal extends JFrame
             "Consulta todos los socios registrados."
         );
 
+        JPanel tarjetaEliminar = crearTarjetaSocios(
+            "Eliminar socio",
+            "Baja un socio solo si no tiene libros prestados."
+        );
+
         BotonRedondeado botonDocentes =
             new BotonRedondeado("Ingresar");
 
@@ -369,13 +369,18 @@ public class VentanaPrincipal extends JFrame
         BotonRedondeado botonLista =
             new BotonRedondeado("Consultar lista");
 
+        BotonRedondeado botonEliminar =
+            new BotonRedondeado("Eliminar");
+
         tarjetaDocentes.add(botonDocentes);
         tarjetaEstudiantes.add(botonEstudiantes);
         tarjetaLista.add(botonLista);
+        tarjetaEliminar.add(botonEliminar);
 
         tarjetas.add(tarjetaDocentes);
         tarjetas.add(tarjetaEstudiantes);
         tarjetas.add(tarjetaLista);
+        tarjetas.add(tarjetaEliminar);
 
         panel.add(encabezado, BorderLayout.NORTH);
         panel.add(tarjetas, BorderLayout.CENTER);
@@ -392,7 +397,79 @@ public class VentanaPrincipal extends JFrame
             evento -> mostrarListaSocios()
         );
 
-        mostrarContenido(panel);
+        botonEliminar.addActionListener(
+            evento -> {
+                // 1. Pedir DNI mediante diálogo
+                String dniInput = JOptionPane.showInputDialog(
+                    this,
+                    "Ingrese el D.N.I. del socio a eliminar:",
+                    "Eliminar socio",
+                    JOptionPane.QUESTION_MESSAGE
+                );
+                if (dniInput == null) {
+                    // Usuario presionó Cancelar
+                    return;
+                }
+                int dni = 0;
+                try {
+                    dni = Integer.parseInt(dniInput);
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(
+                        this,
+                        "DNI inválido. Debe ser un número.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                    );
+                    return;
+                }
+                // 2. Buscar socio
+                Socio socio = biblioteca.buscarSocio(dni);
+                if (socio == null) {
+                    JOptionPane.showMessageDialog(
+                        this,
+                        "No se encontró un socio con DNI: " + dniInput,
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                    );
+                    return;
+                }
+                // 3. Verificar que NO tenga préstamos activos
+                boolean tieneActivos = socio.getPrestamos().stream()
+                        .anyMatch(p -> !p.estaDevuelto());
+                if (tieneActivos) {
+                    JOptionPane.showMessageDialog(
+                        this,
+                        "No se puede eliminar al socio " + socio.getNombre()
+                            + ": tiene " + socio.cantLibrosPrestados()
+                            + " libro(s) prestado(s) activo(s).",
+                        "No se puede eliminar",
+                        JOptionPane.WARNING_MESSAGE
+                    );
+                    return;
+                }
+                // 4. Eliminar socio
+                boolean eliminado = biblioteca.quitarSocio(socio);
+                if (eliminado) {
+                    JOptionPane.showMessageDialog(
+                        this,
+                        "Socio eliminado correctamente: " + socio.getNombre(),
+                        "Éxito",
+                        JOptionPane.INFORMATION_MESSAGE
+                    );
+                    // Actualizar vista (volver a mostrar el menú de socios)
+                    mostrarSocios();
+                } else {
+                    JOptionPane.showMessageDialog(
+                        this,
+                        "Error: no se pudo eliminar el socio.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                    );
+                }
+            }
+        );
+
+        this.mostrarContenido(panel);
     }
 
     private JPanel crearTarjetaSocios(
@@ -461,8 +538,7 @@ public class VentanaPrincipal extends JFrame
         mostrarContenido(ventana);
     }
 
-    private void mostrarListaSocios()
-    {
+    private void mostrarListaSocios() {
         VentanaListaSocios ventana =
             new VentanaListaSocios(
                 biblioteca,
@@ -472,32 +548,28 @@ public class VentanaPrincipal extends JFrame
         mostrarContenido(ventana);
     }
 
-    private void abrirCatalogo()
-    {
+    private void abrirCatalogo() {
         VentanaCatalogo ventanaCatalogo =
             new VentanaCatalogo(biblioteca, bibliotecaDAO, this);
 
         mostrarContenido(ventanaCatalogo);
     }
 
-    private void abrirPrestamos()
-    {
+    private void abrirPrestamos() {
         VentanaPrestamos ventanaPrestamos =
             new VentanaPrestamos(biblioteca, bibliotecaDAO, this);
 
         mostrarContenido(ventanaPrestamos);
     }
 
-    private void abrirDevoluciones()
-    {
+    private void abrirDevoluciones() {
         VentanaDevoluciones ventanaDevoluciones =
             new VentanaDevoluciones(biblioteca, bibliotecaDAO, this);
 
         mostrarContenido(ventanaDevoluciones);
     }
 
-    public void abrirEstadisticas()
-    {
+    public void abrirEstadisticas() {
         VentanaEstadisticas ventana =
             new VentanaEstadisticas(
                 biblioteca,

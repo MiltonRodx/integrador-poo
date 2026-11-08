@@ -1,4 +1,4 @@
-package MiBiblioteca;
+    package MiBiblioteca;
 
 // Clase Biblioteca.
 // Alumnos a cargo de esta clase:
