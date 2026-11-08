@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox prefHeight="700.0" prefWidth="1050.0" stylesheets="@tema.css" styleClass="main-container" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MiBiblioteca.gui.MainController">
+   <children>
+      <!-- BARRA DE TÍTULO CUSTOMIZADA (Header Azul con Botones de Ventana) -->
+      <HBox alignment="CENTER_LEFT" styleClass="title-bar" prefHeight="45.0">
+         <children>
+            <ImageView fitHeight="26.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@capibara.png" />
+               </image>
+               <HBox.margin>
+                  <Insets left="12.0" right="8.0" />
+               </HBox.margin>
+            </ImageView>
+            <Label styleClass="title-label" text="Biblioteca FaCENA - UNNE" font="$x1">
+               <font>
+                  <Font name="System Bold" size="14.0" fx:id="x1" />
+               </font>
+            </Label>
+            <Region HBox.hgrow="ALWAYS" />
+            <!-- Botones de Control de Ventana (Minimizar, Maximizar, Cerrar) -->
+            <Button fx:id="btnMinimize" onAction="#handleMinimize" styleClass="window-button, minimize-button" text="—" />
+            <Button fx:id="btnMaximize" onAction="#handleMaximize" styleClass="window-button, maximize-button" text="□" />
+            <Button fx:id="btnClose" onAction="#handleClose" styleClass="window-button, close-button" text="✕" />
+         </children>
+      </HBox>
+
+      <!-- PESTAÑAS / SOLAPAS (Socios, Libros, Préstamos, Informes) -->
+      <TabPane fx:id="mainTabPane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+        <tabs>
+          
+          <!-- SOLAPA SOCIOS (Respetando el diseño y funciones del compañero) -->
+          <Tab fx:id="tabSocios" text="Socios">
+            <content>
+              <VBox spacing="15.0">
+                 <padding>
+                    <Insets top="15.0" right="20.0" bottom="15.0" left="20.0" />
+                 </padding>
+                 <children>
+                    <HBox spacing="10.0" alignment="CENTER_LEFT">
+                       <children>
+                          <Button styleClass="action-button-primary" text="Alta Docente" />
+                          <Button styleClass="action-button-secondary" text="Alta Estudiante" />
+                          <Button styleClass="action-button-secondary" text="Dar de baja" />
+                          <Button styleClass="action-button-secondary" text="Premiar días" />
+                       </children>
+                    </HBox>
+                    <HBox spacing="10.0" alignment="CENTER_LEFT">
+                       <children>
+                          <TextField promptText="D.N.I. a buscar" prefWidth="200.0" />
+                          <Button styleClass="action-button-secondary" text="Buscar por D.N.I." />
+                       </children>
+                    </HBox>
+                    <TableView VBox.vgrow="ALWAYS">
+                       <columns>
+                          <TableColumn text="DNI" prefWidth="120.0" />
+                          <TableColumn text="Nombre" prefWidth="220.0" />
+                          <TableColumn text="Tipo" prefWidth="120.0" />
+                          <TableColumn text="Carrera / Área" prefWidth="200.0" />
+                          <TableColumn text="Días Préstamo" prefWidth="120.0" />
+                       </columns>
+                    </TableView>
+                 </children>
+              </VBox>
+            </content>
+          </Tab>
+
+          <!-- SOLAPA LIBROS -->
+          <Tab fx:id="tabLibros" text="Libros">
+            <content>
+              <VBox spacing="15.0">
+                 <padding>
+                    <Insets top="15.0" right="20.0" bottom="15.0" left="20.0" />
+                 </padding>
+                 <children>
+                    <HBox spacing="10.0">
+                       <children>
+                          <Button styleClass="action-button-primary" text="Alta Libro" />
+                          <Button styleClass="action-button-secondary" text="Dar de baja" />
+                       </children>
+                    </HBox>
+                    <TableView VBox.vgrow="ALWAYS">
+                       <columns>
+                          <TableColumn text="Título" prefWidth="250.0" />
+                          <TableColumn text="Edición" prefWidth="80.0" />
+                          <TableColumn text="Editorial" prefWidth="150.0" />
+                          <TableColumn text="Año" prefWidth="80.0" />
+                          <TableColumn text="Prestado" prefWidth="90.0" />
+                       </columns>
+                    </TableView>
+                 </children>
+              </VBox>
+            </content>
+          </Tab>
+
+          <!-- SOLAPA PRÉSTAMOS (Con Tarjetas Interactivas + Tabla del compañero) -->
+          <Tab fx:id="tabPrestamos" text="Préstamos">
+            <content>
+              <VBox spacing="15.0">
+                 <padding>
+                    <Insets top="15.0" right="20.0" bottom="15.0" left="20.0" />
+                 </padding>
+                 <children>
+                    <!-- Tarjetas Clickeables -->
+                    <HBox spacing="15.0">
+                       <children>
+                          <VBox fx:id="cardLibros" styleClass="stat-card" prefWidth="220.0">
+                             <children>
+                                <Label styleClass="stat-title" text="Total de libros" />
+                                <Label styleClass="stat-number" text="13" />
+                             </children>
+                          </VBox>
+                          <VBox fx:id="cardSocios" styleClass="stat-card" prefWidth="220.0">
+                             <children>
+                                <Label styleClass="stat-title" text="Socios activos" />
+                                <Label styleClass="stat-number" text="7" />
+                             </children>
+                          </VBox>
+                          <VBox fx:id="cardPrestamos" styleClass="stat-card" prefWidth="220.0">
+                             <children>
+                                <Label styleClass="stat-title" text="Préstamos activos" />
+                                <Label styleClass="stat-number" text="7" />
+                             </children>
+                          </VBox>
+                       </children>
+                    </HBox>
+
+                    <!-- Formulario de Préstamo -->
+                    <HBox spacing="15.0" alignment="CENTER_LEFT">
+                       <children>
+                          <Label text="Socio:" />
+                          <ComboBox prefWidth="220.0" promptText="Seleccionar Socio..." />
+                          <Label text="Fecha de retiro:" />
+                          <DatePicker prefWidth="150.0" />
+                          <Button styleClass="action-button-primary" text="Prestar" />
+                          <Button styleClass="action-button-secondary" text="Devolver" />
+                       </children>
+                    </HBox>
+
+                    <!-- Tabla de Préstamos -->
+                    <TableView VBox.vgrow="ALWAYS">
+                       <columns>
+                          <TableColumn text="Socio" prefWidth="200.0" />
+                          <TableColumn text="Libro" prefWidth="250.0" />
+                          <TableColumn text="Retiro" prefWidth="110.0" />
+                          <TableColumn text="Vence" prefWidth="110.0" />
+                          <TableColumn text="Devolución" prefWidth="110.0" />
+                          <TableColumn text="Estado" prefWidth="100.0" />
+                       </columns>
+                    </TableView>
+                 </children>
+              </VBox>
+            </content>
+          </Tab>
+
+          <!-- SOLAPA INFORMES -->
+          <Tab fx:id="tabInformes" text="Informes">
+             <content>
+                <VBox alignment="CENTER" spacing="10.0">
+                   <children>
+                      <Label text="Módulo de Informes y Reportes Estadísticos" style="-fx-font-size: 16px; -fx-text-fill: #1e3a8a;" />
+                   </children>
+                </VBox>
+             </content>
+          </Tab>
+
+        </tabs>
+      </TabPane>
+   </children>
+</VBox>

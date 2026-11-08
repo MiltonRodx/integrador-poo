@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="MiBiblioteca.gui.PanelEstadisticasController"
+      spacing="16" prefWidth="300" minWidth="260">
+
+    <HBox styleClass="tarjeta-estadistica" alignment="CENTER_LEFT" spacing="16">
+        <StackPane styleClass="icono-estadistica-azul" minWidth="56" minHeight="56">
+            <Label text="📚" styleClass="texto-icono"/>
+        </StackPane>
+        <VBox>
+            <Label text="Total de libros" styleClass="titulo-estadistica"/>
+            <Label fx:id="etiquetaTotalLibros" styleClass="valor-estadistica"/>
+        </VBox>
+    </HBox>
+
+    <HBox styleClass="tarjeta-estadistica" alignment="CENTER_LEFT" spacing="16">
+        <StackPane styleClass="icono-estadistica-verde" minWidth="56" minHeight="56">
+            <Label text="👥" styleClass="texto-icono"/>
+        </StackPane>
+        <VBox>
+            <Label text="Socios activos" styleClass="titulo-estadistica"/>
+            <Label fx:id="etiquetaTotalSocios" styleClass="valor-estadistica"/>
+        </VBox>
+    </HBox>
+
+    <HBox styleClass="tarjeta-estadistica" alignment="CENTER_LEFT" spacing="16">
+        <StackPane styleClass="icono-estadistica-violeta" minWidth="56" minHeight="56">
+            <Label text="📅" styleClass="texto-icono"/>
+        </StackPane>
+        <VBox>
+            <Label text="Préstamos activos" styleClass="titulo-estadistica"/>
+            <Label fx:id="etiquetaPrestamosActivos" styleClass="valor-estadistica"/>
+        </VBox>
+    </HBox>
+</VBox>

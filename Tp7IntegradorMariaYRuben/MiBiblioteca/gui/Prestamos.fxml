@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="MiBiblioteca.gui.PrestamosController"
+      styleClass="pantalla" spacing="18">
+    <padding><Insets top="22" right="28" bottom="22" left="28"/></padding>
+
+    <VBox spacing="2">
+        <Label text="Nuevo Préstamo" styleClass="titulo-pantalla"/>
+        <Label text="Registra un nuevo préstamo para un socio" styleClass="subtitulo-pantalla"/>
+    </VBox>
+
+    <HBox spacing="22">
+        <!-- Tarjeta del formulario -->
+        <VBox styleClass="tarjeta" spacing="14" HBox.hgrow="ALWAYS">
+            <Label text="Buscar socio por DNI" styleClass="etiqueta-campo"/>
+            <HBox spacing="12">
+                <TextField fx:id="campoDniSocio" promptText="Ingrese el DNI del socio…"
+                           onAction="#buscarSocio" HBox.hgrow="ALWAYS"/>
+                <Button text="🔍  Buscar" onAction="#buscarSocio" styleClass="boton-primario"/>
+            </HBox>
+
+            <GridPane hgap="24" vgap="8">
+                <columnConstraints>
+                    <ColumnConstraints percentWidth="50"/>
+                    <ColumnConstraints percentWidth="50"/>
+                </columnConstraints>
+
+                <Label text="Socio" styleClass="etiqueta-campo" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <Label text="Libro" styleClass="etiqueta-campo" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+                <TextField fx:id="campoNombreSocio" promptText="Nombre del socio" editable="false"
+                           maxWidth="Infinity" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <ComboBox fx:id="comboLibrosDisponibles" promptText="Seleccione un libro…"
+                          maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+                <Label text="Fecha de préstamo" styleClass="etiqueta-campo"
+                       GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                <Label text="Fecha de vencimiento" styleClass="etiqueta-campo"
+                       GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+                <DatePicker fx:id="selectorFechaPrestamo" maxWidth="Infinity"
+                            GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                <TextField fx:id="campoFechaVencimiento" promptText="Se calcula al elegir el socio"
+                           editable="false" maxWidth="Infinity"
+                           GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+            </GridPane>
+
+            <HBox alignment="CENTER_RIGHT">
+                <Button text="＋  Registrar Préstamo" onAction="#registrarPrestamo"
+                        styleClass="boton-primario"/>
+            </HBox>
+        </VBox>
+
+        <!-- Tarjetas de estadisticas -->
+        <fx:include source="PanelEstadisticas.fxml"/>
+    </HBox>
+
+    <VBox spacing="2">
+        <Label text="Préstamos Activos" styleClass="titulo-seccion"/>
+        <Label text="Listado de préstamos actualmente en curso" styleClass="subtitulo-pantalla"/>
+    </VBox>
+
+    <VBox styleClass="tarjeta-tabla" VBox.vgrow="ALWAYS">
+        <TableView fx:id="tablaPrestamosActivos" VBox.vgrow="ALWAYS">
+            <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
+            <columns>
+                <TableColumn fx:id="columnaSocio" text="SOCIO"/>
+                <TableColumn fx:id="columnaLibro" text="LIBRO"/>
+                <TableColumn fx:id="columnaFechaPrestamo" text="FECHA PRÉSTAMO"/>
+                <TableColumn fx:id="columnaVencimiento" text="VENCIMIENTO"/>
+                <TableColumn fx:id="columnaEstado" text="ESTADO"/>
+                <TableColumn fx:id="columnaAcciones" text="" maxWidth="70" minWidth="70"/>
+            </columns>
+            <placeholder><Label text="No hay préstamos activos."/></placeholder>
+        </TableView>
+    </VBox>
+</VBox>
