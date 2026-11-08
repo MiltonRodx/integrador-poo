@@ -1,0 +1,13 @@
+#BlueJ class context
+#Sun Nov 08 12:52:31 ART 2026
+comment0.target=ConexionBD
+comment1.params=p_rutaBaseDatos
+comment1.target=ConexionBD(java.lang.String)
+comment2.params=p_rutaBaseDatos
+comment2.target=void setRutaBaseDatos(java.lang.String)
+comment3.target=java.lang.String getRutaBaseDatos()
+comment4.target=java.sql.Connection conectar()
+comment5.target=void cerrar()
+comment6.params=p_trabajo
+comment6.target=void enTransaccion(TrabajoBD)
+numComments=7

@@ -1,0 +1,16 @@
+#BlueJ class context
+#Sun Nov 08 12:54:04 ART 2026
+comment0.target=VentanaCatalogo
+comment0.text=\n Pantalla del menu Catalogo.\n Muestra dos tarjetas\: una para consultar la lista de libros y otra para\n agregar o eliminar libros. No contiene reglas de negocio\: solo navega\n hacia las pantallas VentanaListaLibros y VentanaGestionLibros.\n
+comment1.params=p_biblioteca p_bibliotecaDAO p_ventanaPrincipal
+comment1.target=VentanaCatalogo(Biblioteca, BibliotecaDAO, VentanaPrincipal)
+comment1.text=\n Crea la pantalla del catalogo.\n\n @param p_biblioteca el modelo con los libros y socios\n @param p_bibliotecaDAO acceso a la base de datos (se pasa a las pantallas hijas)\n @param p_ventanaPrincipal ventana contenedora, usada para cambiar de pantalla\n
+comment2.target=void crearInterfaz()
+comment2.text=\n Arma todos los componentes visibles\: el encabezado con titulo y\n descripcion, las dos tarjetas con sus botones y el boton "Volver al\n inicio". Tambien asigna a cada boton la accion que dispara.\n Las tarjetas se construyen con VentanaPrincipal.crearTarjeta, que deja\n titulo, descripcion y boton centrados.\n
+comment3.target=void abrirLista()
+comment3.text=\n Muestra en el area central la pantalla con la lista de libros del\n catalogo (VentanaListaLibros). Se ejecuta al apretar "Mostrar lista".\n
+comment4.target=void abrirGestion()
+comment4.text=\n Muestra en el area central la pantalla para agregar o eliminar libros\n (VentanaGestionLibros). Se ejecuta al apretar "Agregar o eliminar".\n Recibe tambien el DAO porque esa pantalla guarda los cambios en la base.\n
+comment5.target=void mostrarCatalogo()
+comment5.text=\n Vuelve a mostrar el menu del catalogo creando una pantalla nueva.\n Es publico para que las pantallas hijas puedan regresar a este menu.\n
+numComments=6

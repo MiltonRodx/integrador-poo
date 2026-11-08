@@ -1,0 +1,16 @@
+#BlueJ class context
+#Sun Nov 08 12:54:04 ART 2026
+comment0.target=VentanaListaSocios
+comment1.params=p_biblioteca p_ventanaPrincipal
+comment1.target=VentanaListaSocios(Biblioteca, VentanaPrincipal)
+comment2.target=void crearInterfaz()
+comment3.params=evento
+comment3.target=void insertUpdate(javax.swing.event.DocumentEvent)
+comment4.params=evento
+comment4.target=void removeUpdate(javax.swing.event.DocumentEvent)
+comment5.params=evento
+comment5.target=void changedUpdate(javax.swing.event.DocumentEvent)
+comment6.target=void actualizarLista()
+comment7.params=p_datos
+comment7.target=javax.swing.JPanel crearTarjeta(java.lang.String)
+numComments=8

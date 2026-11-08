@@ -1,0 +1,20 @@
+#BlueJ class context
+#Sun Nov 08 12:52:31 ART 2026
+comment0.target=Estudiante
+comment0.text=\n Socio estudiante\: persona inscripta en una carrera de la FaCENA.\n\n Nace con 20 dias de prestamo (la consigna define el vencimiento "20 dias\n despues del retiro") y su regla particular es el TOPE de 3 libros en su\n poder, ademas del bloqueo comun por prestamos vencidos. Su carrera se\n persiste en la columna carrera de la tabla socio (los docentes la tienen\n en NULL).\n
+comment1.params=p_dniSocio p_nombre p_carrera p_prestamos
+comment1.target=Estudiante(int, java.lang.String, java.lang.String, java.util.ArrayList)
+comment1.text=\n Crea un estudiante reconstruido desde la base, con historial incluido.\n\n @param p_dniSocio D.N.I. del estudiante\n @param p_nombre nombre y apellido\n @param p_diasPrestamo dias de prestamo persistidos\n @param p_carrera carrera que cursa\n @param p_prestamos historial de prestamos ya vinculado\n
+comment2.params=p_dniSocio p_nombre p_carrera
+comment2.target=Estudiante(int, java.lang.String, java.lang.String)
+comment2.text=\n Crea un estudiante nuevo con ficha de prestamos vacia.\n\n @param p_dniSocio D.N.I. del estudiante\n @param p_nombre nombre y apellido\n @param p_diasPrestamo dias de prestamo iniciales (20 por consigna)\n @param p_carrera carrera que cursa\n
+comment3.params=p_carrera
+comment3.target=void setCarrera(java.lang.String)
+comment3.text=Establece la carrera que cursa el estudiante.
+comment4.target=java.lang.String getCarrera()
+comment4.text=@return la carrera que cursa el estudiante.
+comment5.target=boolean puedePedir()
+comment5.text=\n Regla del estudiante\: solo puede pedir si NO llego al tope de 3 libros\n en su poder, ademas del bloqueo comun por vencidos.\n\n Con "<\=" se podia cerrar el ciclo llevandose un 4.\u00BA libro; por eso se\n exige "< 3" y recien despues se delega en la regla de la clase padre.\n\n @return true si no tiene 3 libros en mano y no tiene vencidos\n
+comment6.target=java.lang.String soyDeLaClase()
+comment6.text=@return "Estudiante" (etiqueta de los listados y del discriminador de la BD).
+numComments=7

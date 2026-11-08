@@ -1,0 +1,24 @@
+#BlueJ class context
+#Sun Nov 08 12:52:31 ART 2026
+comment0.target=BibliotecaDAO
+comment1.params=p_conexionBD
+comment1.target=BibliotecaDAO(ConexionBD)
+comment10.target=void crearTablas()
+comment11.params=p_sentencia
+comment11.target=void repararPrestamosDuplicados(java.sql.Statement)
+comment12.target=java.util.ArrayList cargarLibros()
+comment13.params=p_nombre
+comment13.target=Biblioteca cargarBiblioteca(java.lang.String)
+comment2.params=p_conexionBD
+comment2.target=void setConexionBD(ConexionBD)
+comment3.params=p_libroDAO
+comment3.target=void setLibroDAO(LibroDAO)
+comment4.params=p_socioDAO
+comment4.target=void setSocioDAO(SocioDAO)
+comment5.params=p_prestamoDAO
+comment5.target=void setPrestamoDAO(PrestamoDAO)
+comment6.target=ConexionBD getConexionBD()
+comment7.target=LibroDAO getLibroDAO()
+comment8.target=SocioDAO getSocioDAO()
+comment9.target=PrestamoDAO getPrestamoDAO()
+numComments=14

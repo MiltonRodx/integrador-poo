@@ -1,0 +1,11 @@
+#BlueJ class context
+#Sun Nov 08 12:54:04 ART 2026
+comment0.target=VentanaConsultas
+comment1.params=p_biblioteca p_bibliotecaDAO p_ventanaPrincipal
+comment1.target=VentanaConsultas(Biblioteca, BibliotecaDAO, VentanaPrincipal)
+comment2.target=void crearInterfaz()
+comment3.params=p_titulo
+comment3.target=javax.swing.JPanel crearTarjeta(java.lang.String)
+comment4.target=javax.swing.JPanel crearTarjetaLibro()
+comment5.target=void consultarLibro()
+numComments=6

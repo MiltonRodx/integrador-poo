@@ -1,0 +1,22 @@
+#BlueJ class context
+#Sun Nov 08 12:52:31 ART 2026
+comment0.target=GestorTemas
+comment1.params=cant
+comment1.target=void setTemaActual(int)
+comment10.target=java.awt.Color getColorTarjeta()
+comment11.target=java.awt.Color getColorTextoSecundario()
+comment12.params=contenedor
+comment12.target=void aplicarTema(java.awt.Container)
+comment13.params=color
+comment13.target=boolean esColorClaro(java.awt.Color)
+comment14.target=java.awt.Color getColorBotonHover()
+comment15.target=java.awt.Color getColorBotonPresionado()
+comment2.target=int getTemaActual()
+comment3.target=GestorTemas()
+comment4.target=void cambiarTema()
+comment5.target=void cargarColores()
+comment6.target=java.awt.Color getColorMenu()
+comment7.target=java.awt.Color getColorFondo()
+comment8.target=java.awt.Color getColorEncabezado()
+comment9.target=java.awt.Color getColorTexto()
+numComments=16

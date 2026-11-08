@@ -1,0 +1,6 @@
+#BlueJ class context
+#Sun Nov 08 12:52:31 ART 2026
+comment0.target=TrabajoBD
+comment1.params=p_conexion
+comment1.target=void ejecutar(java.sql.Connection)
+numComments=2

@@ -1,0 +1,27 @@
+#BlueJ class context
+#Sun Nov 08 12:54:04 ART 2026
+comment0.target=VentanaPrincipal
+comment1.params=p_biblioteca p_bibliotecaDAO
+comment1.target=VentanaPrincipal(Biblioteca, BibliotecaDAO)
+comment10.target=void mostrarSocios()
+comment11.target=void abrirSociosDocentes()
+comment12.target=void abrirSociosEstudiantes()
+comment13.target=void mostrarListaSocios()
+comment14.target=void abrirCatalogo()
+comment15.target=void abrirPrestamos()
+comment16.target=void abrirDevoluciones()
+comment17.target=void abrirEstadisticas()
+comment18.target=void abrirConsultas()
+comment2.params=args
+comment2.target=void main(java.lang.String[])
+comment3.target=void crearInterfaz()
+comment4.target=void cambiarTema()
+comment5.target=void actualizarTema()
+comment6.target=void mostrarInicio()
+comment7.params=p_nombrePantalla
+comment7.target=void mostrarPantalla(java.lang.String)
+comment8.params=panel
+comment8.target=void mostrarContenido(javax.swing.JPanel)
+comment9.params=p_titulo p_descripcion p_boton
+comment9.target=javax.swing.JPanel crearTarjeta(java.lang.String, java.lang.String, BotonRedondeado)
+numComments=19

@@ -1,0 +1,19 @@
+#BlueJ class context
+#Sun Nov 08 12:52:31 ART 2026
+comment0.target=LibroDAO
+comment1.params=p_conexionBD
+comment1.target=LibroDAO(ConexionBD)
+comment2.params=p_conexionBD
+comment2.target=void setConexionBD(ConexionBD)
+comment3.params=p_identificadoresLibros
+comment3.target=void setIdentificadoresLibros(java.util.HashMap)
+comment4.target=ConexionBD getConexionBD()
+comment5.target=java.util.HashMap getIdentificadoresLibros()
+comment6.params=p_libro
+comment6.target=void agregar(Libro)
+comment7.target=java.util.ArrayList obtenerTodos()
+comment8.params=p_libro
+comment8.target=int obtenerIdentificador(Libro)
+comment9.params=p_libro
+comment9.target=void eliminar(Libro)
+numComments=10
