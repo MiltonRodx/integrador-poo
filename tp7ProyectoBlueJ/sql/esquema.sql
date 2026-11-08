@@ -3,6 +3,7 @@
 -- este archivo es la referencia documental para renders y revision.
 -- Tipos de fecha: epoch millis a medianoche (dia calendario, mismo criterio del dominio).
 
+
 CREATE TABLE IF NOT EXISTS biblioteca (
     nombre TEXT PRIMARY KEY
 );
