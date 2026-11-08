@@ -186,7 +186,7 @@ public class Biblioteca {
      */
     public void nuevoSocioEstudiante(int p_dniSocio, String p_nombre, String p_carrera) {
         // Creo un socio estudiante; la consigna fija 20 días de préstamo (vence "20 días después del retiro").
-        Socio tempEstudiante = new Estudiante(p_dniSocio, p_nombre, 20, p_carrera);
+        Socio tempEstudiante = new Estudiante(p_dniSocio, p_nombre, p_carrera);
         
         // lo agrego a los socios
         boolean agregado = this.agregarSocio(tempEstudiante);

@@ -23,9 +23,9 @@ public class Estudiante extends Socio {
      * @param p_carrera carrera que cursa
      * @param p_prestamos historial de prestamos ya vinculado
      */
-    public Estudiante(int p_dniSocio, String p_nombre, int p_diasPrestamo, String p_carrera,
+    public Estudiante(int p_dniSocio, String p_nombre, String p_carrera,
             ArrayList<Prestamo> p_prestamos) { // con coleccion
-       super(p_dniSocio, p_nombre, p_diasPrestamo, p_prestamos);
+       super(p_dniSocio, p_nombre, 20, p_prestamos);
        this.setCarrera(p_carrera);
     }
     
@@ -37,8 +37,8 @@ public class Estudiante extends Socio {
      * @param p_diasPrestamo dias de prestamo iniciales (20 por consigna)
      * @param p_carrera carrera que cursa
      */
-    public Estudiante(int p_dniSocio, String p_nombre, int p_diasPrestamo, String p_carrera) {
-        super(p_dniSocio, p_nombre, p_diasPrestamo);
+    public Estudiante(int p_dniSocio, String p_nombre, String p_carrera) {
+        super(p_dniSocio, p_nombre, 20);
         this.setCarrera(p_carrera);
     }
    

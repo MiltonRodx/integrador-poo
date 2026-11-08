@@ -99,7 +99,6 @@ public class SocioDAO
                 Estudiante unEstudiante = new Estudiante(
                     dni,
                     nombre,
-                    diasPrestamo,
                     resultado.getString("carrera")
                 );
 

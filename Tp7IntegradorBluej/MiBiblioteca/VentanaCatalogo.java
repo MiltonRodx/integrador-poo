@@ -41,6 +41,8 @@ public class VentanaCatalogo extends JPanel
      * Arma todos los componentes visibles: el encabezado con titulo y
      * descripcion, las dos tarjetas con sus botones y el boton "Volver al
      * inicio". Tambien asigna a cada boton la accion que dispara.
+     * Las tarjetas se construyen con VentanaPrincipal.crearTarjeta, que deja
+     * titulo, descripcion y boton centrados.
      */
     private void crearInterfaz()
     {
@@ -70,24 +72,23 @@ public class VentanaCatalogo extends JPanel
         JPanel panelOpciones = new JPanel(new GridLayout(1, 2, 25, 25));
         panelOpciones.setBackground(Color.WHITE);
 
-        JPanel tarjetaLista = crearTarjeta(
-            "Consultar libros",
-            "Explora todos los libros disponibles y busca por titulo."
-        );
-
-        JPanel tarjetaGestion = crearTarjeta(
-            "Gestionar libros",
-            "Agrega nuevos ejemplares o elimina libros del catalogo."
-        );
-
         BotonRedondeado botonLista =
             new BotonRedondeado("Mostrar lista");
 
         BotonRedondeado botonGestion =
             new BotonRedondeado("Agregar o eliminar");
 
-        tarjetaLista.add(botonLista);
-        tarjetaGestion.add(botonGestion);
+        JPanel tarjetaLista = ventanaPrincipal.crearTarjeta(
+            "Consultar libros",
+            "Explora todos los libros disponibles y busca por titulo.",
+            botonLista
+        );
+
+        JPanel tarjetaGestion = ventanaPrincipal.crearTarjeta(
+            "Gestionar libros",
+            "Agrega nuevos ejemplares o elimina libros del catalogo.",
+            botonGestion
+        );
 
         panelOpciones.add(tarjetaLista);
         panelOpciones.add(tarjetaGestion);
@@ -118,53 +119,6 @@ public class VentanaCatalogo extends JPanel
         botonVolver.addActionListener(
             evento -> ventanaPrincipal.mostrarInicio()
         );
-    }
-
-    /**
-     * Construye una tarjeta con un titulo y una descripcion, con el estilo
-     * visual del resto de la aplicacion. El boton se agrega despues, desde
-     * quien llama a este metodo.
-     *
-     * @param p_titulo texto del titulo de la tarjeta
-     * @param p_descripcion texto explicativo debajo del titulo
-     * @return el panel de la tarjeta, listo para agregarle un boton
-     */
-    private JPanel crearTarjeta(
-        String p_titulo,
-        String p_descripcion)
-    {
-        JPanel tarjeta = new JPanel();
-        tarjeta.setLayout(new BoxLayout(tarjeta, BoxLayout.Y_AXIS));
-        tarjeta.setBackground(Color.WHITE);
-        tarjeta.setBorder(
-            BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(220, 226, 235)),
-                BorderFactory.createEmptyBorder(35, 25, 35, 25)
-            )
-        );
-
-        JLabel titulo = new JLabel(p_titulo);
-        titulo.setFont(new Font("Arial", Font.BOLD, 21));
-        titulo.setForeground(new Color(15, 30, 60));
-        titulo.setHorizontalAlignment(SwingConstants.CENTER);
-        titulo.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        JLabel descripcion = new JLabel(
-            "<html><div style='text-align:center; width:250px;'>"
-            + p_descripcion + "</div></html>"
-        );
-        descripcion.setFont(new Font("Arial", Font.PLAIN, 14));
-        descripcion.setForeground(new Color(100, 110, 125));
-        descripcion.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        tarjeta.add(Box.createVerticalGlue());
-        tarjeta.add(titulo);
-        tarjeta.add(Box.createVerticalStrut(20));
-        tarjeta.add(descripcion);
-        tarjeta.add(Box.createVerticalStrut(35));
-        tarjeta.add(Box.createVerticalGlue());
-
-        return tarjeta;
     }
 
     /**

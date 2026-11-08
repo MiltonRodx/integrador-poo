@@ -1,4 +1,3 @@
-
 package MiBiblioteca;
 
 import javax.swing.*;
@@ -73,7 +72,7 @@ public class VentanaPrincipal extends JFrame {
         panelMenu = new JPanel(new GridLayout(8, 1, 5, 12));
         panelMenu.setBackground(gestorTemas.getColorMenu());
         panelMenu.setPreferredSize(new Dimension(230, 0));
-        panelMenu.setBorder( 
+        panelMenu.setBorder(
             BorderFactory.createEmptyBorder(30, 15, 30, 15)
         );
 
@@ -256,10 +255,7 @@ public class VentanaPrincipal extends JFrame {
             BorderFactory.createEmptyBorder(35, 10, 15, 10)
         );
 
-        
-
         panelContenido.add(bienvenida, BorderLayout.CENTER);
-        
 
         gestorTemas.aplicarTema(panelContenido);
 
@@ -305,6 +301,54 @@ public class VentanaPrincipal extends JFrame {
         panelContenido.repaint();
     }
 
+    // Tarjeta con todo centrado (titulo, descripcion y boton).
+    // Es publica para poder reutilizarla desde VentanaCatalogo y otras pantallas.
+    public JPanel crearTarjeta(
+        String p_titulo,
+        String p_descripcion,
+        BotonRedondeado p_boton)
+    {
+        JPanel tarjeta = new JPanel();
+        tarjeta.setLayout(new BoxLayout(tarjeta, BoxLayout.Y_AXIS));
+        tarjeta.setBackground(gestorTemas.getColorTarjeta());
+
+        tarjeta.setBorder(
+            BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(220, 226, 235)),
+                BorderFactory.createEmptyBorder(25, 15, 25, 15)
+            )
+        );
+
+        JLabel titulo = new JLabel(p_titulo, SwingConstants.CENTER);
+        titulo.setFont(new Font("Arial", Font.BOLD, 19));
+        titulo.setForeground(gestorTemas.getColorTexto());
+        titulo.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel descripcion = new JLabel(
+            "<html><div style='text-align:center; width:180px;'>"
+            + p_descripcion + "</div></html>",
+            SwingConstants.CENTER
+        );
+        descripcion.setHorizontalAlignment(SwingConstants.CENTER);
+        descripcion.setFont(new Font("Arial", Font.PLAIN, 13));
+        descripcion.setForeground(gestorTemas.getColorTextoSecundario());
+        descripcion.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // El boton no se estira y queda centrado
+        p_boton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        p_boton.setMaximumSize(p_boton.getPreferredSize());
+
+        tarjeta.add(Box.createVerticalGlue());
+        tarjeta.add(titulo);
+        tarjeta.add(Box.createVerticalStrut(15));
+        tarjeta.add(descripcion);
+        tarjeta.add(Box.createVerticalStrut(25));
+        tarjeta.add(p_boton);
+        tarjeta.add(Box.createVerticalGlue());
+
+        return tarjeta;
+    }
+
     // Pantalla principal de socios
     public void mostrarSocios()
     {
@@ -338,28 +382,9 @@ public class VentanaPrincipal extends JFrame {
         encabezado.add(titulo);
         encabezado.add(descripcion);
 
-        JPanel tarjetas = new JPanel(new GridLayout(1, 3, 20, 20));
+        // 4 tarjetas en una sola fila
+        JPanel tarjetas = new JPanel(new GridLayout(1, 4, 20, 20));
         tarjetas.setBackground(gestorTemas.getColorFondo());
-
-        JPanel tarjetaDocentes = crearTarjetaSocios(
-            "Docentes",
-            "Registro y consulta de socios docentes."
-        );
-
-        JPanel tarjetaEstudiantes = crearTarjetaSocios(
-            "Estudiantes",
-            "Registro y consulta de socios estudiantes."
-        );
-
-        JPanel tarjetaLista = crearTarjetaSocios(
-            "Lista de socios",
-            "Consulta todos los socios registrados."
-        );
-
-        JPanel tarjetaEliminar = crearTarjetaSocios(
-            "Eliminar socio",
-            "Baja un socio solo si no tiene libros prestados."
-        );
 
         BotonRedondeado botonDocentes =
             new BotonRedondeado("Ingresar");
@@ -373,10 +398,29 @@ public class VentanaPrincipal extends JFrame {
         BotonRedondeado botonEliminar =
             new BotonRedondeado("Eliminar");
 
-        tarjetaDocentes.add(botonDocentes);
-        tarjetaEstudiantes.add(botonEstudiantes);
-        tarjetaLista.add(botonLista);
-        tarjetaEliminar.add(botonEliminar);
+        JPanel tarjetaDocentes = crearTarjeta(
+            "Docentes",
+            "Registro y consulta de socios docentes.",
+            botonDocentes
+        );
+
+        JPanel tarjetaEstudiantes = crearTarjeta(
+            "Estudiantes",
+            "Registro y consulta de socios estudiantes.",
+            botonEstudiantes
+        );
+
+        JPanel tarjetaLista = crearTarjeta(
+            "Lista de socios",
+            "Consulta todos los socios registrados.",
+            botonLista
+        );
+
+        JPanel tarjetaEliminar = crearTarjeta(
+            "Eliminar socio",
+            "Baja un socio solo si no tiene libros prestados.",
+            botonEliminar
+        );
 
         tarjetas.add(tarjetaDocentes);
         tarjetas.add(tarjetaEstudiantes);
@@ -400,7 +444,7 @@ public class VentanaPrincipal extends JFrame {
 
         botonEliminar.addActionListener(
             evento -> {
-                // 1. Pedir DNI mediante diálogo
+                // 1. Pedir DNI mediante dialogo
                 String dniInput = JOptionPane.showInputDialog(
                     this,
                     "Ingrese el D.N.I. del socio a eliminar:",
@@ -408,16 +452,16 @@ public class VentanaPrincipal extends JFrame {
                     JOptionPane.QUESTION_MESSAGE
                 );
                 if (dniInput == null) {
-                    // Usuario presionó Cancelar
+                    // Usuario presiono Cancelar
                     return;
                 }
                 int dni = 0;
                 try {
-                    dni = Integer.parseInt(dniInput);
+                    dni = Integer.parseInt(dniInput.trim());
                 } catch (NumberFormatException e) {
                     JOptionPane.showMessageDialog(
                         this,
-                        "DNI inválido. Debe ser un número.",
+                        "DNI invalido. Debe ser un numero.",
                         "Error",
                         JOptionPane.ERROR_MESSAGE
                     );
@@ -428,13 +472,13 @@ public class VentanaPrincipal extends JFrame {
                 if (socio == null) {
                     JOptionPane.showMessageDialog(
                         this,
-                        "No se encontró un socio con DNI: " + dniInput,
+                        "No se encontro un socio con DNI: " + dniInput,
                         "Error",
                         JOptionPane.ERROR_MESSAGE
                     );
                     return;
                 }
-                // 3. Verificar que NO tenga préstamos activos
+                // 3. Verificar que NO tenga prestamos activos
                 boolean tieneActivos = socio.getPrestamos().stream()
                         .anyMatch(p -> !p.estaDevuelto());
                 if (tieneActivos) {
@@ -454,10 +498,10 @@ public class VentanaPrincipal extends JFrame {
                     JOptionPane.showMessageDialog(
                         this,
                         "Socio eliminado correctamente: " + socio.getNombre(),
-                        "Éxito",
+                        "Exito",
                         JOptionPane.INFORMATION_MESSAGE
                     );
-                    // Actualizar vista (volver a mostrar el menú de socios)
+                    // Actualizar vista (volver a mostrar el menu de socios)
                     mostrarSocios();
                 } else {
                     JOptionPane.showMessageDialog(
@@ -471,54 +515,6 @@ public class VentanaPrincipal extends JFrame {
         );
 
         this.mostrarContenido(panel);
-    }
-
-    private JPanel crearTarjetaSocios(
-        String p_titulo,
-        String p_descripcion)
-    {
-        JPanel tarjeta = new JPanel();
-        tarjeta.setLayout(new BoxLayout(tarjeta, BoxLayout.Y_AXIS));
-        tarjeta.setBackground(gestorTemas.getColorTarjeta());
-
-        tarjeta.setBorder(
-            BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(220, 226, 235)),
-                BorderFactory.createEmptyBorder(25, 15, 25, 15)
-            )
-        );
-
-        JLabel titulo = new JLabel(p_titulo, SwingConstants.CENTER);
-        
-        
-        titulo.setFont(new Font("Arial", Font.BOLD, 19));
-        titulo.setForeground(gestorTemas.getColorTexto());
-        titulo.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        JLabel descripcion = new JLabel(
-            "<html><div style='text-align:center; width:180px;'>"
-            + p_descripcion + "</div></html>",
-            SwingConstants.CENTER
-        );
-        
-        descripcion.setHorizontalAlignment(SwingConstants.CENTER);
-        descripcion.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        descripcion.setFont(new Font("Arial", Font.PLAIN, 13));
-        descripcion.setForeground(
-            gestorTemas.getColorTextoSecundario()
-        );
-
-        descripcion.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        tarjeta.add(Box.createVerticalGlue());
-        tarjeta.add(titulo);
-        tarjeta.add(Box.createVerticalStrut(15));
-        tarjeta.add(descripcion);
-        tarjeta.add(Box.createVerticalStrut(25));
-        tarjeta.add(Box.createVerticalGlue());
-
-        return tarjeta;
     }
 
     private void abrirSociosDocentes()
@@ -587,8 +583,7 @@ public class VentanaPrincipal extends JFrame {
         this.mostrarContenido(ventana);
     }
 
-    public void abrirConsultas()
-    {
+    public void abrirConsultas() {
         VentanaConsultas ventana =
             new VentanaConsultas(biblioteca, bibliotecaDAO, this);
 
