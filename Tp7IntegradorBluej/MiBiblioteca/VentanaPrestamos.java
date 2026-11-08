@@ -8,8 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.sql.SQLException;
 
-public class VentanaPrestamos extends JPanel
-{
+public class VentanaPrestamos extends JPanel {
     private Biblioteca biblioteca;
     private BibliotecaDAO bibliotecaDAO;
     private VentanaPrincipal ventanaPrincipal;
