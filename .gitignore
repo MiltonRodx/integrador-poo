@@ -24,8 +24,8 @@ hs_err_pid*
 replay_pid*
 
 # Dependencias versionadas del proyecto (driver JDBC de SQLite en libs/)
-#!tp7ProyectoBlueJ/libs/*.jar
-#!libs/*.jar
+!tp7ProyectoBlueJ/libs/*.jar
+!libs/*.jar
 
 # Salida de compilacion CLI (la genera gui.sh/gui.bat y el javac del README)
 tp7ProyectoBlueJ/classes/
