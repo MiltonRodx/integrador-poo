@@ -1,16 +1,18 @@
- <p align="center">
+<p align="center">
   <img src="https://github.com/user-attachments/assets/ea556bc3-d2c5-46ef-bf69-1e220234a983" alt="Capibara bibliotecario - Gestión de Biblioteca" width="100%">
 </p>
 
 <h1 align="center">Trabajo Integrador de Programación Orientada a Objetos</h1>
-<h2 align="center">MiBiblioteca - Sistema de Gestión de Biblioteca</h2>
+<h2 align="center">Gestión de Biblioteca</h2>
 
 <p align="center">
-  <img alt="Java" src="https://img.shields.io/badge/Java-17%2B-orange?logo=openjdk&logoColor=white&style=flat-square">
-  <img alt="Swing" src="https://img.shields.io/badge/Java-Swing-blue?style=flat-square">
-  <img alt="SQLite" src="https://img.shields.io/badge/SQLite-Base%20de%20datos-003B57?logo=sqlite&logoColor=white&style=flat-square">
-  <img alt="BlueJ" src="https://img.shields.io/badge/IDE-BlueJ-1E90D6?style=flat-square">
-  <img alt="Estado" src="https://img.shields.io/badge/Proyecto-en%20desarrollo-informational?style=flat-square">
+  <a><img alt="Java" src="https://img.shields.io/badge/Java-21-FF8800?logo=openjdk&logoColor=white&style=flat-square"></a>
+  <a><img alt="BlueJ" src="https://img.shields.io/badge/BlueJ-Proyecto%20educativo-1E90D6?logoColor=white&style=flat-square"></a>
+  <a><img alt="Paquete" src="https://img.shields.io/badge/paquete-biblioteca-informational?style=flat-square"></a>
+  <a><img alt="SQLite" src="https://img.shields.io/badge/SQLite-persistencia-003B57?logo=sqlite&logoColor=white&style=flat-square"></a>
+  <a><img alt="JavaFX" src="https://img.shields.io/badge/JavaFX-GUI-0C7C59?logoColor=white&style=flat-square"></a>
+  <a><img alt="AtlantaFX" src="https://img.shields.io/badge/AtlantaFX-CSS-8A2BE2?style=flat-square"></a>
+  <a><img alt="Estado" src="https://img.shields.io/badge/estado-completo-brightgreen?style=flat-square"></a>
 </p>
 
 ---
@@ -18,316 +20,336 @@
 ## 📑 Índice
 
 - [Sobre el proyecto](#-sobre-el-proyecto)
-- [Objetivos y funcionalidades](#-objetivos-y-funcionalidades)
-- [Organización del sistema](#-organización-del-sistema)
-- [Tecnologías utilizadas](#-tecnologías-utilizadas)
-- [Persistencia con SQLite](#-persistencia-con-sqlite)
+- [Requisitos y qué incluye](#-requisitos-y-qué-incluye)
+- [Diagrama UML](#-diagrama-uml)
+- [Estructura del proyecto](#-estructura-del-proyecto)
+- [Tecnologías](#-tecnologías)
+- [Persistencia SQLite](#-persistencia-sqlite)
 - [Interfaz gráfica](#-interfaz-gráfica)
-- [Espacio de trabajo en Trello](#-espacio-de-trabajo-en-trello)
-- [Cómo ejecutar el proyecto](#-cómo-ejecutar-el-proyecto)
-- [Reglas de funcionamiento](#-reglas-de-funcionamiento)
-- [Conclusión](#-conclusión)
+- [Informe técnico completo 📄](docs/informe-tecnico.md) — arquitectura, persistencia y GUI explicadas capa por capa (para la defensa)
+- [Cómo correrlo](#-cómo-correrlo)
+- [Reglas de negocio](#-reglas-de-negocio-y-decisiones-de-diseño)
+- [Demo: salida real](#-demo-salida-real-de-gestionbiblioteca)
+- [Roadmap](#-roadmap)
 
 ---
 
 ## 📖 Sobre el proyecto
 
-Este repositorio contiene nuestro Trabajo Integrador de la materia **Programación Orientada a Objetos**.
+El presente repositorio corresponde al Trabajo Integrador de la asignatura **Programación Orientada a Objetos**.
 
-El proyecto consiste en desarrollar un sistema de gestión para una biblioteca utilizando Java. La idea es poder administrar los libros, registrar socios, realizar préstamos y devoluciones, consultar información y generar estadísticas.
+El proyecto consiste en el desarrollo de un sistema de **Gestión de Biblioteca en Java**, destinado a administrar libros, socios y préstamos, contemplando las particularidades de docentes y estudiantes, las fechas de vencimiento, las devoluciones, las sanciones por morosidad y la generación de reportes.
 
-El sistema contempla dos tipos de socios: docentes y estudiantes. Cada uno tiene sus propias características y condiciones para solicitar libros.
-
-A medida que fuimos avanzando con el trabajo, también incorporamos una interfaz gráfica para que el uso del programa fuera más sencillo y cómodo, además de una base de datos SQLite para guardar la información y conservarla entre ejecuciones.
+> El sistema evalúa responsabilidad de cada docente, premia a lectores puntuales con más días de préstamo y bloquea morosos.
 
 ---
 
-## ✅ Objetivos y funcionalidades
+## ✅ Requisitos y qué incluye
 
-El objetivo principal fue construir un programa que permita gestionar las actividades habituales de una biblioteca y aplicar los conceptos de Programación Orientada a Objetos vistos durante la cursada.
+Implementación completa del diseño de clases de la consigna:
 
-Entre las funcionalidades que desarrollamos se encuentran:
-
-- **Gestión de socios:** permite registrar docentes y estudiantes, consultar sus datos y buscar socios mediante su DNI.
-- **Catálogo de libros:** permite agregar libros, consultar los ejemplares registrados y conocer su disponibilidad.
-- **Préstamos:** permite registrar el préstamo de un libro a un socio, teniendo en cuenta las condiciones correspondientes.
-- **Devoluciones:** permite registrar la devolución de libros y actualizar el estado de los préstamos.
-- **Control de vencimientos:** permite identificar préstamos vencidos y aplicar las restricciones correspondientes.
-- **Consultas:** permite buscar información de socios y consultar quién tiene un determinado libro.
-- **Estadísticas e informes:** presenta información general de la biblioteca, listados de socios y libros, y datos relacionados con los préstamos.
-- **Persistencia:** los datos se guardan en una base SQLite para que no se pierdan al cerrar el programa.
-- **Datos iniciales:** incorporamos un cargador para disponer de registros de prueba al preparar la biblioteca.
+- **Clases del diseño**: `Biblioteca`, `Socio` (abstracta), `Docente`, `Estudiante`, `Libro`, `Prestamo` y la excepción de negocio `LibroNoPrestadoException`.
+- **Reglas de préstamo**: tope de 3 libros para estudiantes, bloqueo total ante un préstamo vencido (socios y docentes), días iniciales 5 (docentes) y 20 (estudiantes).
+- **Responsabilidad docente**: un docente es responsable si nunca tuvo en mora ni tiene un préstamo vencido; devolver el mismo día del vencimiento cuenta como a tiempo. La responsabilidad se premia con `cambiarDiasDePrestamos(int)` adicionando días de préstamo.
+- **Informes**: cantidad de socios por tipo, libros con préstamo vencido (activos), docentes responsables, títulos sin repetir, y el socio que tiene en su poder determinado libro (`quienTieneElLibro`).
+- **Tres formatos de listado** — al carácter, tal cual especifica la consigna (formato1 socios, formato2 libros, formato3 docentes responsables).
+- `GestionBiblioteca` con escenario completo que responde las **4 preguntas** del enunciado usando los métodos apropiados.
+- **Colecciones genéricas** en todas las clases y todo el código dentro del paquete `biblioteca`.
 
 ---
 
-## 🧬 Organización del sistema
-
-Para organizar el código tratamos de separar las responsabilidades de cada clase.
-
-La clase `Biblioteca` se encarga de la lógica principal del sistema y de relacionar los libros, los socios y los préstamos.
-
-La clase `Socio` representa los datos y comportamientos comunes. A partir de ella se encuentran `Docente` y `Estudiante`, que tienen sus propias características.
-
-Por otro lado, `Libro` representa los ejemplares disponibles y `Prestamo` almacena la información relacionada con cada operación.
-
-También separamos el acceso a la base de datos mediante clases DAO, para evitar mezclar las operaciones de SQLite con la lógica principal del programa.
-
-### Diagrama general de clases
+## 🧬 Diagrama UML
 
 ```mermaid
 classDiagram
+    direction LR
+
     class Biblioteca {
-        -nombre
-        -libros
-        -socios
-        +prestarLibro()
-        +devolverLibro()
-        +buscarSocio()
-        +quienTieneElLibro()
-        +listaDeSocios()
-        +listaDeLibros()
+        -nombre : String
+        -libros : ArrayList~Libro~
+        -socios : ArrayList~Socio~
+        +prestarLibro(fechaRetiro : Calendar, socio : Socio, libro : Libro) boolean
+        +devolverLibro(libro : Libro) void
+        +cantidadDeSociosPorTipo(tipo : String) int
+        +prestamosVencidos() ArrayList~Prestamo~
+        +docentesResponsables() ArrayList~Docente~
+        +quienTieneElLibro(libro : Libro) String
+        +buscarSocio(dni : int) Socio
+        +listaDeSocios() String
+        +listaDeTitulos() String
+        +listaDeLibros() String
+        +listaDeDocentesResponsables() String
     }
 
     class Socio {
         <<abstract>>
-        -dniSocio
-        -nombre
-        -prestamos
-        +puedePedir()
-        +cantLibrosPrestados()
+        -dniSocio : int
+        -nombre : String
+        -diasPrestamos : int
+        -prestamos : ArrayList~Prestamo~
+        +cantLibrosPrestados() int
+        +puedePedir() boolean
+        +toString() String
+        +soyDeLaClase()* String
     }
 
     class Docente {
-        -area
-        +esResponsable()
+        -area : String
+        +esResponsable() boolean
+        +cambiarDiasDePrestamos(dias : int) void
+        +puedePedir() boolean
     }
 
     class Estudiante {
-        -carrera
-        +puedePedir()
+        -carrera : String
+        +puedePedir() boolean
     }
 
     class Libro {
-        -titulo
-        -edicion
-        -editorial
-        -anio
-        +prestado()
+        -titulo : String
+        -edicion : int
+        -editorial : String
+        -anio : int
+        -prestamos : ArrayList~Prestamo~
+        +prestado() boolean
+        +ultimoPrestamo() Prestamo
+        +agregarPrestamo(p : Prestamo) boolean
+        +quitarPrestamo(p : Prestamo) boolean
     }
 
     class Prestamo {
-        -fechaRetiro
-        -fechaDevolucion
-        -socio
-        -libro
-        +vencido()
+        -fechaRetiro : Calendar
+        -fechaDevolucion : Calendar
+        -socio : Socio
+        -libro : Libro
+        +registrarFechaDevolucion(fecha : Calendar) void
+        +vencido(fecha : Calendar) boolean
     }
 
-    class BibliotecaDAO
-    class LibroDAO
-    class SocioDAO
-    class PrestamoDAO
-    class ConexionBD
+    class LibroNoPrestadoException
+    class GestionBiblioteca {
+        +main(args : String[]) void$
+    }
 
     Socio <|-- Docente
     Socio <|-- Estudiante
-    Biblioteca "1" o-- "*" Libro
-    Biblioteca "1" o-- "*" Socio
-    Libro "1" o-- "*" Prestamo
-    Socio "1" o-- "*" Prestamo
-
-    BibliotecaDAO --> LibroDAO
-    BibliotecaDAO --> SocioDAO
-    BibliotecaDAO --> PrestamoDAO
-    LibroDAO --> ConexionBD
-    SocioDAO --> ConexionBD
-    PrestamoDAO --> ConexionBD
+    Exception <|-- LibroNoPrestadoException
+    Biblioteca "1" o-- "0..*" Libro : libros
+    Biblioteca "1" o-- "0..*" Socio : socios
+    Libro "1" o-- "0..*" Prestamo : ficha de préstamos
+    Socio "1" o-- "0..*" Prestamo : préstamos en su poder
+    Biblioteca ..> LibroNoPrestadoException : lanza
+    GestionBiblioteca ..> Biblioteca : usa
 ```
 
 ---
 
 ## 🗂 Estructura del proyecto
 
-El proyecto está organizado dentro del paquete `MiBiblioteca`. Las clases se encuentran separadas según la tarea que realizan.
-
 ```text
-MiBiblioteca/
-│
-├── GestionBiblioteca.java
-│
-├── Biblioteca.java
-├── Socio.java
-├── Docente.java
-├── Estudiante.java
-├── Libro.java
-├── Prestamo.java
-│
-├── ConexionBD.java
-├── BibliotecaDAO.java
-├── LibroDAO.java
-├── SocioDAO.java
-├── PrestamoDAO.java
-│
-├── CargadorDeDatosIniciales.java
-│
-├── VentanaPrincipal.java
-├── VentanaSociosDocentes.java
-├── VentanaSociosEstudiantes.java
-├── VentanaListaSocios.java
-├── VentanaCatalogo.java
-├── VentanaPrestamos.java
-├── VentanaDevoluciones.java
-├── VentanaEstadisticas.java
-├── VentanaConsultas.java
-│
-├── PantallaCarga.java
-├── PanelCapibara.java
-├── BotonRedondeado.java
-├── GestorTemas.java
-├── UtilidadesInterfaz.java
-├── UtilidadesPrestamos.java
-└── RenderizadorEstadoPrestamo.java
+tp7ProyectoBlueJ/
+├── package.bluej                  ← metadatos del proyecto BlueJ
+├── libs/
+│   └── sqlite-jdbc-3.54.1.0.jar   ← driver JDBC de SQLite (runtime)
+├── sql/
+│   ├── esquema.sql                ← documentación del esquema (referencia)
+│   └── consultar.jsh              ← consulta rápida de la base con jshell
+├── biblioteca.db                  ← base generada al correr (gitignored)
+└── biblioteca/                    ← paquete de trabajo (consigna: "biblioteca")
+    ├── Biblioteca.java            ← admin de libros/socios, informes y listados
+    ├── Socio.java                 ← abstracta: dni, nombre, días y préstamos
+    ├── Docente.java               ← area, esResponsable() y premio de días
+    ├── Estudiante.java            ← carrera y tope de 3 libros
+    ├── Libro.java                 ← ficha de préstamos del ejemplar (+ id persistente)
+    ├── Prestamo.java              ← retiro, devolución, socio y libro (+ id persistente)
+    ├── LibroNoPrestadoException.java ← excepción de negocio
+    ├── GestionBiblioteca.java     ← clase main: escenario + menu interactivo
+    ├── GestionPersistencia.java   ← demo del CRUD sobre SQLite
+    ├── SesionBiblioteca.java      ← sesion compartida consola/GUI (abrir, siembra, guardar, recargar)
+    └── persistencia/              ← capa de persistencia (paquete biblioteca.persistencia)
+        ├── ConexionBD.java        ← singleton de conexión + DDL auto-migrado
+        ├── DAOException.java      ← excepción unchecked de la capa
+        ├── LibroDAO.java          ← CRUD libro
+        ├── SocioDAO.java          ← CRUD socio (discriminador Docente/Estudiante)
+        ├── PrestamoDAO.java       ← CRUD préstamo (+ reposición en fichas)
+        └── BibliotecaDAO.java     ← fachada guardar()/cargar() del agregado raíz
+
++ biblioteca/gui/                  ← capa visual (paquete biblioteca.gui)
+    ├── App.java                   ← Application: tema Primer claro, sesión, escena, icono
+    ├── Launcher.java              ← entrada "no-JavaFX" (habilita classpath plano y BlueJ)
+    ├── MainWindow.fxml            ← TabPane: Socios / Libros / Préstamos / Informes
+    ├── SociosController / LibrosController / PrestamosController / InformesController
+    ├── Socios.fxml / Libros.fxml / Prestamos.fxml / Informes.fxml
+    ├── Dialogos.java              ← formularios y alertas reutilizables
+    └── icono.png                  ← icono de ventana (capibara bibliotecario)
 ```
 
-La organización puede incluir otras clases auxiliares y excepciones utilizadas por el proyecto.
+> La lista del `gui/` es descriptiva (los archivos `.fxml` y el icono son recursos junto a sus controllers).
 
 ---
 
-## 🛠 Tecnologías utilizadas
+## 🛠 Tecnologías
 
-- **Java:** lenguaje utilizado para desarrollar toda la lógica del sistema.
-- **Java Swing:** biblioteca utilizada para construir las ventanas, formularios, tablas y botones de la interfaz gráfica.
-- **SQLite:** motor de base de datos utilizado para almacenar la información.
-- **JDBC:** conexión entre Java y SQLite.
-- **BlueJ:** entorno de desarrollo utilizado durante el trabajo práctico.
-- **GitHub:** repositorio para guardar y compartir el código del proyecto.
-- **Trello:** herramienta utilizada para organizar las tareas y el avance del trabajo.
+- **Java 21** (OpenJDK) + **BlueJ** — núcleo POO del práctico.
+- **SQLite + JDBC** — capa de persistencia.
+- **JavaFX 21 LTS + AtlantaFX (Primer claro)** — GUI completa con 4 pestañas sobre la misma sesión de datos que la consola.
 
 ---
 
-## 💾 Persistencia con SQLite
+## 💾 Persistencia SQLite
 
-Una de las partes importantes del proyecto fue incorporar una base de datos para poder conservar la información de la biblioteca.
+Capa `biblioteca.persistencia` con CRUD completo sobre SQLite (patrón DAO + conexión singleton), pensada para que la GUI de JavaFX la consuma tal cual.
 
-Para esto utilizamos SQLite junto con JDBC.
+**Esquema** (se auto-crea al abrir la base; referencia documental en `sql/esquema.sql`):
 
-La conexión se realiza mediante `ConexionBD`, mientras que las clases DAO se encargan de las operaciones correspondientes a cada tipo de dato.
+| Tabla | Contenido | Detalles |
+|---|---|---|
+| `biblioteca` | registro raíz | `nombre` (pk text) |
+| `libro` | ejemplares | `id` surrogate (autoincrement) |
+| `socio` | docentes y estudiantes en una tabla plana | columna discriminador `tipo` + `area`/`carrera` nulos según tipo |
+| `prestamo` | préstamos | fecha en epoch millis a medianoche; `fecha_devolucion NULL` = activo |
 
-La persistencia está organizada de la siguiente manera:
+**Decisiones**:
 
-| Clase | Responsabilidad |
-|---|---|
-| `ConexionBD` | Establece la conexión con SQLite y prepara las tablas. |
-| `BibliotecaDAO` | Coordina la carga y el guardado de la información. |
-| `LibroDAO` | Guarda y recupera los libros. |
-| `SocioDAO` | Guarda y recupera docentes y estudiantes. |
-| `PrestamoDAO` | Registra los préstamos y sus devoluciones. |
-
-De esta manera, cuando se realizan operaciones desde el programa, los cambios también se guardan en la base de datos.
-
-Esto permite cerrar y volver a abrir la aplicación sin tener que cargar nuevamente toda la información.
+- **`ConexionBD`** singleton: abre la base, habilita `PRAGMA foreign_keys` y ejecuta el DDL si falta. Los errores JDBC se envuelven en `DAOException` (unchecked) para no contaminar las firmas.
+- **Identidad persistente**: `Libro` y `Prestamo` ganaron un campo `id` (`-1` = sin persistir); el DAO inserta y le devuelve el `rowid` autogenerado. `Socio` usa su DNI como clave natural.
+- **Upsert por identidad** en `BibliotecaDAO.guardar()`: nuevo objeto → `INSERT`, objeto ya persistido → `UPDATE` (así el premio de días al docente y la devolución de préstamos se persisten re-ejecutando el mismo flujo).
+- **`PrestamoDAO.findAll(libros, socios)`** reconstruye el grafo: re-pone cada préstamo en la ficha del libro y del socio, tal como los crea `prestarLibro()` en vivo, para que el negocio siga operando sobre objetos cargados de BD.
+- **Reglas de negocio en la base**: FK `prestamo→socio` y `prestamo→libro` (impide borrar con dependencias) y un índice parcial único que garantiza **un solo préstamo activo por ejemplar**.
+- **Demo**: `GestionPersistencia` — primera corrida siembra (CREATE), segundas corridas leen el estado persistido (READ) y agregan operaciones de UPDATE y DELETE sobre él; `reset` borra las 3 tablas y re-siembra.
 
 ---
 
 ## 🖥 Interfaz gráfica
 
-Además de la parte de consola, desarrollamos una interfaz gráfica utilizando Java Swing.
+GUI JavaFX + tema **AtlantaFX "Primer claro"**, sobre la **misma sesión de datos** que el menú de consola (`SesionBiblioteca`): lo que se da de alta en la GUI queda en `biblioteca.db` y viceversa. Cada operación de escritura persiste en el momento.
 
-La ventana principal funciona como punto de acceso a las distintas secciones de la biblioteca. Desde el menú lateral se puede ingresar a cada una de las funcionalidades.
-
-### Secciones de la aplicación
-
-| Sección | Funcionalidad |
+| Pestaña | Qué ofrece |
 |---|---|
-| Inicio | Pantalla principal de bienvenida. |
-| Socios | Registro y consulta de docentes y estudiantes. |
-| Catálogo | Administración y consulta de libros. |
-| Préstamos | Registro y consulta de préstamos. |
-| Devoluciones | Registro de devoluciones. |
-| Estadísticas | Consulta de información y generación de informes. |
-| Consultas | Búsqueda de información sobre los libros y sus préstamos. |
+| **Socios** | tabla (D.N.I., nombre, tipo, libros en poder, días), alta docente/estudiante, búsqueda por D.N.I., baja y premio de días (solo docentes) |
+| **Libros** | alta de ejemplares y baja (bloqueada si tiene historial de préstamos), estado `Prestado: Si/No` |
+| **Préstamos** | retiro (socio + libros disponibles + fecha), devolución, y tabla con filtro Activos/Vencidos/Todos; los rechazos muestran el motivo (tope 3, vencidos, libro ocupado) |
+| **Informes** | los 3 formatos exactos de la consigna en texto monoespaciado, títulos sin repetir, vencidos y contadores por tipo |
 
-### Diseño de la aplicación
+**Correr la GUI**: desde `tp7ProyectoBlueJ` ejecutar `./gui.sh` (Linux, o `gui.bat` en Windows): compila a `classes/`, copia los recursos y lanza la ventana. Desde **BlueJ** (con los jars de `libs/` cargados en *Tools → Preferences → Libraries*): click derecho sobre `Launcher` → `void main(String[] args)` — el launcher "no-JavaFX" es necesario porque JavaFX exige module-path para arrancar una clase que extiende `Application`, y el proyecto trabaja por classpath.
 
-También trabajamos en algunos detalles visuales para que la aplicación tuviera una apariencia más cuidada:
-
-- Pantalla de carga al iniciar el programa.
-- Menú lateral para navegar entre las secciones.
-- Botones redondeados personalizados.
-- Panel de bienvenida con un capibara bibliotecario.
-- Cuatro temas visuales: azul, oscuro, rosa y rojo.
-- Tablas y formularios para mostrar y cargar información.
-
-La idea fue mantener una interfaz sencilla, donde las opciones principales estuvieran siempre a mano y las operaciones fueran fáciles de encontrar.
+**Dependencias versionadas en `libs/`**: `sqlite-jdbc 3.54.1.0`, `javafx-{base,graphics,controls,fxml}-21.0.13` (nativos `linux` y `win`) y `atlantafx-base 2.1.0` (bytecode Java 21 exacto — la 3.0.0 exige Java 25).
 
 ---
 
-## 📋 Espacio de trabajo en Trello
+## 🚀 Cómo correrlo
 
-Para organizarnos durante el desarrollo del trabajo utilizamos Trello como espacio de planificación.
+**Con BlueJ:** abrir el proyecto `tp7ProyectoBlueJ`, compilar el paquete `biblioteca` y ejecutar el `main` de `GestionBiblioteca` (click derecho sobre la clase → `void main(String[] args)`).
 
-Allí podemos organizar las tareas, registrar qué actividades están pendientes, cuáles se encuentran en proceso y cuáles ya fueron terminadas.
+**Por línea de comandos** (JDK 21+), desde `tp7ProyectoBlueJ`:
 
-También nos sirve para llevar un seguimiento de los cambios que vamos realizando y tener una visión general del avance del proyecto.
+```bash
+javac -d classes biblioteca/*.java biblioteca/persistencia/*.java
 
-<p align="center">
-  <a href="https://trello.com/b/xPFlwiGt/proyecto-integrador-unne">
-    <img src="https://img.shields.io/badge/Trello-Ver%20espacio%20de%20trabajo-0052CC?logo=trello&logoColor=white&style=for-the-badge" alt="Abrir tablero de Trello">
-  </a>
-</p>
+# Escenario de la consigna (salida fija del TP7, no toca la base de datos)
+java -cp classes biblioteca.GestionBiblioteca escenario
 
-**Tablero del proyecto:** [Proyecto Integrador UNNE](https://trello.com/b/xPFlwiGt/proyecto-integrador-unne)
+# Menu interactivo: todas las operaciones con persistencia automatica en SQLite
+java -cp "classes;libs/sqlite-jdbc-3.54.1.0.jar" biblioteca.GestionBiblioteca
 
----
+# Demo de persistencia (CRUD logueado por escritura)
+java -cp "classes;libs/sqlite-jdbc-3.54.1.0.jar" biblioteca.GestionPersistencia          # 1.a vez: siembra; siguientes: recupera estado
+java -cp "classes;libs/sqlite-jdbc-3.54.1.0.jar" biblioteca.GestionPersistencia reset    # borrar todo y re-sembrar
 
-## 🚀 Cómo ejecutar el proyecto
+# En Linux/macOS el separador de classpath es ":"
 
-Para ejecutar el programa es necesario contar con Java instalado y tener disponible el controlador JDBC de SQLite.
+# GUI completa (JavaFX + AtlantaFX): compila y abre la ventana
+./gui.sh      # Linux
+gui.bat       # (apretar en terminal de Windows)
+```
+*GUI también desde BlueJ: click derecho sobre `Launcher` → `void main(String[] args)` (previa carga de los jars de `libs/`).*
 
-Los pasos generales son:
-
-1. Descargar o clonar el repositorio.
-2. Abrir el proyecto desde BlueJ.
-3. Verificar que la biblioteca del controlador SQLite esté agregada al proyecto.
-4. Compilar las clases.
-5. Ejecutar la clase `GestionBiblioteca`, que contiene el método `main`.
-
-Al iniciar el programa se prepara la conexión con SQLite, se carga la información correspondiente y se abre la aplicación.
+**En BlueJ:** cargar el driver una sola vez en *Tools → Preferences → Libraries* y seleccionar `tp7ProyectoBlueJ/libs/sqlite-jdbc-3.54.1.0.jar`; luego click derecho sobre `GestionPersistencia` → `void main(String[] args)`.
 
 ---
 
-## 📜 Reglas de funcionamiento
+## 📜 Reglas de negocio y decisiones de diseño
 
-El sistema contempla algunas condiciones para que las operaciones de la biblioteca se realicen correctamente:
+<details>
+<summary><strong>Abrir reglas</strong> (evaluación a nivel día, tope 3, premio docente…)</summary>
 
-- Los socios se diferencian entre docentes y estudiantes.
-- Cada tipo de socio tiene sus propias condiciones para solicitar libros.
-- No se permite prestar un ejemplar que ya se encuentre prestado.
-- Se controlan las fechas de retiro y vencimiento de cada préstamo.
-- Los socios con préstamos vencidos tienen restricciones para solicitar nuevos libros.
-- Las devoluciones actualizan el estado del préstamo.
-- Se puede consultar quién tiene actualmente un determinado ejemplar.
-- Los informes permiten consultar la situación de los socios, los libros y los préstamos.
+- **Evaluación a nivel día**: todas las comparaciones de vencimiento normalizan la fecha a medianoche (`HOUR_OF_DAY`/`MINUTE`/`SECOND`/`MILLISECOND` en 0). Consecuencia directa: un préstamo que vence **hoy** todavía está a tiempo, y devolver el **mismo día** del vencimiento cuenta como devolución a tiempo.
+- **Rechazo silencioso** en `prestarLibro`: si falta fecha/socio/libro, el libro ya está prestado o el socio no `puedePedir()`, devuelve `false` sin efectos colaterales y sin imprimir; quien llama decide qué mostrar. El diseño del diagrama (firma `boolean`) lo respalda.
+- **Tope del estudiante**: `puedePedir()` exige menos de 3 libros en su poder (con `<= 3` podía cerrar el ciclo con 4 libros en mano), más el bloqueo estándar por vencidos.
+- **Docente responsable**: nunca tuvo ni tiene un préstamo vencido. Los préstamos **devueltos** se evalúan contra su propia fecha de devolución; los **activos** contra hoy. La responsabilidad se premia sumando días con `cambiarDiasDePrestamos(int)`.
+- **Prestamos vencidos**: el informe `prestamosVencidos()` considera **solo préstamos activos** (sin fecha de devolución); un préstamo devuelto tarde no aparece, aunque sí deja al docente como no responsable.
+- **Días de préstamo**: docentes nacen con **5** días; estudiantes con **20** (la consigna define el vencimiento "20 días después del retiro").
 
-Estas reglas se encuentran distribuidas entre las clases del modelo, principalmente en `Biblioteca`, `Socio`, `Docente`, `Estudiante`, `Libro` y `Prestamo`.
+</details>
+
+---
+
+## 🖨 Demo: salida real de `GestionBiblioteca`
+
+<details>
+<summary><strong>Abrir la salida completa</strong> (rechazos, premio, vencidos, 4 preguntas y listados)</summary>
+
+```text
+-- Rechazos de prestamo --
+Milstein (ya tiene 3 libros) intenta llevarse otro:   false
+Paenza (tiene un vencido) intenta llevarse otro:      false
+
+-- Premio a la responsabilidad --
+Perez tenia 5 dias de prestamo
+Perez ahora tiene 10 dias de prestamo
+-- Prestamos vencidos a la fecha --
+Retiro: 2026/10/5 - Devolucion: Sin devolver
+Libro: Longman. Diccionario Pocket
+Socio: Francisco Paenza
+
+1) Cantidad de socios de tipo Estudiante: 2
+2) Docentes que nunca adeudaron ni adeudan libros:
+Lista de Docentes Responsables:
+* D.N.I.: 14524782 || Juan Perez (Docente) || Libros Prestados: 1
+* D.N.I.: 10912002 || Maria Alegre (Docente) || Libros Prestados: 0
+3) Listas de libros y de socios de la biblioteca:
+Lista de Libros:
+1) Titulo: Programando con JAVA || Prestado: (Si)
+2) Titulo: Longman. Diccionario Pocket || Prestado: (Si)
+3) Titulo: Vivir para contarla || Prestado: (Si)
+4) Titulo: JAVA. Como Programar || Prestado: (Si)
+5) Titulo: JAVA. Como Programar || Prestado: (No)
+6) Titulo: Longman. Diccionario Pocket || Prestado: (Si)
+
+Lista de Socios:
+1) D.N.I.: 14524782 || Juan Perez (Docente) || Libros Prestados: 1
+2) D.N.I.: 17982110 || Juan Fernandez (Docente) || Libros Prestados: 0
+3) D.N.I.: 10912002 || Maria Alegre (Docente) || Libros Prestados: 0
+4) D.N.I.: 28987498 || Francisco Paenza (Estudiante) || Libros Prestados: 1
+5) D.N.I.: 31987123 || Cesar Milstein (Estudiante) || Libros Prestados: 3
+
+**************************************
+Cantidad de Socios del tipo Estudiante: 2
+Cantidad de Socios del tipo Docente: 3
+**************************************
+4) El libro "Programando con JAVA" lo tiene: Juan Perez
+```
+
+</details>
 
 ---
 
-## 🎓 Conclusión
-En este  trabajo pudimos aplicar los conceptos de Programación Orientada a Objetos  aprendidos en la catedra en un proyecto más completo, pasando de trabajar sin persistencia de datos ni interfaz a integrarlos con las librerias javax.swing.* e java.sql.Connection.
+## 🧭 Roadmap
 
-Durante el desarrollo trabajamos con herencia, encapsulamiento, colecciones, relaciones entre objetos, excepciones, persistencia con SQLite y construcción de interfaces gráficas con Java Swing.
-
-También aprendimos a organizar mejor el código, separar responsabilidades y reutilizar métodos para evitar repetir lógica.
-
-El resultado es una aplicación que permite gestionar las operaciones principales de una biblioteca y conservar la información mediante una base de datos.
+- [x] **Persistencia con SQLite**: ✔ conexión (+ DDL auto-migrado), DAOs con CRUD completo (insert/update/delete/find) y demo `GestionPersistencia`.
+- [x] **GUI con JavaFX + AtlantaFX**: 4 pestañas (Socios/Libros/Préstamos/Informes) sobre `SesionBiblioteca`, tema Primer claro y persistencia viva.
+- [ ] **Empaquetado final**: distribución del proyecto con las tres capas integradas.
 
 ---
+
+<footer>
 
 <p align="center">
   <em>Trabajo Integrador · Programación Orientada a Objetos · Java</em>
 </p>
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/ea556bc3-d2c5-46ef-bf69-1e220234a983" alt="Capibara bibliotecario - MiBiblioteca" width="50%">
+  <img src="https://github.com/user-attachments/assets/ea556bc3-d2c5-46ef-bf69-1e220234a983" alt="Capibara bibliotecario - Gestión de Biblioteca" width="50%">
 </p>
+
+</footer>
