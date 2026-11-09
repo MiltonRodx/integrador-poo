@@ -439,6 +439,9 @@ public class Biblioteca {
         // distinct() sobre un stream ordenado conserva el orden de alta de los libros.
         return this.getLibros().stream().map(Libro::getTitulo).distinct()
                 .collect(Collectors.joining("\n", "Lista de Titulos:\n", "\n"));
+        // return this.getLibros().stream().map(Libro::getTitulo).distinct()
+        //      .collect(Collectors.joining("\n", "Lista de Titulos:\n", "\n"));
+        
     }
 
     // +listaDeLibros(): String

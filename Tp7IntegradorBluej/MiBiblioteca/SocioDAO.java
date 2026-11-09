@@ -6,8 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class SocioDAO
-{
+public class SocioDAO {
     private ConexionBD conexionBD;
 
     public SocioDAO(ConexionBD p_conexionBD){

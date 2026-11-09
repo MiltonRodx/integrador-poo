@@ -16,11 +16,13 @@ import java.util.GregorianCalendar;
  */
 public abstract class Socio {
     
+    // Atributos
     private int dniSocio;
     private String nombre;
     private int diasPrestamo;
     private ArrayList <Prestamo> prestamos;
     
+    // Constructores
     /**
      * Crea un socio con su ficha de prestamos vacia.
      *
@@ -53,8 +55,8 @@ public abstract class Socio {
         this.setPrestamos(p_prestamos);
     }
     
+    
     // Accessors
-
     /** Establece el D.N.I. del socio (solo al construir: es su identidad). */
     private void setDniSocio(int p_dniSocio){ this.dniSocio = p_dniSocio; }
 

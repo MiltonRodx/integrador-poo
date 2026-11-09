@@ -1,5 +1,5 @@
 #BlueJ class context
-#Sun Nov 08 12:52:31 ART 2026
+#Mon Nov 09 20:15:54 ART 2026
 comment0.target=Socio
 comment0.text=\n Representa un socio de la biblioteca (clase abstracta).\n\n Guarda el D.N.I., el nombre, los dias de prestamo asignados y la ficha de\n prestamos que tiene en su poder. Las reglas particulares de cada tipo\n (tope de 3 libros, premio por responsabilidad) las definen las subclases\n {@link Estudiante} y {@link Docente}; {@link \#puedePedir()} aporta la\n regla comun\: nadie puede pedir teniendo un prestamo vencido.\n
 comment1.params=p_dniSocio p_nombre p_diasPrestamo

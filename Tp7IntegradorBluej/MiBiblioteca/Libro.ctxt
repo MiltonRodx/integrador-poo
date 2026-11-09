@@ -1,5 +1,5 @@
 #BlueJ class context
-#Sun Nov 08 12:52:31 ART 2026
+#Mon Nov 09 20:15:54 ART 2026
 comment0.target=Libro
 comment0.text=\n Ejemplar fisico de un titulo en la biblioteca.\n\n Varios ejemplares pueden compartir titulo/editorial (por eso los\n listados de "titulos sin repetir" usan distinct()). Cada Libro lleva su\n ficha de prestamos (historico completo, activos y devueltos) y un id de\n identidad persistente que SOLO asigna la capa DAO al insertar (-1 \=\n todavia sin id, adjetivo de "objeto nuevo" en el upsert).\n
 comment1.params=p_titulo p_edicion p_editorial p_anio p_prestamos

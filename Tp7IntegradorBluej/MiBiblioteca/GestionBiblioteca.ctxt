@@ -1,5 +1,5 @@
 #BlueJ class context
-#Mon Nov 09 18:08:33 ART 2026
+#Mon Nov 09 20:21:51 ART 2026
 comment0.target=GestionBiblioteca
 comment1.params=p_teclado p_mensaje
 comment1.target=int leerEntero(java.util.Scanner, java.lang.String)

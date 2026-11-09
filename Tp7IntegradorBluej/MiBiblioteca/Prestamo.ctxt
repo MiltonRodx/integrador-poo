@@ -1,5 +1,5 @@
 #BlueJ class context
-#Sun Nov 08 12:52:31 ART 2026
+#Mon Nov 09 20:15:54 ART 2026
 comment0.target=Prestamo
 comment0.text=\n Prestamo de un ejemplar a un socio, con sus fechas clave.\n\n La fecha de devolucion queda null mientras el prestamo siga ACTIVO. El\n vencimiento se calcula como retiro + dias de prestamo del socio y se\n evalua a nivel dia\: un prestamo que vence HOY todavia no esta vencido.\n Ademas lleva el id de identidad persistente que asigna la capa DAO\n al insertar (-1 \= todavia sin id).\n
 comment1.params=p_fechaRetiro p_socio p_libro

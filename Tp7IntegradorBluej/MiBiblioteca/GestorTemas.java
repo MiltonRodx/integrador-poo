@@ -6,8 +6,8 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
 
-public class GestorTemas
-{
+public class GestorTemas {
+    // Atributos
     private int temaActual = 0;
 
     private Color colorMenu;
@@ -19,14 +19,24 @@ public class GestorTemas
     private Color colorBoton;
     private Color colorBotonHover;
     private Color colorBotonPresionado;
-    
-    private void setTemaActual(int cant) { this.temaActual = cant; }
-    public int getTemaActual() { return this.temaActual; }
-    
+
     // Constructor
     public GestorTemas() {
         this.cargarColores();
     }
+    
+    // Setters
+    private void setTemaActual(int cant) { this.temaActual = cant; }
+    public int getTemaActual() { return this.temaActual; }
+    
+    // Getters
+    public Color getColorMenu() { return this.colorMenu; }
+    public Color getColorFondo() { return this.colorFondo; }
+    public Color getColorEncabezado() { return this.colorEncabezado; }
+    public Color getColorTexto() { return this.colorTexto; }
+    public Color getColorTarjeta() { return this.colorTarjeta; }
+    public Color getColorTextoSecundario() { return this.colorTextoSecundario; }
+    
 
     public void cambiarTema() {
         this.setTemaActual(this.getTemaActual() + 1);
@@ -38,10 +48,9 @@ public class GestorTemas
         this.cargarColores();
     }
 
-    private void cargarColores()
-    {
-        switch(temaActual)
-        {
+    private void cargarColores() {
+        
+        switch(temaActual) {
             // Azul
             case 0:
                 colorMenu = new Color(15, 30, 60);
@@ -100,13 +109,7 @@ public class GestorTemas
         }
     }
 
-    // Getters
-    public Color getColorMenu() { return colorMenu; }
-    public Color getColorFondo() { return colorFondo; }
-    public Color getColorEncabezado() { return colorEncabezado; }
-    public Color getColorTexto() { return colorTexto; }
-    public Color getColorTarjeta() { return colorTarjeta; }
-    public Color getColorTextoSecundario() { return colorTextoSecundario; }
+    
 
     
     public void aplicarTema(Container contenedor)

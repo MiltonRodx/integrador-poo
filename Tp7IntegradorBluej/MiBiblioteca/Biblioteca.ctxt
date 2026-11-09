@@ -1,5 +1,5 @@
 #BlueJ class context
-#Mon Nov 09 18:03:20 ART 2026
+#Mon Nov 09 20:15:54 ART 2026
 comment0.target=Biblioteca
 comment0.text=\n Representa una biblioteca que administra una colecci\u00F3n de {@link Libro}s\n y un conjunto de {@link Socio}s (estudiantes y docentes).\n <p>\n Permite dar de alta libros y socios, registrar pr\u00E9stamos y devoluciones,\n y obtener distintos listados e informes (pr\u00E9stamos vencidos, docentes\n responsables, t\u00EDtulos, etc.).\n </p>\n\n @author Ariel Sebastian Gomez\n @author Rodriguez Rivas Milton Nahuel\n @author Ruben Tiburcio Romero Fernand\u00E9z\n
 comment1.params=p_nombre p_libros p_socios

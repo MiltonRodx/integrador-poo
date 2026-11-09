@@ -1,5 +1,5 @@
 #BlueJ class context
-#Sun Nov 08 12:52:31 ART 2026
+#Mon Nov 09 20:15:54 ART 2026
 comment0.target=Estudiante
 comment0.text=\n Socio estudiante\: persona inscripta en una carrera de la FaCENA.\n\n Nace con 20 dias de prestamo (la consigna define el vencimiento "20 dias\n despues del retiro") y su regla particular es el TOPE de 3 libros en su\n poder, ademas del bloqueo comun por prestamos vencidos. Su carrera se\n persiste en la columna carrera de la tabla socio (los docentes la tienen\n en NULL).\n
 comment1.params=p_dniSocio p_nombre p_carrera p_prestamos

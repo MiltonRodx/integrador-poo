@@ -1,5 +1,5 @@
 #BlueJ class context
-#Sun Nov 08 12:52:31 ART 2026
+#Mon Nov 09 20:15:54 ART 2026
 comment0.target=Docente
 comment0.text=\n Socio docente\: docente de la FaCENA vinculado a un area.\n\n Nace con 5 dias de prestamo y es el unico tipo que participa del premio\n por responsabilidad\: cuando {@link \#esResponsable()} informa que nunca\n debio un libro, se le adicionan dias con {@link \#cambiarDiasDePrestamos(int)}.\n Su area de especializacion se persiste en la columna area de la tabla\n socio (los estudiantes la tienen en NULL).\n
 comment1.params=p_dniSocio p_nombre p_diasPrestamo p_prestamos p_area

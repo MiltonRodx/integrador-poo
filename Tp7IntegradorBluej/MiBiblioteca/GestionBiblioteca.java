@@ -62,7 +62,7 @@ public class GestionBiblioteca {
             respuesta = leerEntero(teclado, "Ingrese una opcion:");
 
             switch(respuesta){
-
+                
                 case 1:
                     System.out.println("Titulo:");
                     String titulo = teclado.nextLine();

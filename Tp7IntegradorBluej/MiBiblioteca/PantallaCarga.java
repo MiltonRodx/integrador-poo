@@ -8,8 +8,7 @@ import java.awt.event.MouseEvent;
 
 // Splash de 5 segundos, saltable: con un click se corta la espera y
 // arranca la GUI en el momento. La barra queda igual.
-public class PantallaCarga extends JFrame
-{
+public class PantallaCarga extends JFrame {
     private Timer temporizador;
     private boolean salteado;
 

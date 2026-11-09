@@ -5,30 +5,29 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class ConexionBD
-{
+public class ConexionBD {
+    // Atributos
     private String rutaBaseDatos;
     private Connection conexion; // ACÁ GUARDAMOS LA CONEXIÓN
 
-    public ConexionBD(String p_rutaBaseDatos)
-    {
+    // Constructor
+    public ConexionBD(String p_rutaBaseDatos) {
         this.setRutaBaseDatos(p_rutaBaseDatos);
         this.conexion = null;
     }
 
-    private void setRutaBaseDatos(String p_rutaBaseDatos)
-    {
-        this.rutaBaseDatos = p_rutaBaseDatos;
-    }
+    // Accessors
+    private void setRutaBaseDatos(String p_rutaBaseDatos) { this.rutaBaseDatos = p_rutaBaseDatos; }
 
-    public String getRutaBaseDatos()
-    {
-        return this.rutaBaseDatos;
-    }
-
+    public String getRutaBaseDatos() { return this.rutaBaseDatos; }
+    
+    private void setConexion(Connection p_conexion) { this.conexion = p_conexion; }
+    
+    public Connection getConexion() { return this.conexion; }
+    
+    // Metodos
     // Método para conectar (si ya está conectado, devuelve la misma)
-    public Connection conectar() throws SQLException
-    {
+    public Connection conectar() throws SQLException {
         if (this.conexion == null || this.conexion.isClosed()) {
             this.conexion = DriverManager.getConnection(
                 "jdbc:sqlite:" + this.getRutaBaseDatos()
@@ -40,13 +39,12 @@ public class ConexionBD
             }
         }
         
-        return this.conexion;
+        return this.getConexion();
     }
 
-    public void cerrar() throws SQLException
-    {
-        if (this.conexion != null && !this.conexion.isClosed()) {
-            this.conexion.close();
+    public void cerrar() throws SQLException {
+        if (this.getConexion() != null && !this.getConexion().isClosed()) {
+            this.getConexion().close();
         }
     }
 
