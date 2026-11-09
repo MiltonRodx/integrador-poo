@@ -63,6 +63,20 @@ public class SocioDAO
         sentencia.close();
         conexion.close();
     }
+    
+    public int eliminar(Socio p_socio) throws SQLException {
+
+        String consulta = "DELETE FROM Socio WHERE dniSocio = ?";
+
+        // try-with-resources: cierra la sentencia y la conexion aunque falle
+        try (Connection conexion = this.getConexionBD().conectar();
+             PreparedStatement sentencia = conexion.prepareStatement(consulta)) {
+
+            sentencia.setInt(1, p_socio.getDniSocio());
+
+            return sentencia.executeUpdate();
+        }
+    }
 
     public ArrayList<Socio> obtenerTodos() throws SQLException{
 

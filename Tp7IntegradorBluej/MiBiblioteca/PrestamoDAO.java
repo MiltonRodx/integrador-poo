@@ -203,8 +203,7 @@ public class PrestamoDAO {
 
         SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
 
-        while(resultado.next())
-        {
+        while(resultado.next()) {
             int dni = resultado.getInt("dniSocio");
             int idLibro = resultado.getInt("idLibro");
 
@@ -261,19 +260,17 @@ public class PrestamoDAO {
             }
         }
         
-
         resultado.close();
         sentencia.close();
         conexion.close();
     }
     
     
-    public void agregar(Prestamo p_prestamo) throws SQLException
-     {
-    this.agregar(
-        p_prestamo,
-        p_prestamo.getSocio().getDiasPrestamo()
-    );
+    public void agregar(Prestamo p_prestamo) throws SQLException {
+        this.agregar(
+            p_prestamo,
+            p_prestamo.getSocio().getDiasPrestamo()
+        );
    }
 
 }

@@ -5,8 +5,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 import java.awt.*;
 
-public class VentanaListaSocios extends JPanel
-{
+public class VentanaListaSocios extends JPanel {
     private Biblioteca biblioteca;
     private VentanaPrincipal ventanaPrincipal;
 

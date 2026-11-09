@@ -1,5 +1,5 @@
 #BlueJ class context
-#Sun Nov 08 12:52:31 ART 2026
+#Mon Nov 09 18:03:20 ART 2026
 comment0.target=LibroNoPrestadoException
 comment0.text=\n Excepcion de negocio (CHECKED) de la consigna\: se lanza cuando se intenta\n devolver un libro que no esta prestado, o cuando se pregunta quien tiene\n un libro que se encuentra disponible en la biblioteca.\n\n CHECKED (hereda de Exception, no de RuntimeException) porque el enunciado\n exige declararla y capturarla explicitamente\: la captura queda en cada\n invocador (menu de consola y GUI), que decide como presentarla.\n
 comment1.params=p_message

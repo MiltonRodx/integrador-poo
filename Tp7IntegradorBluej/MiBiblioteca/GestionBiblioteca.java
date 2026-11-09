@@ -1,4 +1,3 @@
-
 package MiBiblioteca;
 
 import java.util.Calendar;
@@ -10,6 +9,21 @@ import java.util.Scanner;
 // CONSOLA del practico: este main es solo texto (consigna).
 // Para la interfaz grafica esta VentanaPrincipal.main().
 public class GestionBiblioteca {
+
+    // Lee un entero por teclado sin explotar si el usuario escribe texto.
+    // Repite la pregunta hasta que ingrese un numero valido.
+    private static int leerEntero(Scanner p_teclado, String p_mensaje) {
+        while (true) {
+            System.out.println(p_mensaje);
+            String linea = p_teclado.nextLine().trim();
+            try {
+                return Integer.parseInt(linea);
+            } catch (NumberFormatException e) {
+                System.out.println("Debe ingresar un numero entero.");
+            }
+        }
+    }
+
     public static void main(String[] args)
         throws SQLException, ParseException, LibroNoPrestadoException {
 
@@ -19,12 +33,16 @@ public class GestionBiblioteca {
         ConexionBD conexionBD = new ConexionBD("biblioteca.db");
 
         BibliotecaDAO bibliotecaDAO = new BibliotecaDAO(conexionBD);
-        Biblioteca biblioteca = bibliotecaDAO.cargarBiblioteca("Biblioteca Gestion FACENA-UNNE");
+
+        // Primero las tablas, despues la carga: en la primera ejecucion
+        // la base esta vacia y cargar sin tablas fallaria.
         bibliotecaDAO.crearTablas();
+        Biblioteca biblioteca = bibliotecaDAO.cargarBiblioteca("Biblioteca Gestion FACENA-UNNE");
 
-        int respuesta = 0;
+        int respuesta;
 
-        while(respuesta != 13){
+        // do...while: el menu se muestra al menos una vez y se sale con 0
+        do {
             System.out.println("\n===== BIBLIOTECA GESTION FACENA-UNNE =====");
             System.out.println("1. Agregar libro");
             System.out.println("2. Agregar socio docente");
@@ -40,28 +58,21 @@ public class GestionBiblioteca {
             System.out.println("12. Listar titulos");
             System.out.println("13. Eliminar socio");
             System.out.println("0. Salir");
-            
-            System.out.println("Ingrese una opcion:");
 
-            respuesta = teclado.nextInt();
-            teclado.nextLine();
+            respuesta = leerEntero(teclado, "Ingrese una opcion:");
 
             switch(respuesta){
-                
+
                 case 1:
                     System.out.println("Titulo:");
                     String titulo = teclado.nextLine();
 
-                    System.out.println("Edicion:");
-                    int edicion = teclado.nextInt();
-                    teclado.nextLine();
+                    int edicion = leerEntero(teclado, "Edicion:");
 
                     System.out.println("Editorial:");
                     String editorial = teclado.nextLine();
 
-                    System.out.println("Anio:");
-                    int anio = teclado.nextInt();
-                    teclado.nextLine();
+                    int anio = leerEntero(teclado, "Anio:");
 
                     biblioteca.nuevoLibro(titulo, edicion, editorial, anio);
 
@@ -69,16 +80,28 @@ public class GestionBiblioteca {
                         biblioteca.getLibros().size() - 1
                     );
 
-                    bibliotecaDAO.getLibroDAO().agregar(nuevoLibro);
+                    try {
 
-                    System.out.println("Libro agregado correctamente.");
+                        bibliotecaDAO.getLibroDAO().agregar(nuevoLibro);
+
+                        System.out.println("Libro agregado correctamente.");
+
+                    } catch (SQLException excepcionSQL) {
+
+                        // La persistencia manda: si la base rechazo el insert,
+                        // se saca el libro de memoria.
+                        biblioteca.getLibros().remove(nuevoLibro);
+
+                        System.out.println(
+                            "Error al guardar el libro en la base de datos: "
+                            + excepcionSQL.getMessage()
+                        );
+                    }
 
                     break;
 
                 case 2:
-                    System.out.println("D.N.I.:");
-                    int dniDocente = teclado.nextInt();
-                    teclado.nextLine();
+                    int dniDocente = leerEntero(teclado, "D.N.I.:");
 
                     System.out.println("Nombre y apellido:");
                     String nombreDocente = teclado.nextLine();
@@ -92,16 +115,26 @@ public class GestionBiblioteca {
                         biblioteca.getSocios().size() - 1
                     );
 
-                    bibliotecaDAO.getSocioDAO().agregar(nuevoDocente);
+                    try {
 
-                    System.out.println("Docente agregado correctamente.");
+                        bibliotecaDAO.getSocioDAO().agregar(nuevoDocente);
+
+                        System.out.println("Docente agregado correctamente.");
+
+                    } catch (SQLException excepcionSQL) {
+
+                        biblioteca.getSocios().remove(nuevoDocente);
+
+                        System.out.println(
+                            "Error al guardar el docente en la base de datos: "
+                            + excepcionSQL.getMessage()
+                        );
+                    }
 
                     break;
 
                 case 3:
-                    System.out.println("D.N.I.:");
-                    int dniEstudiante = teclado.nextInt();
-                    teclado.nextLine();
+                    int dniEstudiante = leerEntero(teclado, "D.N.I.:");
 
                     System.out.println("Nombre y apellido:");
                     String nombreEstudiante = teclado.nextLine();
@@ -109,30 +142,40 @@ public class GestionBiblioteca {
                     System.out.println("Carrera:");
                     String carrera = teclado.nextLine();
 
-                   biblioteca.nuevoSocioEstudiante(dniEstudiante, nombreEstudiante, carrera);
-                   
+                    biblioteca.nuevoSocioEstudiante(dniEstudiante, nombreEstudiante, carrera);
+
                     Socio nuevoEstudiante = biblioteca.getSocios().get(
                         biblioteca.getSocios().size() - 1
                     );
 
-                    bibliotecaDAO.getSocioDAO().agregar(nuevoEstudiante);
+                    try {
 
-                    System.out.println("Estudiante agregado correctamente.");
+                        bibliotecaDAO.getSocioDAO().agregar(nuevoEstudiante);
+
+                        System.out.println("Estudiante agregado correctamente.");
+
+                    } catch (SQLException excepcionSQL) {
+
+                        biblioteca.getSocios().remove(nuevoEstudiante);
+
+                        System.out.println(
+                            "Error al guardar el estudiante en la base de datos: "
+                            + excepcionSQL.getMessage()
+                        );
+                    }
 
                     break;
 
                 case 4:
 
-                    System.out.println("D.N.I. del socio:");
-                    int dniSocio = teclado.nextInt();
-                    teclado.nextLine();
+                    int dniSocio = leerEntero(teclado, "D.N.I. del socio:");
 
                     System.out.println("Titulo del libro:");
                     String tituloLibro = teclado.nextLine();
 
-                    System.out.println("Asignar dias de prestamos (0 = hoy):");
-                    int diasTranscurridos = teclado.nextInt();
-                    teclado.nextLine();
+                    int diasTranscurridos = leerEntero(
+                        teclado, "Asignar dias de prestamos (0 = hoy):"
+                    );
 
                     Socio socio = biblioteca.buscarSocio(dniSocio);
                     Libro libro = biblioteca.buscarLibro(tituloLibro);
@@ -267,7 +310,7 @@ public class GestionBiblioteca {
                 case 7:
                     System.out.println(biblioteca.prestamosVencidos());
                     break;
-                    
+
                 case 8:
                     System.out.println(biblioteca.listaDeDocentesResponsables());
                     break;
@@ -311,37 +354,53 @@ public class GestionBiblioteca {
                     break;
 
                 case 13:
-                    System.out.println("Titulo del socio a eliminar (o DNI):");
-                    String dniInput = teclado.nextLine();
-                    int dni = 0;
-                    try {
-                        dni = Integer.parseInt(dniInput);
-                    } catch (NumberFormatException e) {
-                        System.out.println("DNI invalido. Debe ser un numero.");
-                        break;
-                    }
+                    int dni = leerEntero(teclado, "D.N.I. del socio a eliminar:");
+
                     Socio socioEncontrado = biblioteca.buscarSocio(dni);
+
                     if (socioEncontrado == null) {
-                        System.out.println("No se encontro un socio con DNI: " + dniInput);
+                        System.out.println("No se encontro un socio con DNI: " + dni);
                         break;
                     }
+
                     // Verifico que NO tenga prestamos activos
                     boolean tieneActivos = socioEncontrado.getPrestamos().stream()
                             .anyMatch(p -> !p.estaDevuelto());
+
                     if (tieneActivos) {
-                        System.out.println("No se puede eliminar al socio " + socioEncontrado.getNombre()
+                        System.out.println("No se puede eliminar al socio "
+                                + socioEncontrado.getNombre()
                                 + ": tiene " + socioEncontrado.cantLibrosPrestados()
                                 + " libro(s) prestado(s) activo(s).");
                         break;
                     }
-                    boolean eliminado = biblioteca.quitarSocio(socioEncontrado);
-                    if (eliminado) {
-                        System.out.println("Socio eliminado correctamente: " + socioEncontrado.getNombre());
-                    } else {
-                        System.out.println("Error: no se pudo eliminar el socio.");
+
+                    try {
+
+                        // Primero la base: si falla, no se toca la memoria y
+                        // no quedan desincronizadas.
+                        // OJO: ajustar el nombre/firma al metodo real de tu SocioDAO.
+                        bibliotecaDAO.getSocioDAO().eliminar(socioEncontrado);
+
+                        boolean eliminado = biblioteca.quitarSocio(socioEncontrado);
+
+                        if (eliminado) {
+                            System.out.println("Socio eliminado correctamente: "
+                                    + socioEncontrado.getNombre());
+                        } else {
+                            System.out.println("Error: no se pudo eliminar el socio.");
+                        }
+
+                    } catch (SQLException excepcionSQL) {
+
+                        System.out.println(
+                            "Error al eliminar el socio de la base de datos: "
+                            + excepcionSQL.getMessage()
+                        );
                     }
                     break;
-                case 14:
+
+                case 0:
                     System.out.println("Saliendo del sistema...");
                     break;
 
@@ -349,7 +408,7 @@ public class GestionBiblioteca {
                     System.out.println("Opcion incorrecta.");
                     break;
             }
-        }
+        } while(respuesta != 0);
 
         teclado.close();
         conexionBD.cerrar();

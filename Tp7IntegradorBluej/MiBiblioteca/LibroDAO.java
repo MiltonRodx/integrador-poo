@@ -35,7 +35,7 @@ public class LibroDAO
         return this.identificadoresLibros;
     }
 
-    public void agregar(Libro p_libro) throws SQLException{
+    public void agregar(Libro p_libro) throws SQLException {
 
         Connection conexion = this.getConexionBD().conectar();
 

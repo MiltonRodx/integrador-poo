@@ -1,6 +1,8 @@
 #BlueJ class context
-#Sun Nov 08 12:52:31 ART 2026
+#Mon Nov 09 18:08:33 ART 2026
 comment0.target=GestionBiblioteca
-comment1.params=args
-comment1.target=void main(java.lang.String[])
-numComments=2
+comment1.params=p_teclado p_mensaje
+comment1.target=int leerEntero(java.util.Scanner, java.lang.String)
+comment2.params=args
+comment2.target=void main(java.lang.String[])
+numComments=3

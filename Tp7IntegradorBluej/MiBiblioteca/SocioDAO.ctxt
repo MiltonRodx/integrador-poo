@@ -1,5 +1,5 @@
 #BlueJ class context
-#Sun Nov 08 12:52:31 ART 2026
+#Mon Nov 09 18:08:33 ART 2026
 comment0.target=SocioDAO
 comment1.params=p_conexionBD
 comment1.target=SocioDAO(ConexionBD)
@@ -8,5 +8,7 @@ comment2.target=void setConexionBD(ConexionBD)
 comment3.target=ConexionBD getConexionBD()
 comment4.params=p_socio
 comment4.target=void agregar(Socio)
-comment5.target=java.util.ArrayList obtenerTodos()
-numComments=6
+comment5.params=p_socio
+comment5.target=int eliminar(Socio)
+comment6.target=java.util.ArrayList obtenerTodos()
+numComments=7
