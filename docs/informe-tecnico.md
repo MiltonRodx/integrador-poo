@@ -474,8 +474,10 @@ salir cierra la conexión con `conexionBD.cerrar()`.
 | 0 | Salir. |
 
 **Escenario de la consigna**: el menú es interactivo y **no carga datos por sí
-solo**. El escenario fijo de ejemplo está en `CargadorDeDatosIniciales` (ver
-sección 8). Igual, la opción 4 permite reproducir los casos de la consigna a
+solo**: trabaja sobre `biblioteca.db`, que viene incluida en el repositorio
+con el escenario de ejemplo ya cargado (6 libros con títulos repetidos,
+3 docentes y 2 estudiantes, 8 préstamos de 2026 con vencidos y devoluciones
+a tiempo). La opción 4 permite, además, reproducir los casos de la consigna a
 mano: los "días transcurridos" sirven para fabricar préstamos vencidos y probar
 el bloqueo de socios y el informe de vencidos.
 
@@ -577,26 +579,14 @@ java -cp Tp7ProyectoEjecutable.jar biblioteca.GestionBiblioteca
 En ambos casos `biblioteca.db` se crea en la **carpeta desde donde se ejecuta
 el comando**.
 
-### Datos iniciales: `CargadorDeDatosIniciales`
+### Datos iniciales
 
-Es una clase **sin `main`** y no se ejecuta sola al arrancar. Carga el
-escenario de ejemplo de la consigna:
-
-- 6 libros (con títulos repetidos, para probar varios ejemplares);
-- 3 docentes y 2 estudiantes;
-- 8 préstamos con fechas fijas de 2026, entre ellos vencidos sin devolver y
-  devoluciones a tiempo.
-
-Para usarla desde BlueJ:
-
-1. Crear `new ConexionBD("biblioteca.db")` y `new BibliotecaDAO(...)`.
-2. Ejecutar `crearTablas()`.
-3. Crear `new Biblioteca("Biblioteca Gestion FACENA-UNNE")`.
-4. Crear `new CargadorDeDatosIniciales(biblioteca, bibliotecaDAO)` en el banco
-   de objetos de BlueJ.
-5. Llamar al método `cargarDatosDePrueba()`.
-
-Los datos quedan también guardados en la base.
+Los datos del escenario de la consigna ya están cargados en `biblioteca.db`
+(distribuida con el repositorio). Si la base se elimina, el programa la
+recrea **vacía** y se la puebla desde el menú: la opción 1 agrega libros, la
+2 y 3 socios, y la opción 4 registra préstamos (con los "días transcurridos"
+para simular fechas pasadas). Al finalizar la sesión todo queda guardado en
+la base.
 
 ---
 

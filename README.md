@@ -54,7 +54,6 @@ El proyecto creció en tres etapas: el **núcleo POO** (consola), la **persisten
 - **Consultas:** búsqueda de socios y de quién tiene en su poder un determinado libro.
 - **Informes y estadísticas:** cantidad de socios por tipo, vencidos, docentes responsables, títulos sin repetir y listados con formato.
 - **Persistencia:** todo se guarda en SQLite y se conserva entre ejecuciones.
-- **Datos iniciales:** `CargadorDeDatosIniciales` siembra registros de prueba.
 - **Temas visuales** en la GUI y pantalla de carga al iniciar.
 
 ---
@@ -73,7 +72,9 @@ El proyecto creció en tres etapas: el **núcleo POO** (consola), la **persisten
 | **Consola (CLI)** | `GestionBiblioteca` |
 | **Interfaz gráfica (Swing)** | `VentanaPrincipal` |
 
-La base `biblioteca.db` se crea y se siembra con datos de prueba la primera vez que se ejecuta.
+La base `biblioteca.db` ya viene incluida en el repositorio con los datos del
+escenario cargados. Si algún día la borrás, el programa la vuelve a crear
+vacía y la vas poblando por el propio menú.
 
 ---
 
@@ -203,7 +204,6 @@ integrador-poo/
         ├── LibroDAO.java
         ├── SocioDAO.java
         ├── PrestamoDAO.java
-        ├── CargadorDeDatosIniciales.java
         ├── TrabajoBD.java
         │
         │  ── Consola ──
@@ -253,7 +253,6 @@ Capa de persistencia con patrón **DAO** y conexión **singleton**. Las operacio
 | `LibroDAO` | CRUD de libros. |
 | `SocioDAO` | CRUD de docentes y estudiantes. |
 | `PrestamoDAO` | CRUD de préstamos y devoluciones; reconstruye las fichas de libros y socios al cargar. |
-| `CargadorDeDatosIniciales` | Siembra datos de prueba. |
 
 **Decisiones principales:**
 
