@@ -1,11 +1,11 @@
-# Informe Técnico — Gestión de Biblioteca
+# Informe Técnico — MiBiblioteca (Gestión de Biblioteca)
 
 > Trabajo Integrador de Programación Orientada a Objetos · TP7
-> Java 21 · SQLite (JDBC) · JavaFX + AtlantaFX
-> Equipo 49 / proyecto `integrador-poo` (rama `main`)
+> Java 21 · Java Swing · SQLite (JDBC) · BlueJ
+> Equipo: Los NullPointerException · repositorio `integrador-poo` (rama `main`)
 
-Este documento explica **cómo funciona absolutamente todo el sistema**, capa por
-capa, con el recorrido de datos de punta a punta. Está armado para **defensa oral**:
+Este documento explica **cómo funciona el sistema**, capa por capa, con el
+recorrido de los datos de punta a punta. Está pensado para la **defensa oral**:
 cada sección cierra con los "puntos clave para explicar".
 
 ---
@@ -14,38 +14,34 @@ cada sección cierra con los "puntos clave para explicar".
 
 1. [¿Qué hace el sistema?](#1-qué-hace-el-sistema)
 2. [Arquitectura en capas](#2-arquitectura-en-capas)
-3. [Capa de dominio (la consigna del TP7)](#3-capa-de-dominio-la-consigna-del-tp7)
+3. [Capa de dominio](#3-capa-de-dominio)
 4. [Capa de persistencia (SQLite + JDBC)](#4-capa-de-persistencia-sqlite--jdbc)
-5. [Capa de presentación: GUI JavaFX](#5-capa-de-presentación-gui-javafx)
-6. [Capa de presentación: menú de consola](#6-capa-de-presentación-menú-de-consola)
-7. [El recorrido completo de una operación (punta a punta)](#7-el-recorrido-completo-de-una-operación-punta-a-punta)
+5. [Capa de presentación: GUI Swing](#5-capa-de-presentación-gui-swing)
+6. [Capa de presentación: consola](#6-capa-de-presentación-consola)
+7. [Recorrido completo de una operación](#7-recorrido-completo-de-una-operación)
 8. [Cómo se corre el sistema](#8-cómo-se-corre-el-sistema)
-9. [Pruebas y evidencias](#9-pruebas-y-evidencias)
+9. [Casos de prueba](#9-casos-de-prueba)
 10. [Decisiones de diseño y por qué](#10-decisiones-de-diseño-y-por-qué)
-11. [Preguntas probables del tribunal (FAQ)](#11-preguntas-probables-del-tribunal-faq)
+11. [Preguntas probables del tribunal](#11-preguntas-probables-del-tribunal)
 
 ---
 
 ## 1. ¿Qué hace el sistema?
 
-Una biblioteca administra **libros (ejemplares), socios (docentes y estudiantes)
-y préstamos**, con las reglas de la consigna y agregando persistencia real y una
-interfaz gráfica:
+Una biblioteca administra **libros (ejemplares), socios (docentes y
+estudiantes) y préstamos**. El sistema implementagilas reglas de la consigna y le
+suma persistencia real y una interfaz gráfica:
 
-- **Reglas de negocio del TP7**: tope de 3 libros para estudiantes, bloqueo
-  cuando hay préstamos vencidos (5 días docente / 20 días estudiante),
-  docentes responsables con premio de días, y las 4 preguntas con los 3
-  formatos de listado exactos.
-- **Persistencia SQLite**: todo lo que se hace queda guardado en
-  `biblioteca.db` (CRUD completo con DAOs).
-- **GUI con JavaFX**: ventana con 4 pestañas (Socios / Libros / Préstamos /
-  Informes) sobre la misma base.
-- **Menú de consola** (`GestionBiblioteca`): todas las operaciones también en
-  modo texto, y el **escenario de la consigna** que responde las 4 preguntas
-  con salida fija.
+- **Reglas de negocio**: tope de libros para estudiantes, bloqueo ante préstamos
+  vencidos, docentes responsables con premio de días e informes con formato.
+- **Persistencia SQLite**: lo que se hace queda guardado en `biblioteca.db`.
+- **GUI con Java Swing**: ventana principal con menú lateral y una pantalla por
+  sección (Socios, Catálogo, Préstamos, Devoluciones, Estadísticas, Consultas).
+- **Consola** (`GestionBiblioteca`): las operaciones también están disponibles
+  en modo texto.
 
-Las tres interfaces de uso (GUI, consola, escenario) operan sobre **el mismo
-modelo y la misma base**: es la misma aplicación con tres "caras".
+La GUI y la consola trabajan sobre **el mismo modelo y la misma base**: son dos
+"caras" de la misma aplicación.
 
 ---
 
@@ -54,16 +50,12 @@ modelo y la misma base**: es la misma aplicación con tres "caras".
 ```mermaid
 flowchart TB
     subgraph PRESENTACION["Capa de presentación"]
-        GUI["GUI JavaFX<br/>gui/App + 4 controllers"]
-        MENU["Menú consola<br/>GestionBiblioteca"]
-        ESC["Escenario consigna<br/>GestionBiblioteca escenario"]
+        GUI["GUI Swing<br/>VentanaPrincipal + Ventana*"]
+        CLI["Consola<br/>GestionBiblioteca"]
+        TEMA["GestorTemas · BotonRedondeado<br/>PantallaCarga · Utilidades*"]
     end
 
-    subgraph SESION["Sesión (puente)"]
-        SES["SesionBiblioteca<br/>abrir/cargar · guardar · suscribir/publicar"]
-    end
-
-    subgraph MODELO["Capa de dominio (la consigna)"]
+    subgraph MODELO["Capa de dominio"]
         BIB["Biblioteca"]
         SOC["Socio (abstracta)"]
         DOC["Docente"]
@@ -74,23 +66,24 @@ flowchart TB
     end
 
     subgraph PERSISTENCIA["Capa de persistencia"]
-        CON["ConexionBD<br/>singleton + DDL"]
-        DAOB["BibliotecaDAO<br/>guardar / cargar"]
-        DAOS["SocioDAO · LibroDAO<br/>PrestamoDAO · DAOException"]
+        DAOB["BibliotecaDAO<br/>(fachada)"]
+        DAOS["LibroDAO · SocioDAO · PrestamoDAO"]
+        CON["ConexionBD<br/>conexión + transacciones"]
     end
 
     DB[("SQLite<br/>biblioteca.db")]
 
-    GUI --> SES
-    MENU --> SES
-    SES --> BIB
+    GUI --> BIB
+    GUI --> DAOB
+    CLI --> BIB
+    CLI --> DAOB
+    GUI --- TEMA
     BIB --- SOC
     SOC --> DOC
     SOC --> EST
     LIB --> PRE
     SOC --> PRE
     BIB --> EX
-    SES --> DAOB
     DAOB --> DAOS
     DAOS --> CON
     CON --> DB
@@ -98,335 +91,347 @@ flowchart TB
 
 **Por qué está separada en capas**
 
-- El **dominio** es exactamente el diseño pedido por la consigna (clases puras).
-  No sabe nada de SQL ni de JavaFX → es reutilizable y testable solo.
-- La **persistencia** solo traduce objetos ↔ filas. Si mañana la base fuera
-  MySQL, no cambia ni una línea del dominio.
-- La **presentación** (GUI/consola) no toca SQL directo: pide cosas al modelo y
-  avisa "guardá" a la sesión. Si mañana se cambia el front, no cambia nada de lo
-  demás.
+- El **dominio** es el diseño pedido por la consigna: clases puras que no saben
+  nada de SQL ni de Swing.
+- La **persistencia** solo traduce objetos ↔ filas. Cambiar de motor de base de
+  datos no toca el dominio.
+- La **presentación** no escribe SQL: usa el modelo para las reglas y el DAO
+  para guardar.
 
-**Puntos clave para explicar**: *"Las reglas del negocio son del modelo; la base
-guarda; la pantalla muestra. Cada capa solo conoce a la de abajo."*
+**Puntos clave para explicar**: *"Las reglas son del modelo; la base guarda; la
+pantalla muestra. Cada capa solo conoce a la de abajo."*
 
 ---
 
-## 3. Capa de dominio (la consigna del TP7)
+## 3. Capa de dominio
 
-Paquete `biblioteca`, colecciones genéricas (`ArrayList<Socio>`, `ArrayList<Prestamo>`…).
+Paquete `MiBiblioteca`, con colecciones genéricas (`ArrayList<Socio>`,
+`ArrayList<Prestamo>`…).
 
-### Clases y responsabilidades
+| Clase | Qué representa |
+|---|---|
+| `Biblioteca` | Agregado raíz: nombre + colecciones de libros y socios. Concentra las operaciones (`prestarLibro`, `devolverLibro`, `buscarSocio`, `quitarSocio`, `quienTieneElLibro`, informes y listados). |
+| `Socio` (abstracta) | DNI, nombre, días de préstamo y lista de préstamos. Define `puedePedir()` y `cantLibrosPrestados()`. |
+| `Docente` | Agrega `area`, `esResponsable()` y el premio de días. |
+| `Estudiante` | Agrega `carrera` y el tope de libros en su poder. |
+| `Libro` | Ejemplar: título, edición, editorial, año y su ficha de préstamos. |
+| `Prestamo` | Fecha de retiro, fecha de devolución, socio y libro. Sabe si está vencido y si está devuelto. |
+| `LibroNoPrestadoException` | Excepción de negocio para devolver o consultar un libro que no está prestado. |
 
-| Clase | Qué representa | Operaciones de negocio |
-|---|---|---|
-| `Biblioteca` | El agregado raiz: nombre + colección de libros y socios | `prestarLibro`, `devolverLibro`, `quienTieneElLibro`, `prestamosVencidos`, `docentesResponsables`, `cantidadDeSociosPorTipo`, `buscarSocio`, los 4 listados |
-| `Socio` (abstracta) | dni, nombre, días de préstamo, lista de préstamos | `cantLibrosPrestados`, `puedePedir` (sin vencidos), `soyDeLaClase` (abstracto) |
-| `Docente` | + `area` | `esResponsable` (nunca adeudó), `cambiarDiasDePrestamos` (premio), redefinición de `puedePedir` |
-| `Estudiante` | + `carrera` | `puedePedir`: sin vencidos **y** menos de 3 libros |
-| `Libro` | Ejemplar: título, edición, editorial, año, ficha de préstamos, `id` | `prestado` (tiene préstamo sin devolución), `ultimoPrestamo` |
-| `Prestamo` | Retiro + devolución (+ socio, libro, `id`) | `registrarFechaDevolucion`, `vencido(fecha)` |
-| `LibroNoPrestadoException` | Excepción de negocio (checked) | usada por `devolverLibro` y `quienTieneElLibro` |
+### Reglas de negocio
 
-### Reglas de negocio implementadas (y cómo explicarlas)
+- **Días de préstamo**: docentes **5**, estudiantes **20**.
+- **Tope del estudiante**: máximo **3** libros en su poder.
+- **Bloqueo**: un socio con un préstamo vencido no puede pedir nuevos libros.
+- **Un ejemplar, un préstamo activo**: no se presta un libro que ya está prestado.
+- **Evaluación a nivel día**: las fechas se normalizan a medianoche. Un préstamo
+  que vence **hoy** todavía está a tiempo y devolver el **mismo día** del
+  vencimiento cuenta como devolución a tiempo.
+- **Docente responsable**: nunca tuvo ni tiene un préstamo vencido. Los devueltos
+  se evalúan contra su fecha de devolución y los activos contra hoy.
+- **Premio**: `cambiarDiasDePrestamos(int)` suma días de préstamo al docente.
+- **Rechazo silencioso**: `prestarLibro` devuelve `boolean`; quien llama decide
+  qué mensaje mostrar.
+- **Informe de vencidos**: considera solo préstamos **activos**.
 
-1. **Evaluación a nivel día**: todas las fechas se normalizan a medianoche
-   (`HOUR_OF_DAY/MIN/SEC/MILLIS = 0`). Consecuencia: un préstamo que vence
-   **hoy** todavía está a tiempo y devolver el **mismo día del vencimiento**
-   cuenta como a tiempo. (`SesionBiblioteca.fecha/hoy` y los normalizadores del
-   modelo comparten este criterio.)
-2. **Tope del estudiante**: `puedePedir()` exige **menos de 3** libros, más el
-   bloqueo estándar por préstamos vencidos. Con `<=` podría cerrar el ciclo con
-   4 libros en mano.
-3. **Docente responsable**: recorre su historial; los **devueltos** se evalúan
-   contra su propia fecha de devolución (¿entregó tarde?) y los **activos**
-   contra hoy. Si algo quedó vencido → no responsable.
-4. **Premio**: `cambiarDiasDePrestamos(int)` **suma** días al docente → más plazo
-   para futuros préstamos (se refleja en `Prestamo.vencido`, que hoy usa
-   `socio.getDiasPrestamos()`).
-5. **`prestamosVencidos()`**: devuelve solo préstamos **activos** vencidos (un
-   préstamo devuelto tarde no figura, aunque sí deja al docente como no
-   responsable).
-6. **Rechazo silencioso** en `prestarLibro`: devuelve `boolean` sin imprimir —
-   la consigna pide esa firma; quién llama decide qué mostrar (menú/GUI traducen
-   a mensajes).
-7. **Excepción de negocio**: `devolverLibro` y `quienTieneElLibro` lanzan
-   `LibroNoPrestadoException` con los mensajes literales de la consigna.
-
-**Puntos clave para explicar**: *"El modelo no imprime ni consulta la base:
-esas reglas funcionan igual en consola, en la GUI y en el escenario."*
+**Puntos clave para explicar**: *"El modelo no imprime ni consulta la base: las
+reglas funcionan igual desde la GUI y desde la consola."*
 
 ---
 
 ## 4. Capa de persistencia (SQLite + JDBC)
 
-Paquete `biblioteca.persistencia`. Motor: **SQLite** (archivo único,
-sin servidor) accedido con **JDBC** (driver `sqlite-jdbc` en `libs/`).
+Motor: **SQLite** (un archivo, sin servidor) accedido por **JDBC** con el driver
+`sqlite-jdbc` (carpeta `+libs/`).
 
-### 4.1 `ConexionBD` — el punto único de entrada a la base
+### 4.1 `ConexionBD` — acceso único a la base
 
-- **Singleton**: `instanciar("biblioteca.db")` abre una vez y devuelve la misma
-  conexión a todos los DAOs.
-- Carga el driver (`org.sqlite.JDBC`), abre `jdbc:sqlite:<ruta>` y ejecuta:
-  - `PRAGMA foreign_keys = ON` → sin esto SQLite ignora las FKs.
-  - **DDL auto-migrado**: crea las 4 tablas si no existen (`CREATE TABLE IF NOT
-    EXISTS`). La base se construye sola en la primera ejecución.
-- Los errores de JDBC se envuelven en **`DAOException` (unchecked)**: las firmas
-  de los DAOs quedan limpias y la GUI solo hace `catch` cuando le importa.
+- Se construye con la ruta del archivo (`new ConexionBD("biblioteca.db")`) y la
+  comparten todos los DAOs.
+- `conectar()` abre `jdbc:sqlite:<ruta>` **solo si hace falta**: si ya hay una
+  conexión abierta, devuelve la misma. Al abrir ejecuta
+  `PRAGMA foreign_keys = ON` (sin eso SQLite **ignora** las claves foráneas).
+- `cerrar()` cierra la conexión si está abierta.
+- **`enTransaccion(TrabajoBD)`**: ejecuta un bloque de trabajo **todo o nada**.
+  Desactiva el autoCommit, corre el trabajo y hace `COMMIT`; si algo falla hace
+  `ROLLBACK` y relanza la excepción. Al terminar, salga como salga, restablece
+  el autoCommit. Sirve para operaciones que tocan varias tablas.
 
-### 4.2 El esquema de `biblioteca.db` (del modelo entidad-relación a tablas)
+### 4.2 Esquema de `biblioteca.db`
 
-| Tabla | Clave | Columnas | Detalles de diseño |
-|---|---|---|---|
-| `biblioteca` | `nombre` (PK text) | — | registro institucional, la misma clave comparten GUI y consola |
-| `libro` | `id` (AUTOINCREMENT) | titulo, edicion, editorial, anio | **id surrogate**: los títulos pueden repetir (varios ejemplares) |
-| `socio` | `dni` (PK natural) | nombre, tipo, dias_prestamos, area, carrera | **tabla plana con discriminador** `tipo IN ('Docente','Estudiante')`; `area`/`carrera` nulos según el tipo |
-| `prestamo` | `id` (AUTOINCREMENT) | socio_dni (FK), libro_id (FK), fecha_retiro, fecha_devolucion | fechas en **epoch millis a medianoche**; `NULL` = préstamo activo |
+Tres tablas, creadas por `BibliotecaDAO.crearTablas()`:
 
-Reglas a nivel base:
+```mermaid
+erDiagram
+    LIBRO {
+        INTEGER idLibro PK
+        TEXT titulo
+        INTEGER edicion
+        TEXT editorial
+        INTEGER anio
+    }
+    SOCIO {
+        INTEGER dniSocio PK
+        TEXT nombre
+        INTEGER diasPrestamo
+        TEXT tipo "Docente / Estudiante"
+        TEXT area "solo Docente"
+        TEXT carrera "solo Estudiante"
+    }
+    PRESTAMO {
+        INTEGER idPrestamo PK
+        TEXT fechaRetiro
+        TEXT fechaDevolucion "NULL = activo"
+        INTEGER dniSocio FK
+        INTEGER idLibro FK
+        INTEGER diasPrestamo
+    }
 
-- **FKs reales** `prestamo → socio` y `prestamo → libro` → la base **impide
-  borrar** un socio/libro con historial.
-- **Índice parcial único** `idx_libro_un_prestamo_activo ON prestamo(libro_id)
-  WHERE fecha_devolucion IS NULL` → un ejemplar no puede tener **dos préstamos
-  activos a la vez**, protegido también en la BBDD, no solo en el modelo.
+    SOCIO ||--o{ PRESTAMO : "recibe"
+    LIBRO ||--o{ PRESTAMO : "se presta en"
+```
 
-### 4.3 Los DAOs — CRUD con prepared statements
+| Tabla | Clave | Detalles |
+|---|---|---|
+| `Libro` | `idLibro` (AUTOINCREMENT) | Id artificial: los títulos pueden repetirse (varios ejemplares). |
+| `Socio` | `dniSocio` (clave natural) | **Una sola tabla** para docentes y estudiantes, diferenciados por `tipo`. `area` es solo de docentes y `carrera` solo de estudiantes; la otra queda `NULL`. |
+| `Prestamo` | `idPrestamo` (AUTOINCREMENT) | `fechaDevolucion NULL` = préstamo activo. Guarda `diasPrestamo`: los días que correspondían al socio al momento del préstamo. |
 
-Patrón **DAO** (Data Access Object): cada tabla tiene su clase que expone CRUD.
-Todo con `PreparedStatement` (sin concatenar strings → sin SQL injection) y
-`try-with-resources` (el ResultSet se libera solo).
+Reglas que defiende la base:
 
-| DAO | CREATE | READ | UPDATE | DELETE |
-|---|---|---|---|---|
-| `LibroDAO` | `insert` | `findById`, `findAll` | `update` | `delete`, `deleteAll` |
-| `SocioDAO` | `insert` | `findByDni`, `findAll` | `update` | `delete`, `deleteAll` |
-| `PrestamoDAO` | `insert` | `findAllRegistros`, `findAll(libros, socios)` | `update` (fecha devolución) | `delete`, `deleteAll` |
+- **Claves foráneas** `Prestamo → Socio` y `Prestamo → Libro`, sin `ON DELETE
+  CASCADE`: no se puede borrar un socio o libro con historial.
+- **Índice parcial único** `idx_prestamo_activo_unico` sobre `Prestamo(idLibro)
+  WHERE fechaDevolucion IS NULL`: un libro no puede tener **dos préstamos
+  activos a la vez**, aunque el modelo falle.
+- `NOT NULL` en los campos esenciales (`titulo`, `nombre`, `tipo`,
+  `fechaRetiro`, `dniSocio`, `idLibro`).
 
-Detalles que conviene poder citar:
+### 4.3 Creación y migración: `crearTablas()`
 
-- **`insert` devuelve el `rowid` autogenerado** (`getGeneratedKeys()`) y se lo
-  asigna al objeto (`libro.setId(...)`) → el objeto en memoria queda "
-  identificado" contra la BD.
-- **SocioDAO mapea polimórficamente**: lee la columna `tipo` y reconstruye la
-  subclase correcta (`new Docente(...)` o `new Estudiante(...)`); guarda
-  `area`/`carrera` de forma condicional con `instanceof`.
-- **PrestamoDAO.findAll(libros, socios)** reconstruye el grafo: por cada fila
-  crea el `Prestamo`, y lo **reagrega a la ficha del libro y del socio**
-  (mismo efecto que `prestarLibro` en vivo) → el estado recargado de la base es
-  100% operativo para el negocio.
-- Dates: se guardan como **epoch millis** (`getTimeInMillis()`) y al leer se
-  re-normaliza a medianoche (coherente con la regla de "día completo" del dominio).
+Al arrancar, `BibliotecaDAO.crearTablas()` deja la base lista y **se puede correr
+las veces que haga falta** (idempotente):
 
-### 4.4 `BibliotecaDAO` — la fachada del agregado
+1. `CREATE TABLE IF NOT EXISTS` para las tres tablas.
+2. **Migración de columna**: consulta `PRAGMA table_info(Prestamo)`; si falta
+   `diasPrestamo`, la agrega con `ALTER TABLE`, y completa las filas viejas
+   copiando los días del socio.
+3. **Reparación de datos viejos**: `repararPrestamosDuplicados` busca libros con
+   varios préstamos activos a la vez (un bug de versiones anteriores). Cierra los
+   sobrantes con la fecha de retiro del préstamo siguiente y deja activo el más
+   nuevo. **No borra datos** y avisa por consola de cada reparación.
+4. **Índice único parcial**: recién entonces se crea. Si aun así falla, la
+   aplicación **no se cae**: avisa y lista qué libros están en conflicto.
 
-- **`guardar(biblioteca)`** — sincroniza el grafo completo, por identidad:
-  - objetos con `id == -1` → `INSERT` (y les llega el `id` nuevo);
-  - objetos con `id >= 0` → `UPDATE`.
-  - Orden: primero **libros** (las claves FK), luego **socios**, al final
-    **préstamos**. *Importante*: el upsert **no borra** filas que el grafo ya
-    no tiene — las **bajas** hacen `delete()` explícito del DAO (lo hacen igual
-    menú y GUI, y la FK marca la frontera).
-- **`cargar(nombre)`** — si no existe el registro institucional crea la biblio
-  vacía; si existe: lee libros, socios y préstamos, y devuelve la Biblioteca
-  armada (con sus colecciones de préstamos repuestas).
+### 4.4 Los DAOs
 
-### 4.5 `SesionBiblioteca` — el ciclo de vida compartido
+Patrón **DAO** (Data Access Object): cada tabla tiene su clase de acceso, y
+`BibliotecaDAO` las agrupa.
 
-Clase que unifica el ciclo de vida para **cualquiera de las interfaces**:
+| Clase | Rol |
+|---|---|
+| `LibroDAO` | Acceso a la tabla `Libro` (`obtenerTodos()` y las operaciones de alta, baja y modificación). |
+| `SocioDAO` | Acceso a `Socio`. Reconstruye la subclase correcta (`Docente` o `Estudiante`) según la columna `tipo`. |
+| `PrestamoDAO` | Acceso a `Prestamo`. `cargarPrestamos(socios, libros)` lee las filas y **reenlaza cada préstamo** a la ficha de su libro y de su socio. |
+| `BibliotecaDAO` | **Fachada**: construye los tres DAOs sobre la misma `ConexionBD`, crea las tablas y arma la `Biblioteca` completa con `cargarBiblioteca(nombre)`. |
 
-- instancia la conexión y los DAOs una sola vez;
-- carga el estado (o siembra el catálogo de la consigna si la base está
-  nueva — la GUI siembra directo, el menú pregunta S/N);
-- `guardar()` inmediata tras cada operación de escritura;
-- `recargar()` (vuelve a leer la base) y `cerrar()`;
-- **patrón observable**: `suscribir(Runnable)` / `publicar()` → cuando el
-  estado cambia, las vistas GUI se refrescan solas.
+> ⚠️ COMPLETAR: detallar los métodos de `LibroDAO`, `SocioDAO` y `PrestamoDAO`
+> (insert / update / delete) y si usan `PreparedStatement` y `enTransaccion`.
 
-**Puntos clave para explicar**: *"El upsert usa la identidad persistente: inserta
-lo nuevo y actualiza lo conocido. La BD defiende sus propias reglas (FK e índice
-único), no solo el modelo."*
+`cargarBiblioteca(nombre)` hace, en orden: lee los **libros**, lee los
+**socios**, carga los **préstamos** enlazándolos a ambos y devuelve
+`new Biblioteca(nombre, libros, socios)`. Como las fechas se guardan como texto,
+esta carga puede lanzar `ParseException`.
+
+**Puntos clave para explicar**: *"La base defiende sus propias reglas (claves
+foráneas e índice único), no solo el modelo. Y la migración está hecha para no
+romper nunca datos ya guardados."*
 
 ---
 
-## 5. Capa de presentación: GUI JavaFX
+## 5. Capa de presentación: GUI Swing
 
-Paquete `biblioteca.gui`. Stack: **JavaFX 21 + AtlantaFX** (tema PrimerLight).
+Interfaz hecha solo con **Java Swing** (JDK nativo, sin dependencias externas).
 
 ### 5.1 Arranque de la aplicación
 
-- **`App extends Application`**: en `init()` setea el tema; en `start()`
-  - crea la `SesionBiblioteca` (abre la base una vez),
-  - carga `MainWindow.fxml` con un **`controllerFactory`**: le pasa la sesión a
-    cada controller (los FXML no crean controllers "por su cuenta"),
-  - arma la ventana (1024x640, ícono, título) y la muestra.
-- **`stop()`**: al cerrar la ventana se cierra la conexión SQLite.
-- **`Launcher`**: work-around clásico de Java: si `main` está en una clase que
-  extiende `Application`, Java exige lanzarla por *module-path*, y por classpath
-  plano muere con "JavaFX runtime components are missing". El `Launcher` **no**
-  extiende `Application`: solo llama `Application.launch(App.class, args)` →
-  permite arrancar la GUI por classpath plano (`gui.bat` / `gui.sh` / BlueJ).
-- **`gui.bat` / `gui.sh`**: compilan todo y copian FXML/PNG a `classes/`, y
-  lanzan el Launcher con el classpath de los jars de `libs/`.
+El `main` de la GUI está en `VentanaPrincipal`. Hace, en este orden:
 
-### 5.2 La ventana: 4 pestañas (TabPane de `MainWindow.fxml`)
+1. Crea la `ConexionBD("biblioteca.db")` y el `BibliotecaDAO`.
+2. `crearTablas()` deja el esquema listo (y migra si hace falta).
+3. `cargarBiblioteca("Biblioteca Gestion FACENA-UNNE")` arma el modelo desde la base.
+4. Con `SwingUtilities.invokeLater` (la GUI se arma en el hilo de eventos de
+   Swing) muestra la `PantallaCarga` y, al terminar, abre la `VentanaPrincipal`.
 
-| Pestaña | Controller | Qué ofrece |
-|---|---|---|
-| **Socios** | `SociosController` | Tabla completa (dni, nombre, tipo, libros prestados, días). **Alta** de docente o estudiante vía formulario (valida: dni entero positivo, único, campos no vacíos). **Buscar por DNI** selecciona y hace scroll a la fila. **Baja** con confirmación y bloqueo si tiene préstamos (FK). **Premiar** → dialogo de días (solos docentes). |
-| **Libros** | `LibrosController` | Tabla de ejemplares (título, edición, editorial, año, ¿prestado?). **Alta** (los títulos pueden repetir) y **baja** con confirmación + bloqueo por FK. |
-| **Préstamos** | `PrestamosController` | Formulario de retiro: **combos** (socios, libros **disponibles**) + **DatePicker** (hoy por defecto). Tabla con filtro por radio: **Activos / Vencidos / Todos**; columnas socio, libro, retiro, **vencimiento (calculado)**, devolución y estado (Devuelto / VENCIDO / A tiempo). **Devolver** opera sobre la fila seleccionada. |
-| **Informes** | `InformesController` | Los 4 listados en un `TextArea` **monoespaciado** con los formatos **exactos** de la consigna, títulos sin repetir, informe de vencidos y contadores vivos (estudiantes / docentes / vencidos). |
+Si algo falla al iniciar, se informa el error por consola.
 
-### 5.3 Cómo está construida la interacción
+### 5.2 `VentanaPrincipal`: estructura
 
-- Las **tablas** usan `TableView<X>` con `ReadOnlyObjectWrapper` como
-  `cellValueFactory`: las clases del TP no son JavaBeans "con Property", así
-  que el wrapper expone el valor correcto para cada columna.
-- **Diálogos propios** (`Dialogos`): `formulario(Window, título, cabecera, N`
-  etiquetas)` con grilla `GridPane` devuelve los valores si el usuario confirma
-  (y vacío si cancela); `error/aviso/informacion/confirm` son `Alert`s de una
-  línea. Compartidos por las 4 pestañas.
-- **Validación en dos niveles**: la vista valida formato (entero, no vacío) y
-  el **modelo valida el negocio** (por ejemplo `PrestamosController` muestra el
-  *motivo* de rechazo revisando las mismas condiciones que `prestarLibro`, de la
-  misma manera en que lo hace el modelo).
-- **Refresco reactivo**: cada controller hace `sesion.suscribir(this::recargar)`
-  en su `initialize()`. Toda operación termina con
-  `sesion.guardar()` (BD) + `sesion.publicar()` → las cuatro pestañas se
-  re-renderizan con el estado nuevo, incluyendo cambios hechos desde otra
-  pestaña o desde la consola.
+Es un `JFrame` (1300×850, mínimo 1000×650) con un `BorderLayout`:
 
-**Puntos clave para explicar**: *"La GUI no conoce SQL ni replica reglas: llama
-al modelo, guarda la sesión y avisa. Cualquier cambio se refleja en todas las
-vistas porque todas se suscriben a la sesión."*
+| Zona | Contenido |
+|---|---|
+| **WEST** | Menú lateral con botones `BotonRedondeado`: Inicio, Socios, Catálogo, Préstamos, Devoluciones, Estadísticas, Consultas. |
+| **NORTH** | Encabezado con el nombre de la biblioteca y el equipo. El botón **Tema** aparece solo en Inicio. |
+| **CENTER** | `panelContenido`: acá se muestra la pantalla activa. |
+
+**Navegación**: cada `Ventana*` es un `JPanel` que recibe `(biblioteca,
+bibliotecaDAO, ventanaPrincipal)`. Al elegir una opción del menú,
+`mostrarContenido(panel)` **reemplaza** el panel central (`removeAll` →
+`add` → `revalidate` / `repaint`) sin tocar el menú ni el encabezado.
+
+| Sección | Pantallas |
+|---|---|
+| Socios | `mostrarSocios()`: tarjetas → `VentanaSociosDocentes`, `VentanaSociosEstudiantes`, `VentanaListaSocios` y baja de socio |
+| Catálogo | `VentanaCatalogo` (+ `VentanaGestionLibros`, `VentanaListaLibros`) |
+| Préstamos | `VentanaPrestamos` |
+| Devoluciones | `VentanaDevoluciones` |
+| Estadísticas | `VentanaEstadisticas` (+ `VentanaInforme`) |
+| Consultas | `VentanaConsultas` |
+
+> ⚠️ COMPLETAR: confirmar qué hace exactamente `VentanaGestionLibros`,
+> `VentanaListaLibros` e `VentanaInforme`.
+
+`crearTarjeta(título, descripción, botón)` es un método público que arma las
+tarjetas centradas (título, texto y botón) y se **reutiliza** desde otras
+pantallas, como `VentanaCatalogo`.
+
+### 5.3 Baja de socio (ejemplo de validación en la GUI)
+
+Desde la tarjeta "Eliminar socio": **(1)** se pide el DNI con un `JOptionPane`;
+**(2)** se valida que sea un número; **(3)** se busca con
+`biblioteca.buscarSocio(dni)`; **(4)** se **bloquea** si el socio tiene algún
+préstamo sin devolver, mostrando cuántos libros tiene; **(5)** recién entonces se
+llama a `biblioteca.quitarSocio(socio)` y se informa el resultado.
+
+> ⚠️ COMPLETAR: confirmar en qué punto se borra también la fila de la tabla
+> `Socio`. En el código de `VentanaPrincipal` solo se ve la baja en el modelo; si
+> `quitarSocio` no llama al `SocioDAO`, el socio reaparece al reiniciar.
+
+### 5.4 Temas visuales: `GestorTemas`
+
+`GestorTemas` guarda el tema activo (0–3) y un juego de colores por tema:
+
+| N.º | Tema |
+|---|---|
+| 0 | Azul |
+| 1 | Oscuro |
+| 2 | Rosa |
+| 3 | Rojo |
+
+- `cambiarTema()` avanza al siguiente y vuelve a 0 después del último.
+- `aplicarTema(Container)` **recorre recursivamente** todos los componentes y
+  aplica los colores según su tipo: `BotonRedondeado` (colores normal, hover y
+  presionado), `JButton`, `JLabel`, campos de texto y combos, `JTable` (con
+  encabezado), `JPanel` y `JScrollPane`. También corrige el color del título de
+  los bordes (`TitledBorder`), que en los temas oscuros quedaba invisible.
+- Para los paneles usa `esColorClaro()`, que calcula la **luminosidad**
+  (`0.299·R + 0.587·G + 0.114·B > 220`) y decide si el panel es "tarjeta" o
+  "fondo".
+- Al cambiar el tema, `VentanaPrincipal` actualiza todo y vuelve a Inicio.
+
+### 5.5 Componentes de apoyo
+
+- `BotonRedondeado`: botón propio con colores normal / hover / presionado.
+- `PantallaCarga`: splash que se muestra mientras arranca la aplicación.
+- `RenderizadorEstadoPrestamo`: dibuja el estado del préstamo en las tablas.
+- `UtilidadesInterfaz` y `UtilidadesPrestamos`: funciones comunes de las pantallas.
+
+**Puntos clave para explicar**: *"La ventana principal es un marco fijo (menú +
+encabezado) y solo cambia el panel central. Los colores se aplican recorriendo
+el árbol de componentes, así que cada pantalla nueva hereda el tema sin código
+extra."*
 
 ---
 
-## 6. Capa de presentación: menú de consola
+## 6. Capa de presentación: consola
 
-`GestionBiblioteca` tiene **dos modos**:
+`GestionBiblioteca` es la clase principal del modo consola. Usa el mismo modelo
+y la misma base que la GUI.
 
-1. **Menú interactivo** (`java biblioteca.GestionBiblioteca`): 18 operaciones
-   agrupadas (libros, socios, préstamos, docentes, base de datos), entradas
-   validadas con re-pregunta (enteros, DNI único, tipo, fecha "Enter=hoy o dia
-   mes anio"), persistencia instantánea vía `SesionBiblioteca` y salida
-   ordenada (guarda + cierra la conexión). Comparte la **misma base** que la GUI.
-2. **Escenario de la consigna** (`... escenario`): salida fija que instancia
-   libros/socios, ejecuta préstamos con fechas del caso, muestra rechazos,
-   premio y los **4 informes con el formato pedido por el TP7**. Es la cara
-   "evaluable" del ejercicio, idéntica en la primera entrega.
-
-(En el mismo paquete quedó `GestionPersistencia`: demo previa del CRUD que
-muestra CREATE/READ/UPDATE/DELETE hablando directamente con los DAOs — útil
-para mostrar la capa sola.)
+> ⚠️ COMPLETAR: describir qué operaciones ofrece el menú de consola y si
+> incluye el escenario fijo de la consigna.
 
 ---
 
-## 7. El recorrido completo de una operación (punta a punta)
+## 7. Recorrido completo de una operación
 
-Ejemplo: registrar un préstamo en la GUI, hasta la fila guardada en la base
-(mismo flujo en el menú de consola, cambia solo la interfaz):
+Ejemplo: registrar un préstamo desde la GUI hasta la fila guardada.
 
 ```mermaid
 sequenceDiagram
-    participant U as Usuario (GUI)
-    participant C as PrestamosController
+    participant U as Usuario
+    participant V as VentanaPrestamos
     participant M as Biblioteca (modelo)
-    participant S as SesionBiblioteca
-    participant D as PrestamoDAO/BibliotecaDAO
-    participant B as SQLite biblioteca.db
+    participant D as DAOs
+    participant B as SQLite (biblioteca.db)
 
-    U->>C: elige socio + libro + fecha, "Registrar"
-    C->>C: valida formato (campos no vacios)
-    C->>M: prestarLibro(retiro, socio, libro)
-    M->>M: libro.prestado()? socio.puedePedir()?
-    M-->>C: true (crea Prestamo en fichas libro + socio)
-    C->>S: guardar() + publicar()
-    S->>D: guardar(biblioteca)
-    D->>B: INSERT prestamo (rowid -> prestamo.setId)
+    U->>V: elige socio y libro, "Registrar"
+    V->>V: valida el formato de los datos
+    V->>M: prestarLibro(fecha, socio, libro)
+    M->>M: ¿libro libre? ¿socio puede pedir?
+    M-->>V: true (crea el Prestamo en las fichas)
+    V->>D: guarda el préstamo
+    D->>B: INSERT en Prestamo
     B-->>D: OK
-    D-->>C: listo
-    C-->U: tabla y combos refrescados (suscribir/publicar)
+    V-->>U: mensaje y pantalla actualizada
 ```
 
-En texto: **(1)** la vista valida el formato de la entrada; **(2)** delega en
-`Biblioteca.prestarLibro` — el modelo verifica las reglas (libro no prestado,
-socio sin vencidos y dentro del tope) y de estar bien **crea el `Prestamo` y lo
-agrega a las fichas del libro y del socio**; **(3)** el controller llama
-`sesion.guardar()`: el `guardar()` del `BibliotecaDAO` recorre el grafo: el libro
-y socio ya persistían (UPDATE) pero el préstamo nuevo tiene `id = -1` → **INSERT
-con `PreparedStatement`** — `getGeneratedKeys()` le devuelve el `rowid` y lo
-deja en el objeto; **(4)** `sesion.publicar()` → las 4 pestañas se refrescan con
-el estado nuevo. Al cerrar la app, `App.stop()` cierra la conexión en limpio.
+> ⚠️ COMPLETAR: ajustar el paso "guarda el préstamo" con el método exacto de
+> `PrestamoDAO` y el orden real de las llamadas.
 
-La **devolución** recorre el mismo camino, pero el préstamo ya tiene `id` → va
-por **UPDATE** (`fecha_devolucion` = hoy, medianoche). Una **baja** hace el
-`DELETE` explícito con el DAO correspondiente (y la FK bloquea el borrado si hay
-historial asociado).
+En palabras: **(1)** la vista valida el formato; **(2)** el modelo verifica las
+reglas y, si se cumplen, crea el `Prestamo` y lo agrega a las fichas del libro y
+del socio; **(3)** el DAO inserta la fila; **(4)** si el índice único o las
+claves foráneas detectan una inconsistencia, la base **rechaza** la operación.
+La devolución sigue el mismo camino, pero completando `fechaDevolucion` en la
+fila existente.
 
-**Puntos clave para explicar**: *"Insertar o actualizar no lo decide un `if`
-suelto: lo decide la identidad persistente (`id == -1`). La base devuelve los
-ids y el objeto queda marcado como persistido."*
+**Puntos clave para explicar**: *"Hay dos defensas: el modelo valida primero y,
+si algo se le escapa, la base lo frena."*
 
 ---
 
 ## 8. Cómo se corre el sistema
 
-Desde `tp7ProyectoBlueJ/`:
+**Requisitos:** JDK 21 y BlueJ.
 
-```bash
-javac -d classes biblioteca/*.java biblioteca/persistencia/*.java biblioteca/gui/*.java
+1. Abrir con BlueJ la carpeta `Tp7IntegradorBluej`.
+2. Compilar. El driver `sqlite-jdbc-3.54.1.0.jar` está en `+libs/`, que BlueJ
+   carga automáticamente.
+3. Click derecho sobre la clase → `void main(String[] args)`:
 
-# GUI (con JavaFX + AtlantaFX + sqlite-jdbc en libs/)
-# Windows:
-gui.bat
-# Linux:
-./gui.sh
+| Modo | Clase |
+|---|---|
+| Consola | `GestionBiblioteca` |
+| Interfaz gráfica (Swing) | `VentanaPrincipal` |
 
-# Menú de consola (misma base que la GUI)
-java -cp "classes;libs/sqlite-jdbc-3.54.1.0.jar" biblioteca.GestionBiblioteca
+La base `biblioteca.db` se crea sola la primera vez. Para empezar de cero basta
+con **borrar el archivo**: se reconstruye en el próximo arranque.
 
-# Escenario de la consigna (no toca la base)
-java -cp classes biblioteca.GestionBiblioteca escenario
-
-# Demo del CRUD
-java -cp "classes;libs/sqlite-jdbc-3.54.1.0.jar" biblioteca.GestionPersistencia reset
-```
-
-- **Desde BlueJ**: carga en *Preferences → Libraries* los jars de `libs/`
-  (JavaFX 21 para Windows, AtlantaFX, sqlite-jdbc), reinicia, abre el proyecto
-  y: `Launcher → void main(...)` (GUI), `GestionBiblioteca → void main(...)`
-  (menú) o con `"escenario"` como parámetro.
-- `sql/consultar.jsh`: consulta rápida de la base por consola con `jshell`
-  (socios y préstamos con estado).
-- `sql/esquema.sql`: script documental del DDL (idéntico a lo que ejecuta
-  `ConexionBD`).
-- Borrar el estado local: eliminar `biblioteca.db` (y el programa la reconstruye
-  vacía y la siembra).
+> ⚠️ COMPLETAR: indicar cómo usar `Tp7ProyectoEjecutable.jar` (clase principal
+> y comando) y si se siembran datos iniciales con `CargadorDeDatosIniciales`.
 
 ---
 
-## 9. Pruebas y evidencias
+## 9. Casos de prueba
 
-Se verificó manualmente el sistema completo mediante corridas controladas:
+Lista de verificaciones para recorrer el sistema (y para mostrar en la defensa):
 
-- **CRUD registro a registro**: alta libro → `INSERT` con id autogenerado; alta
-  socio; préstamo; devolución (UPDATE); bajas (DELETE).
-- **Persistencia real entre corridas**: al 2.º lanzamiento, el estado guardado
-  se recarga (días del docente ya premiados, préstamos activos que persisten,
-  socios dados de baja que no reaparecen).
-- **Integridad reforzada por la base**:
-  - borrar un socio/libro **con** historial → la FK lo impide;
-  - intentar un segundo préstamo activo sobre el mismo ejemplar → lo impide el
-    índice parcial único.
-- **Reglas del negocio**: tope de estudiante (rechaza el 4.º), bloqueo por
-  vencido (rechaza el préstamo y lista al moroso), docente responsable/no
-  responsable, premio de días sumados, devolución el mismo día del vencimiento
-  cuenta como a tiempo.
-- **Formatos exactos** de los 3 listados de la consigna (comparados contra
-  el enunciado, al carácter por medio), en consola y en la pestaña Informes.
-- **Sincronización de vistas**: cada operación de la GUI refresca las 4
-  pestañas (suscribir/publicar).
+- **Persistencia**: dar de alta un socio y un libro, cerrar y reabrir la
+  aplicación; los datos siguen ahí.
+- **Préstamo normal**: prestar un libro libre; aparece como prestado.
+- **Libro ocupado**: intentar prestar un libro ya prestado; se rechaza.
+- **Tope del estudiante**: con 3 libros, el cuarto se rechaza.
+- **Bloqueo por vencido**: un socio con un préstamo vencido no puede pedir otro.
+- **Devolución**: devolver el mismo día del vencimiento cuenta como a tiempo.
+- **Docente responsable**: aparece en el informe solo si nunca tuvo vencidos; el
+  premio suma días.
+- **Integridad**: no se puede borrar un socio o libro con historial (clave
+  foránea); un segundo préstamo activo del mismo libro lo frena el índice único.
+- **Temas**: el botón Tema recorre los cuatro y todas las pantallas se actualizan.
+- **Migración**: abrir una base de una versión anterior; `crearTablas()` la
+  adapta sin perder datos.
 
 ---
 
@@ -434,57 +439,54 @@ Se verificó manualmente el sistema completo mediante corridas controladas:
 
 | Decisión | Motivo |
 |---|---|
-| Patrón DAO + Singleton de conexión | separar persistencia del dominio; una sola conexión para toda la app (SQLite la serializa) |
-| `DAOException` unchecked | no contamina las firmas del TP7 ni fuerza try/catch en toda la GUI; la GUI captura en los puntos de baja |
-| `id` en `Libro` y `Prestamo` (`-1` = no persistido) | identidad mínima para el upsert; el DNI ya es clave natural del socio |
-| `upsert por identidad` en `guardar()` | el mismo flujo funciona para insertar, actualizar y armar la carga; borra explícito para bajas |
-| tabla `socio` plana con discriminador | docentes y estudiantes comparten casi todo el estado; evita dos tablas espejo |
-| fechas como **epoch millis a medianoche** | compara fechas por entero (sin deriva horaria) y respeta el criterio "día completo" del dominio |
-| `SesionBiblioteca` + observable | única fuente de verdad del ciclo de vida, compartida por GUI/consola; refresco de vistas desacoplado |
-| `Launcher` (no-Application) | `gui.bat`/`gui.sh`/BlueJ arrancan por classpath; evita el error "JavaFX runtime components are missing" |
-| AtlantaFX PrimerLight | UI moderna con solo un jar (el tema es un stylesheet de usuario) |
-| interpretación del tope del estudiante | "no tiene más de 3" se implementó como máximo 3 en su poder (`< 3`), dejando constancia del trade-off en comentarios |
+| Patrón DAO + fachada `BibliotecaDAO` | Separar la persistencia del dominio y tener un único punto de carga. |
+| `ConexionBD` reutiliza la conexión abierta | Una sola conexión para toda la app (SQLite serializa las escrituras). |
+| `enTransaccion(TrabajoBD)` | Operaciones multi-tabla "todo o nada", con `ROLLBACK` ante errores. |
+| `PRAGMA foreign_keys = ON` | SQLite no aplica las claves foráneas por defecto. |
+| Tabla `Socio` única con discriminador `tipo` | Docentes y estudiantes comparten casi todo; evita dos tablas espejo. |
+| Índice parcial único de préstamo activo | La base garantiza "un ejemplar, un préstamo activo". |
+| Columna `diasPrestamo` en `Prestamo` | Cada préstamo recuerda los días que le correspondían al socio cuando se hizo. |
+| `crearTablas()` idempotente con migración y reparación | Actualizar bases viejas sin perder datos ni romper el arranque. |
+| Swing nativo | Sin dependencias extra: funciona con solo el JDK y BlueJ. |
+| `GestorTemas` recursivo | Un tema nuevo o una pantalla nueva no requieren tocar cada componente. |
+| Una ventana principal con panel central intercambiable | Menú y encabezado se mantienen; solo cambia el contenido. |
 
 ---
 
-## 11. Preguntas probables del tribunal (FAQ)
+## 11. Preguntas probables del tribunal
 
-**¿Por qué SQLite y no un DBMS tipo MySQL?**
-Porque la entrega es sobre persistencia y diseño, no sobre operación de un
-servidor: SQLite es un archivo real con SQL, FKs, índices e integridad, y con
-JDBC el día de mañana cambia la URL y el DDL, no el diseño.
+**¿Por qué SQLite y no MySQL?**
+El trabajo evalúa persistencia y diseño, no administrar un servidor. SQLite es un
+archivo con SQL real, claves foráneas e índices. Con JDBC, cambiar de motor
+afecta la URL y el esquema, no el diseño.
 
-**¿Qué pasa si abren dos veces el programa?**
-Dos sesiones sobre el mismo archivo (SQLite tolera lecturas concurrentes). El
-diseño está pensado para una app de escritorio monousuario: SQLite serializa
-las escrituras, así que en el uso docente no hay conflictos predecibles.
-
-**¿Por qué `Calendar` y no `LocalDate`?**
-La consigna del TP7 exige `Calendar` (diagrama). La GUI usa `LocalDate` solo en
-el `DatePicker` (widget) y **convierte** a `Calendar` al bajar al modelo.
+**¿Por qué Swing?**
+Viene con el JDK: no hay dependencias externas y funciona directo desde BlueJ.
 
 **¿Dónde están las reglas del negocio?**
-En el dominio (`Biblioteca`, `Socio`, `Prestamo`). La GUI/consola muestran
-mensajes con los mismos criterios para dar feedback, pero la decisión final la
-toma el modelo.
+En el dominio (`Biblioteca`, `Socio`, `Docente`, `Estudiante`, `Prestamo`). La
+GUI solo muestra mensajes; la decisión la toma el modelo.
 
 **¿Cómo se reconstruye el estado al abrir?**
-`SesionBiblioteca` → `BibliotecaDAO.cargar()` → los tres `findAll` → se arma la
-`Biblioteca` y cada `Prestamo` se re-enlaza a la ficha de su libro y su socio.
-Después el negocio opera igual que con objetos recién creados.
+`cargarBiblioteca()` lee libros y socios, y `cargarPrestamos()` reenlaza cada
+préstamo a su libro y socio. Después el modelo opera igual que con objetos
+recién creados.
 
-**¿Qué es eso de "id = -1"?**
-Los objetos nacen sin identidad de BD. El DAO inserta y asigna el `rowid`. Esa
-marca es la que decide insertar vs actualizar en el `guardar()`.
+**¿Qué es el índice parcial único?**
+Un índice sobre `idLibro` que solo cuenta las filas con `fechaDevolucion NULL`:
+impide dos préstamos activos del mismo libro, pero permite el historial.
 
-**¿Se pueden borrar libros/socios con historial?**
-No: la FK lo impide a nivel base y el menú/GUI lo bloquean antes con un
-mensaje claro. Es una decisión de integridad, no una limitación del front.
+**¿Se pueden borrar libros o socios con historial?**
+No: las claves foráneas sin `CASCADE` lo impiden, y la GUI bloquea antes la baja
+de un socio con libros prestados.
+
+**¿Qué pasa si la base tiene datos de una versión anterior?**
+`crearTablas()` agrega columnas faltantes, repara préstamos duplicados sin
+borrar nada y recién después crea el índice único.
 
 **¿Y si la base se borra?**
-Se reconstruye sola (DDL auto-migrado) y la GUI re-siembra el catálogo de la
-consigna; el menú lo ofrece como opción (S/N).
+Se reconstruye sola con `crearTablas()`.
 
 ---
 
-*Documento generado para la defensa del Trabajo Integrador — equipo 49.*
+*Documento para la defensa del Trabajo Integrador — Los NullPointerException.*
