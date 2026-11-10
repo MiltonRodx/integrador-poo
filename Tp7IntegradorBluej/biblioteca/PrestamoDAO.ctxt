@@ -1,0 +1,30 @@
+#BlueJ class context
+#Tue Nov 10 10:38:09 ART 2026
+comment0.target=PrestamoDAO
+comment1.params=p_conexionBD p_libroDAO
+comment1.target=PrestamoDAO(ConexionBD, LibroDAO)
+comment10.params=p_prestamo
+comment10.target=int actualizarDevolucion(Prestamo)
+comment11.params=p_conexion
+comment11.target=void ejecutar(java.sql.Connection)
+comment12.params=p_prestamo p_conexion
+comment12.target=int actualizarDevolucion(Prestamo, java.sql.Connection)
+comment13.params=socios libros
+comment13.target=void cargarPrestamos(java.util.ArrayList, java.util.ArrayList)
+comment14.params=p_prestamo
+comment14.target=void agregar(Prestamo)
+comment2.params=p_conexionBD
+comment2.target=void setConexionBD(ConexionBD)
+comment3.params=p_libroDAO
+comment3.target=void setLibroDAO(LibroDAO)
+comment4.target=ConexionBD getConexionBD()
+comment5.target=LibroDAO getLibroDAO()
+comment6.params=p_prestamo p_diasPrestamo
+comment6.target=void agregar(Prestamo, int)
+comment7.params=p_conexion
+comment7.target=void ejecutar(java.sql.Connection)
+comment8.params=p_prestamo p_diasPrestamo p_conexion
+comment8.target=void insertar(Prestamo, int, java.sql.Connection)
+comment9.params=p_prestamo
+comment9.target=int obtenerDiasPrestamo(Prestamo)
+numComments=15

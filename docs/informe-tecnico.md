@@ -1,4 +1,4 @@
-# Informe Técnico — MiBiblioteca (Gestión de Biblioteca)
+# Informe Técnico — biblioteca (Gestión de Biblioteca)
 
 > Trabajo Integrador de Programación Orientada a Objetos · TP7
 > Java 21 · Java Swing · SQLite (JDBC) · BlueJ
@@ -132,7 +132,7 @@ muestra. Cada capa solo conoce a la de abajo."*
 
 ## 3. Capa de dominio
 
-Todo está en el paquete `MiBiblioteca`, con colecciones genéricas
+Todo está en el paquete `biblioteca`, con colecciones genéricas
 (`ArrayList<Socio>`, `ArrayList<Prestamo>`…).
 
 | Clase | Qué representa |
@@ -561,7 +561,7 @@ La base `biblioteca.db` se crea sola la primera vez. Para empezar de cero,
 
 ### Desde `Tp7ProyectoEjecutable.jar`
 
-El jar incluye las clases de `MiBiblioteca` y el driver de SQLite, así que no
+El jar incluye las clases de `biblioteca` y el driver de SQLite, así que no
 necesita `+libs/`.
 
 ```bash
@@ -571,7 +571,7 @@ cd Tp7IntegradorBluej
 java -jar Tp7ProyectoEjecutable.jar
 
 # Consola (hay que indicar la clase)
-java -cp Tp7ProyectoEjecutable.jar MiBiblioteca.GestionBiblioteca
+java -cp Tp7ProyectoEjecutable.jar biblioteca.GestionBiblioteca
 ```
 
 En ambos casos `biblioteca.db` se crea en la **carpeta desde donde se ejecuta

@@ -1,0 +1,11 @@
+#BlueJ class context
+#Tue Nov 10 10:38:09 ART 2026
+comment0.target=CargadorDeDatosIniciales
+comment1.params=p_biblioteca p_bibliotecaDAO
+comment1.target=CargadorDeDatosIniciales(Biblioteca, BibliotecaDAO)
+comment2.target=void cargarDatosDePrueba()
+comment3.params=p_fechaRetiro p_fechaDevolucion p_socio p_libro
+comment3.target=void registrarPrestamo(java.util.Calendar, java.util.Calendar, Socio, Libro)
+comment4.params=p_anio p_mes p_dia
+comment4.target=java.util.Calendar fecha(int, int, int)
+numComments=5

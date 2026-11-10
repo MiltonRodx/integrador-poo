@@ -15,7 +15,7 @@ Los tests de validación superan la batería de requisitos de la consigna.
 ### Con BlueJ
 
 1. Abrir BlueJ y crear un nuevo proyecto apuntando a la carpeta `Tp7IntegradorBluej/`.
-2. BlueJ detectará automáticamente las clases en `MiBiblioteca/`.
+2. BlueJ detectará automáticamente las clases en `biblioteca/`.
 3. Compilar: clic derecho sobre el proyecto → `Compile Class`.
 4. Ejecutar la consola: `GestionBiblioteca.main()`.
 5. Ejecutar la GUI: `VentanaPrincipal.main()`.
@@ -24,11 +24,11 @@ Los tests de validación superan la batería de requisitos de la consigna.
 
 ```bash
 # Compilar (ejemplo con javac y sqlite-jdbc)
-javac -cp "+libs/sqlite-jdbc-3.54.1.0.jar" MiBiblioteca/*.java -d classes
+javac -cp "+libs/sqlite-jdbc-3.54.1.0.jar" biblioteca/*.java -d classes
 # Ejecutar consola
-java -cp "classes:+libs/sqlite-jdbc-3.54.1.0.jar" MiBiblioteca.GestionBiblioteca
+java -cp "classes:+libs/sqlite-jdbc-3.54.1.0.jar" biblioteca.GestionBiblioteca
 # Ejecutar GUI
-java -cp "classes:+libs/sqlite-jdbc-3.54.1.0.jar" MiBiblioteca.VentanaPrincipal
+java -cp "classes:+libs/sqlite-jdbc-3.54.1.0.jar" biblioteca.VentanaPrincipal
 ```
 
 ### Desde el jar precompilado
@@ -39,7 +39,7 @@ java -jar mibibloteca.jar
 
 ## Estructura principal
 
-- `MiBiblioteca/` — Clases de dominio (Estudiante, Docente, Socio, Libro, Prestamo) y DAOs.
+- `biblioteca/` — Clases de dominio (Estudiante, Docente, Socio, Libro, Prestamo) y DAOs.
 - `+libs/` — Dependencias externas (driver JDBC SQLite).
 - `mibibloteca.jar` — Ejecutable con toda la interfaz Swing incluida.
 - `biblioteca.db` — Base de datos local (no modificar directamente; las pruebas usan copia temporaria).

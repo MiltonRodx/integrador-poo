@@ -3,7 +3,7 @@
 </p>
 
 <h1 align="center">Trabajo Integrador de Programación Orientada a Objetos</h1>
-<h2 align="center">MiBiblioteca · Sistema de Gestión de Biblioteca</h2>
+<h2 align="center">biblioteca · Sistema de Gestión de Biblioteca</h2>
 
 <p align="center">
   <img alt="Java" src="https://img.shields.io/badge/Java-21-FF8800?logo=openjdk&logoColor=white&style=flat-square">
@@ -38,7 +38,7 @@ Este repositorio contiene el Trabajo Integrador de la asignatura **Programación
 
 Es un sistema de **gestión de biblioteca en Java** que administra libros, socios y préstamos. Contempla las particularidades de docentes y estudiantes, las fechas de vencimiento, las devoluciones, las sanciones por morosidad y la generación de informes.
 
-El proyecto creció en tres etapas: el **núcleo POO** (consola), la **persistencia** con SQLite + JDBC y una **interfaz gráfica** con Java Swing. Las tres capas conviven en un mismo paquete, `MiBiblioteca`, y se pueden usar tanto desde consola como desde la GUI.
+El proyecto creció en tres etapas: el **núcleo POO** (consola), la **persistencia** con SQLite + JDBC y una **interfaz gráfica** con Java Swing. Las tres capas conviven en un mismo paquete, `biblioteca`, y se pueden usar tanto desde consola como desde la GUI.
 
 > El sistema evalúa la responsabilidad de cada docente, premia a los lectores puntuales con más días de préstamo y bloquea a los morosos.
 
@@ -186,7 +186,7 @@ integrador-poo/
     ├── +libs/
     │   └── sqlite-jdbc-3.54.1.0.jar ← driver JDBC (BlueJ lo carga solo)
     ├── Tp7ProyectoEjecutable.jar
-    └── MiBiblioteca/                ← paquete con todo el código
+    └── biblioteca/                ← paquete con todo el código
         │
         │  ── Modelo (núcleo POO) ──
         ├── Biblioteca.java

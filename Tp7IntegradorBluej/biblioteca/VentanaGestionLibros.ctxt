@@ -1,0 +1,12 @@
+#BlueJ class context
+#Tue Nov 10 10:38:09 ART 2026
+comment0.target=VentanaGestionLibros
+comment1.params=p_biblioteca p_bibliotecaDAO p_ventanaCatalogo
+comment1.target=VentanaGestionLibros(Biblioteca, BibliotecaDAO, VentanaCatalogo)
+comment2.target=void crearInterfaz()
+comment3.params=p_texto
+comment3.target=javax.swing.JTextField crearCampo(java.lang.String)
+comment4.target=void registrarLibro()
+comment5.target=void actualizarComboLibros()
+comment6.target=void eliminarLibro()
+numComments=7

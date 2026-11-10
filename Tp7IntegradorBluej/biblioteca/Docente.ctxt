@@ -1,0 +1,25 @@
+#BlueJ class context
+#Tue Nov 10 10:38:09 ART 2026
+comment0.target=Docente
+comment0.text=\r\n Socio docente\: docente de la FaCENA vinculado a un area.\r\n\r\n Nace con 5 dias de prestamo y es el unico tipo que participa del premio\r\n por responsabilidad\: cuando {@link \#esResponsable()} informa que nunca\r\n debio un libro, se le adicionan dias con {@link \#cambiarDiasDePrestamos(int)}.\r\n Su area de especializacion se persiste en la columna area de la tabla\r\n socio (los estudiantes la tienen en NULL).\r\n
+comment1.params=p_dniSocio p_nombre p_diasPrestamo p_prestamos p_area
+comment1.target=Docente(int, java.lang.String, int, java.util.ArrayList, java.lang.String)
+comment1.text=\r\n Crea un docente reconstruido desde la base, con historial incluido.\r\n\r\n @param p_dniSocio D.N.I. del docente\r\n @param p_nombre nombre y apellido\r\n @param p_diasPrestamo dias de prestamo persistidos (base mas premios)\r\n @param p_prestamos historial de prestamos ya vinculado\r\n @param p_area area de especializacion\r\n
+comment2.params=p_dniSocio p_nombre p_diasPrestamo p_area
+comment2.target=Docente(int, java.lang.String, int, java.lang.String)
+comment2.text=\r\n Crea un docente nuevo con ficha de prestamos vacia.\r\n\r\n @param p_dniSocio D.N.I. del docente\r\n @param p_nombre nombre y apellido\r\n @param p_diasPrestamo dias de prestamo iniciales (5 por consigna)\r\n @param p_area area de especializacion\r\n
+comment3.params=p_area
+comment3.target=void setArea(java.lang.String)
+comment3.text=Establece el area de especializacion del docente.
+comment4.target=java.lang.String getArea()
+comment4.text=@return el area de especializacion del docente.
+comment5.target=boolean esResponsable()
+comment5.text=\r\n Informa si el docente "nunca tuvo ni tiene" un prestamo vencido.\r\n\r\n Los prestamos activos se evaluan contra HOY y los ya devueltos contra\r\n su propia fecha de devolucion (devolver el mismo dia del vencimiento\r\n cuenta como a tiempo, consigna). Basta UN solo vencido, presente o\r\n pasado, para dejar de ser responsable.\r\n\r\n @return true si ninguno de sus prestamos estuvo vencido\r\n
+comment6.params=p_dias
+comment6.target=void cambiarDiasDePrestamos(int)
+comment6.text=\r\n Premio a la responsabilidad\: ADICIONA dias de prestamo (no reemplaza).\r\n\r\n @param p_dias dias adicionales para sus proximos retiros\r\n
+comment7.target=boolean puedePedir()
+comment7.text=\r\n Regla del docente\: sin tope de libros, solo el bloqueo comun por\r\n vencidos que aporta la clase padre.\r\n\r\n @return true si no tiene prestamos vencidos activos\r\n
+comment8.target=java.lang.String soyDeLaClase()
+comment8.text=@return "Docente" (etiqueta de los listados y del discriminador de la BD).
+numComments=9

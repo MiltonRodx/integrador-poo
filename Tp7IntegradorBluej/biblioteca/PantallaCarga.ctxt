@@ -1,0 +1,13 @@
+#BlueJ class context
+#Tue Nov 10 10:38:09 ART 2026
+comment0.target=PantallaCarga
+comment1.params=p_alFinalizar
+comment1.target=PantallaCarga(java.lang.Runnable)
+comment2.target=void saltar()
+comment3.params=p_contenedor
+comment3.target=void escuchar(java.awt.Container)
+comment4.params=evento
+comment4.target=void mousePressed(java.awt.event.MouseEvent)
+comment5.params=evento
+comment5.target=void mousePressed(java.awt.event.MouseEvent)
+numComments=6

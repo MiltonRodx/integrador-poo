@@ -1,0 +1,14 @@
+#BlueJ class context
+#Tue Nov 10 10:38:09 ART 2026
+comment0.target=SocioDAO
+comment1.params=p_conexionBD
+comment1.target=SocioDAO(ConexionBD)
+comment2.params=p_conexionBD
+comment2.target=void setConexionBD(ConexionBD)
+comment3.target=ConexionBD getConexionBD()
+comment4.params=p_socio
+comment4.target=void agregar(Socio)
+comment5.params=p_socio
+comment5.target=int eliminar(Socio)
+comment6.target=java.util.ArrayList obtenerTodos()
+numComments=7

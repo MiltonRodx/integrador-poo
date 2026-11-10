@@ -1,6 +1,0 @@
-#BlueJ class context
-#Sun Nov 08 12:52:31 ART 2026
-comment0.target=RenderizadorEstadoPrestamo
-comment1.params=tabla valor seleccionado tieneFoco fila columna
-comment1.target=java.awt.Component getTableCellRendererComponent(javax.swing.JTable, java.lang.Object, boolean, boolean, int, int)
-numComments=2
