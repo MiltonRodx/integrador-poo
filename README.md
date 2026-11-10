@@ -174,16 +174,15 @@ classDiagram
 ```text
 integrador-poo/
 ├── README.md
-├── consigna-poo.md                  ← consigna del trabajo
+├── schema.sql                       ← esquema DDL de la base de datos
 ├── docs/
 │   ├── diagrama-er.md               ← diagrama entidad-relación de la base
 │   ├── diagrama-er.png
 │   ├── informe-tecnico.md           ← informe técnico (arquitectura, persistencia y GUI)
-│   ├── informe-tecnico.docx
 │   └── Ficha Autoevaluacion Grupo Los NullPointerException.pdf
 └── Tp7IntegradorBluej/              ← proyecto BlueJ (abrir esta carpeta)
     ├── package.bluej
-    ├── biblioteca.db                ← base SQLite
+    ├── biblioteca.db                ← base de prueba SQLite
     ├── +libs/
     │   └── sqlite-jdbc-3.54.1.0.jar ← driver JDBC (BlueJ lo carga solo)
     ├── Tp7ProyectoEjecutable.jar
