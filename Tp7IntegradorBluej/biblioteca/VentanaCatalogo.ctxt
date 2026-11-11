@@ -1,5 +1,5 @@
 #BlueJ class context
-#Wed Nov 11 14:12:29 ART 2026
+#Wed Nov 11 14:52:03 ART 2026
 comment0.target=VentanaCatalogo
 comment0.text=\r\n Pantalla del menu Catalogo.\r\n Muestra dos tarjetas\: una para consultar la lista de libros y otra para\r\n agregar o eliminar libros. No contiene reglas de negocio\: solo navega\r\n hacia las pantallas VentanaListaLibros y VentanaGestionLibros.\r\n
 comment1.params=p_biblioteca p_bibliotecaDAO p_ventanaPrincipal

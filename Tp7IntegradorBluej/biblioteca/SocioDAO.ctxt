@@ -1,5 +1,5 @@
 #BlueJ class context
-#Wed Nov 11 14:07:20 ART 2026
+#Wed Nov 11 14:52:03 ART 2026
 comment0.target=SocioDAO
 comment1.params=p_conexionBD
 comment1.target=SocioDAO(ConexionBD)
@@ -10,5 +10,10 @@ comment4.params=p_socio
 comment4.target=void agregar(Socio)
 comment5.params=p_socio
 comment5.target=int eliminar(Socio)
-comment6.target=java.util.ArrayList obtenerTodos()
-numComments=7
+comment6.params=p_conexion
+comment6.target=void ejecutar(java.sql.Connection)
+comment7.params=p_socio
+comment7.target=int actualizarDiasPrestamo(Socio)
+comment7.text=\r\n Persiste los dias de prestamo actuales del socio (el premio de los\r\n docentes responsables es el unico update de datos que tiene el sistema).\r\n\r\n @return la cantidad de filas afectadas (0 si el DNI no existe en la base)\r\n
+comment8.target=java.util.ArrayList obtenerTodos()
+numComments=9

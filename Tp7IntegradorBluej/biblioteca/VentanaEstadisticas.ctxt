@@ -1,5 +1,5 @@
 #BlueJ class context
-#Wed Nov 11 14:12:29 ART 2026
+#Wed Nov 11 14:52:03 ART 2026
 comment0.target=VentanaEstadisticas
 comment1.params=p_biblioteca p_bibliotecaDAO p_ventanaPrincipal
 comment1.target=VentanaEstadisticas(Biblioteca, BibliotecaDAO, VentanaPrincipal)

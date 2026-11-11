@@ -1,5 +1,5 @@
 #BlueJ class context
-#Wed Nov 11 14:12:29 ART 2026
+#Wed Nov 11 14:52:03 ART 2026
 comment0.target=VentanaSociosDocentes
 comment0.text=\r\n Ventana de interfaz gr\u00E1fica para el registro de nuevos socios docentes\r\n en el sistema de gesti\u00F3n de la biblioteca.\r\n \r\n @author \r\n @version 1.0\r\n
 comment1.params=p_biblioteca p_bibliotecaDAO p_ventanaPrincipal
@@ -12,6 +12,4 @@ comment3.target=javax.swing.JPanel crearCampo(java.lang.String, javax.swing.JTex
 comment3.text=\r\n M\u00E9todo auxiliar para crear un panel de campo de texto con su etiqueta.\r\n \r\n @param p_titulo Texto de la etiqueta del campo.\r\n @param p_campo Componente JTextField asociado.\r\n @return Un JPanel contenedor con dise\u00F1o estructurado.\r\n
 comment4.target=void registrarDocente()
 comment4.text=\r\n Valida los campos del formulario, registra el nuevo docente utilizando\r\n los m\u00E9todos del modelo UML, lo persiste en la base de datos y actualiza la vista.\r\n
-comment5.target=void premiarResponsables()
-comment5.text=\r\n Premia a los docentes responsables (+5 dias de prestamo), persiste el\r\n cambio en la base de datos y refresca la lista de socios. Mismo criterio\r\n que la consola\: primero el modelo; si la base rechaza la escritura,\r\n se deshace el cambio en memoria para no desincronizar.\r\n
-numComments=6
+numComments=5

@@ -1,19 +1,24 @@
 #BlueJ class context
-#Wed Nov 11 14:12:29 ART 2026
+#Wed Nov 11 14:52:03 ART 2026
 comment0.target=VentanaPrincipal
 comment1.params=p_biblioteca p_bibliotecaDAO
 comment1.target=VentanaPrincipal(Biblioteca, BibliotecaDAO)
-comment10.target=void mostrarSocios()
-comment11.target=void abrirSociosDocentes()
-comment12.target=void abrirSociosEstudiantes()
-comment13.target=void mostrarListaSocios()
-comment14.target=void abrirCatalogo()
-comment15.target=void abrirPrestamos()
-comment16.target=void abrirDevoluciones()
-comment17.target=void abrirEstadisticas()
-comment18.target=void abrirConsultas()
+comment10.params=p_titulo p_descripcion p_boton p_botonSecundario
+comment10.target=javax.swing.JPanel crearTarjeta(java.lang.String, java.lang.String, BotonRedondeado, BotonRedondeado)
+comment10.text=\r\n Igual que crearTarjeta(titulo, descripcion, boton), pero con un boton\r\n secundario debajo del principal (por ejemplo "Premiar" en Docentes).\r\n
+comment11.target=void mostrarSocios()
+comment12.target=void premiarDocentes()
+comment12.text=\r\n Premio a los docentes responsables desde la tarjeta Docentes.\r\n\r\n Abre un dialogo con un desplegable para elegir a quien premiar\r\n (un docente responsable, o todos de una vez) y la cantidad de dias\r\n a agregar. Mismo criterio que el resto del sistema\: primero el\r\n modelo ({@link Docente\#cambiarDiasDePrestamos(int)}); si la base\r\n rechaza la persistencia, se deshace el cambio en memoria.\r\n
+comment13.target=void abrirSociosDocentes()
+comment14.target=void abrirSociosEstudiantes()
+comment15.target=void mostrarListaSocios()
+comment16.target=void abrirCatalogo()
+comment17.target=void abrirPrestamos()
+comment18.target=void abrirDevoluciones()
+comment19.target=void abrirEstadisticas()
 comment2.params=args
 comment2.target=void main(java.lang.String[])
+comment20.target=void abrirConsultas()
 comment3.target=void crearInterfaz()
 comment4.target=void cambiarTema()
 comment5.target=void actualizarTema()
@@ -24,4 +29,4 @@ comment8.params=panel
 comment8.target=void mostrarContenido(javax.swing.JPanel)
 comment9.params=p_titulo p_descripcion p_boton
 comment9.target=javax.swing.JPanel crearTarjeta(java.lang.String, java.lang.String, BotonRedondeado)
-numComments=19
+numComments=21
