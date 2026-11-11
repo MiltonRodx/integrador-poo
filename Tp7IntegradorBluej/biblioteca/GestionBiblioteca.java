@@ -24,6 +24,25 @@ public class GestionBiblioteca {
         }
     }
 
+    // Si la base rechaza un cambio, se recarga el modelo desde la base para
+    // no quedar desincronizados. La transaccion fallida ya dejo la base como
+    // estaba, asi que recargar deshace el cambio hecho solo en memoria.
+    private static Biblioteca recargarBiblioteca(BibliotecaDAO p_bibliotecaDAO,
+            Biblioteca p_bibliotecaActual) {
+        try {
+            return p_bibliotecaDAO.cargarBiblioteca(
+                "Biblioteca Gestion FACENA-UNNE"
+            );
+        } catch (SQLException | ParseException e) {
+            System.out.println(
+                "No se pudo recargar la base de datos: " + e.getMessage()
+                + ". El estado en memoria puede no coincidir con la base: "
+                + "reinicie el programa."
+            );
+            return p_bibliotecaActual;
+        }
+    }
+
     public static void main(String[] args)
         throws SQLException, ParseException, LibroNoPrestadoException {
 
@@ -179,9 +198,36 @@ public class GestionBiblioteca {
                     );
 
                     Socio socio = biblioteca.buscarSocio(dniSocio);
-                    Libro libro = biblioteca.buscarLibro(tituloLibro);
 
-                    if(socio != null && libro != null){
+                    // Si hay varios ejemplares del mismo titulo, se presta uno libre.
+                    Libro libro = null;
+                    boolean existeTitulo = false;
+
+                    for (Libro unLibro : biblioteca.getLibros()) {
+                        if (unLibro.getTitulo().equalsIgnoreCase(tituloLibro)) {
+                            existeTitulo = true;
+                            if (!unLibro.prestado()) {
+                                libro = unLibro;
+                                break;
+                            }
+                        }
+                    }
+
+                    if(socio == null){
+
+                        System.out.println("No se encontro el socio.");
+
+                    } else if(!existeTitulo){
+
+                        System.out.println("No se encontro el libro.");
+
+                    } else if(libro == null){
+
+                        System.out.println(
+                            "Todas las copias de ese titulo estan prestadas."
+                        );
+
+                    } else {
 
                         Calendar fechaRetiro = Calendar.getInstance();
                         fechaRetiro.add(Calendar.DAY_OF_MONTH, -diasTranscurridos);
@@ -223,9 +269,6 @@ public class GestionBiblioteca {
                             System.out.println("No se pudo realizar el prestamo.");
                         }
 
-                    } else {
-
-                        System.out.println("No se encontro el socio o el libro.");
                     }
 
                     break;
@@ -235,23 +278,26 @@ public class GestionBiblioteca {
                     System.out.println("Titulo del libro:");
                     String tituloDevolucion = teclado.nextLine();
 
-                    Libro libroDevolucion = biblioteca.buscarLibro(tituloDevolucion);
+                    // Si hay varios ejemplares del mismo titulo, la devolucion
+                    // se hace sobre el que esta prestado.
+                    Libro libroDevolucion = null;
+
+                    for (Libro unLibro : biblioteca.getLibros()) {
+                        if (unLibro.getTitulo().equalsIgnoreCase(tituloDevolucion)
+                                && unLibro.prestado()) {
+                            libroDevolucion = unLibro;
+                            break;
+                        }
+                    }
 
                     if(libroDevolucion != null){
 
-                        Prestamo prestamoDevuelto = null;
+                        // Biblioteca.devolverLibro() registra la fecha sobre
+                        // ultimoPrestamo(): se usa el mismo prestamo para el
+                        // UPDATE, asi modelo y base apuntan a la misma fila.
+                        Prestamo prestamoDevuelto = libroDevolucion.ultimoPrestamo();
 
-                        ArrayList<Prestamo> prestamosLibro = libroDevolucion.getPrestamos();
-
-                        for(Prestamo prestamo : prestamosLibro){
-
-                            if(!prestamo.estaDevuelto()){
-
-                                prestamoDevuelto = prestamo;
-                            }
-                        }
-
-                        if(prestamoDevuelto != null){
+                        if(prestamoDevuelto != null && !prestamoDevuelto.estaDevuelto()){
 
                             try {
 
@@ -261,10 +307,12 @@ public class GestionBiblioteca {
                                     .actualizarDevolucion(prestamoDevuelto);
 
                                 if(filas == 0){
-                                    prestamoDevuelto.registrarFechaDevolucion(null);
                                     System.out.println(
                                         "No se encontro el prestamo activo en la base: "
                                         + "la devolucion no se registro."
+                                    );
+                                    biblioteca = recargarBiblioteca(
+                                        bibliotecaDAO, biblioteca
                                     );
                                 } else {
                                     System.out.println("Devolucion registrada correctamente.");
@@ -272,13 +320,16 @@ public class GestionBiblioteca {
 
                             } catch (SQLException excepcionSQL) {
 
-                                // La persistencia manda: si el UPDATE falla, se
-                                // deshace la devolucion en memoria.
-                                prestamoDevuelto.registrarFechaDevolucion(null);
-
+                                // La persistencia manda: el UPDATE corrio en
+                                // transaccion, asi que se recarga el modelo
+                                // desde la base para deshacer el cambio en
+                                // memoria (Prestamo no permite volver a null).
                                 System.out.println(
                                     "Error al guardar la devolucion en la base de datos: "
                                     + excepcionSQL.getMessage()
+                                );
+                                biblioteca = recargarBiblioteca(
+                                    bibliotecaDAO, biblioteca
                                 );
 
                             } catch (LibroNoPrestadoException excepcionNegocio) {
@@ -290,6 +341,10 @@ public class GestionBiblioteca {
 
                             System.out.println("El libro no tiene un prestamo activo.");
                         }
+
+                    } else if(biblioteca.buscarLibro(tituloDevolucion) != null){
+
+                        System.out.println("El libro no tiene un prestamo activo.");
 
                     } else {
 
@@ -321,7 +376,23 @@ public class GestionBiblioteca {
 
                     String tituloConsulta = teclado.nextLine();
 
-                    Libro libroConsulta = biblioteca.buscarLibro(tituloConsulta);
+                    // Con varios ejemplares del mismo titulo se consulta el
+                    // que esta prestado; si ninguno lo esta, buscarLibro()
+                    // devuelve el primero y quienTieneElLibro() avisa que esta
+                    // en la biblioteca.
+                    Libro libroConsulta = null;
+
+                    for (Libro unLibro : biblioteca.getLibros()) {
+                        if (unLibro.getTitulo().equalsIgnoreCase(tituloConsulta)
+                                && unLibro.prestado()) {
+                            libroConsulta = unLibro;
+                            break;
+                        }
+                    }
+
+                    if(libroConsulta == null){
+                        libroConsulta = biblioteca.buscarLibro(tituloConsulta);
+                    }
 
                     if(libroConsulta != null){
 
@@ -379,9 +450,19 @@ public class GestionBiblioteca {
                     try {
 
                         // Primero la base: si falla, no se toca la memoria y
-                        // no quedan desincronizadas.
-                        // OJO: ajustar el nombre/firma al metodo real de tu SocioDAO.
-                        bibliotecaDAO.getSocioDAO().eliminar(socioEncontrado);
+                        // no quedan desincronizadas. SocioDAO elimina tambien
+                        // el historial de prestamos del socio en la misma
+                        // transaccion.
+                        int filas = bibliotecaDAO.getSocioDAO()
+                                                 .eliminar(socioEncontrado);
+
+                        if (filas == 0) {
+                            System.out.println(
+                                "No se encontro el socio en la base de datos: "
+                                + "no se elimino nada."
+                            );
+                            break;
+                        }
 
                         boolean eliminado = biblioteca.quitarSocio(socioEncontrado);
 
@@ -402,9 +483,9 @@ public class GestionBiblioteca {
                     break;
 
                 case 14:
-                    // Modelo primero: el premio toca solo memoria. Si la base
-                    // rechaza la persistencia, se deshace restando lo sumado
-                    // (mismo criterio que prestamos/devoluciones).
+                    // Modelo primero: el premio toca solo memoria. La base se
+                    // actualiza docente por docente; si alguna escritura falla,
+                    // se revierte solo lo que no llego a persistirse.
                     ArrayList<Docente> premiados =
                         biblioteca.premiarDocentesResponsables(5);
 
@@ -415,18 +496,44 @@ public class GestionBiblioteca {
                         break;
                     }
 
+                    ArrayList<Docente> guardados = new ArrayList<>();
+
                     try {
                         for (Docente unDocente : premiados) {
-                            bibliotecaDAO.getSocioDAO()
-                                         .actualizarDiasPrestamo(unDocente);
+                            int filas = bibliotecaDAO.getSocioDAO()
+                                .actualizarDiasPrestamo(unDocente);
+
+                            if (filas > 0) {
+                                guardados.add(unDocente);
+                            }
                         }
 
-                        System.out.println(
-                            "Premio otorgado: +5 dias de prestamo a "
-                            + premiados.size() + " docente(s) responsable(s)."
-                        );
-
+                        // Los que no quedaron en la base vuelven a sus dias
+                        // anteriores: memoria y base quedan sincronizadas.
                         for (Docente unDocente : premiados) {
+                            if (!guardados.contains(unDocente)) {
+                                unDocente.cambiarDiasDePrestamos(-5);
+                            }
+                        }
+
+                        if (guardados.isEmpty()) {
+                            System.out.println(
+                                "No se pudo guardar el premio de ningun docente "
+                                + "en la base de datos."
+                            );
+                        } else if (guardados.size() < premiados.size()) {
+                            System.out.println(
+                                "Premio aplicado a " + guardados.size() + " de "
+                                + premiados.size() + " docente(s) responsable(s)."
+                            );
+                        } else {
+                            System.out.println(
+                                "Premio otorgado: +5 dias de prestamo a "
+                                + premiados.size() + " docente(s) responsable(s)."
+                            );
+                        }
+
+                        for (Docente unDocente : guardados) {
                             System.out.println(
                                 "  - " + unDocente.getNombre()
                                 + " (D.N.I. " + unDocente.getDniSocio() + ")"
@@ -436,14 +543,17 @@ public class GestionBiblioteca {
                         }
 
                     } catch (SQLException excepcionSQL) {
+                        // Solo se revierte lo que no llego a persistirse.
                         for (Docente unDocente : premiados) {
-                            unDocente.cambiarDiasDePrestamos(-5);
+                            if (!guardados.contains(unDocente)) {
+                                unDocente.cambiarDiasDePrestamos(-5);
+                            }
                         }
 
                         System.out.println(
                             "Error al guardar el premio en la base de datos: "
                             + excepcionSQL.getMessage()
-                            + " (se deshizo el cambio en memoria)."
+                            + " (se deshicieron los premios no persistidos)."
                         );
                     }
                     break;
