@@ -1,5 +1,5 @@
 #BlueJ class context
-#Tue Nov 10 10:38:09 ART 2026
+#Wed Nov 11 10:55:48 ART 2026
 comment0.target=VentanaSociosDocentes
 comment0.text=\r\n Ventana de interfaz gr\u00E1fica para el registro de nuevos socios docentes\r\n en el sistema de gesti\u00F3n de la biblioteca.\r\n \r\n @author \r\n @version 1.0\r\n
 comment1.params=p_biblioteca p_bibliotecaDAO p_ventanaPrincipal

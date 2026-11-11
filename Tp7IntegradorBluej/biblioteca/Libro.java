@@ -6,9 +6,11 @@ import java.util.ArrayList;
  *
  * Varios ejemplares pueden compartir titulo/editorial (por eso los
  * listados de "titulos sin repetir" usan distinct()). Cada Libro lleva su
- * ficha de prestamos (historico completo, activos y devueltos) y un id de
- * identidad persistente que SOLO asigna la capa DAO al insertar (-1 =
- * todavia sin id, adjetivo de "objeto nuevo" en el upsert).
+ * ficha de prestamos (historico completo, activos y devueltos).
+ *
+ * La identidad persistente (id de la tabla libro) no se guarda en el
+ * objeto: la resuelve la capa DAO con su mapa libro -> idLibro, por eso
+ * el dominio queda fiel al UML de la consigna.
  */
 public class Libro {
     
@@ -17,8 +19,6 @@ public class Libro {
     private String editorial;
     private int anio;
     private ArrayList<Prestamo> prestamos;
-    // Identidad persistente: la asigna la capa DAO al insertar (-1 = todavia sin persistir).
-    private int id = -1;
     
     /**
      * Crea un ejemplar con un historial de prestamos pre-existente.
@@ -85,12 +85,6 @@ public class Libro {
 
     /** @return el anio de edicion. */
     public int getAnio() { return this.anio; }
-
-    /** @return el id persistente asignado por la BD, o -1 si aun no se inserto. */
-    public int getId() { return this.id; }
-
-    /** Solo para la capa de persistencia: reconstruye la identidad almacenada en la BD. */
-    public void setId(int p_id) { this.id = p_id; }
     
     /**
      * Agrega un prestamo a la ficha del ejemplar (retiro o carga desde la BD).

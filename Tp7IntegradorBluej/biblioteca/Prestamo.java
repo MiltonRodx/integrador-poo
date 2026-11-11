@@ -10,16 +10,14 @@ import java.util.GregorianCalendar;
  * La fecha de devolucion queda null mientras el prestamo siga ACTIVO. El
  * vencimiento se calcula como retiro + dias de prestamo del socio y se
  * evalua a nivel dia: un prestamo que vence HOY todavia no esta vencido.
- * Ademas lleva el id de identidad persistente que asigna la capa DAO
- * al insertar (-1 = todavia sin id).
+ * El id de la tabla prestamo no se guarda en el objeto: la capa DAO
+ * referencia cada prestamo por su clave natural (socio + libro + retiro).
  */
 public class Prestamo {
     private Calendar fechaRetiro;
     private Calendar fechaDevolucion;
     private Socio socio;
     private Libro libro;
-    // Identidad persistente: la asigna la capa DAO al insertar (-1 = todavia sin persistir).
-    private int id = -1;
 
     /**
      * Crea el prestamo por RETIRO: socio, libro y fecha de retiro.
@@ -60,12 +58,6 @@ public class Prestamo {
 
     /** @return el ejemplar prestado. */
     public Libro getLibro(){ return this.libro; }
-
-    /** @return el id persistente asignado por la BD, o -1 si aun no se inserto. */
-    public int getId(){ return this.id; }
-
-    /** Solo para la capa de persistencia: reconstruye la identidad almacenada en la BD. */
-    public void setId(int p_id){ this.id = p_id; }
 
     /** @return true si ya se registro la fecha de devolucion; false si sigue activo. */
     public boolean estaDevuelto(){ return this.getFechaDevolucion() != null; }

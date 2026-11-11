@@ -256,8 +256,8 @@ Capa de persistencia con patrón **DAO** y conexión **singleton**. Las operacio
 
 **Decisiones principales:**
 
-- **Identidad persistente:** `Libro` y `Prestamo` tienen un `id` autogenerado (`-1` = todavía no persistido). `Socio` usa su D.N.I. como clave natural.
-- **Upsert por identidad:** objeto nuevo → `INSERT`; objeto ya persistido → `UPDATE`.
+- **Identidad persistente:** `Socio` usa su D.N.I. como clave natural; `Libro` y `Prestamo` no guardan el id en el objeto: el `LibroDAO` lo resuelve con su mapa `libro → idLibro` (PK `AUTOINCREMENT` de la tabla) y `Prestamo` se referencia por su clave natural (socio + ejemplar + fecha de retiro).
+- **Escrituras por operación:** INSERT al crear, UPDATE para la devolución (y los días del préstamo), DELETE al dar de baja; el dominio queda fiel al UML sin atributos técnicos.
 - **Reglas del negocio en la base:** claves foráneas restrictivas y un índice parcial único que garantiza **un solo préstamo activo por ejemplar**.
 - **Herencia en una sola tabla:** docentes y estudiantes comparten la tabla `socio`, diferenciados por la columna `tipo`.
 - **Fechas** guardadas como epoch millis a medianoche (comparación a nivel día).

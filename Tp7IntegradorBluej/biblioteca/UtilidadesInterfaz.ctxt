@@ -1,5 +1,5 @@
 #BlueJ class context
-#Tue Nov 10 10:38:09 ART 2026
+#Wed Nov 11 10:55:47 ART 2026
 comment0.target=UtilidadesInterfaz
 comment1.params=p_titulo p_campo
 comment1.target=javax.swing.JPanel crearCampo(java.lang.String, javax.swing.JTextField)
