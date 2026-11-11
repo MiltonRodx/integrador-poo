@@ -1,5 +1,5 @@
 #BlueJ class context
-#Wed Nov 11 13:35:52 ART 2026
+#Wed Nov 11 14:07:20 ART 2026
 comment0.target=Libro
 comment0.text=\r\n Ejemplar fisico de un titulo en la biblioteca.\r\n\r\n Varios ejemplares pueden compartir titulo/editorial (por eso los\r\n listados de "titulos sin repetir" usan distinct()). Cada Libro lleva su\r\n ficha de prestamos (historico completo, activos y devueltos).\r\n\r\n La identidad persistente (id de la tabla libro) no se guarda en el\r\n objeto\: la resuelve la capa DAO con su mapa libro -> idLibro, por eso\r\n el dominio queda fiel al UML de la consigna.\r\n
 comment1.params=p_titulo p_edicion p_editorial p_anio p_prestamos
