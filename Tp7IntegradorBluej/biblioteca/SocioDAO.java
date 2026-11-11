@@ -65,16 +65,34 @@ public class SocioDAO {
     
     public int eliminar(Socio p_socio) throws SQLException {
 
-        String consulta = "DELETE FROM Socio WHERE dniSocio = ?";
+        final int[] filasSocio = new int[1];
 
-        // try-with-resources: cierra la sentencia y la conexion aunque falle
-        try (Connection conexion = this.getConexionBD().conectar();
-             PreparedStatement sentencia = conexion.prepareStatement(consulta)) {
+        // La baja borra primero el historial de prestamos del socio dentro de
+        // una transaccion: sin eso la FK de Prestamo rechaza el DELETE.
+        // La consola ya bloquea la baja si el socio tiene prestamos activos.
+        this.getConexionBD().enTransaccion(new TrabajoBD() {
+            public void ejecutar(Connection p_conexion) throws SQLException {
 
-            sentencia.setInt(1, p_socio.getDniSocio());
+                String borrarPrestamos =
+                    "DELETE FROM Prestamo WHERE dniSocio = ?";
+                String borrarSocio =
+                    "DELETE FROM Socio WHERE dniSocio = ?";
 
-            return sentencia.executeUpdate();
-        }
+                try (PreparedStatement sentenciaPrestamos =
+                         p_conexion.prepareStatement(borrarPrestamos);
+                     PreparedStatement sentenciaSocio =
+                         p_conexion.prepareStatement(borrarSocio)) {
+
+                    sentenciaPrestamos.setInt(1, p_socio.getDniSocio());
+                    sentenciaPrestamos.executeUpdate();
+
+                    sentenciaSocio.setInt(1, p_socio.getDniSocio());
+                    filasSocio[0] = sentenciaSocio.executeUpdate();
+                }
+            }
+        });
+
+        return filasSocio[0];
     }
 
     /**
