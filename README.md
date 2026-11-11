@@ -306,7 +306,7 @@ Interfaz construida con **Java Swing**, sin librerías externas. `VentanaPrincip
 
 | Sección | Ventanas | Funcionalidad |
 |---|---|---|
-| Socios | `VentanaSociosDocentes`, `VentanaSociosEstudiantes`, `VentanaListaSocios` | Alta y consulta de docentes y estudiantes. |
+| Socios | `VentanaSociosDocentes`, `VentanaSociosEstudiantes`, `VentanaListaSocios` | Alta y consulta de docentes y estudiantes. `VentanaSociosDocentes` premia a los docentes responsables (+5 días) y persiste el premio. |
 | Catálogo | `VentanaCatalogo`, `VentanaGestionLibros`, `VentanaListaLibros` | Alta, gestión y listado de libros con su disponibilidad. |
 | Préstamos | `VentanaPrestamos` | Retiro de libros y control de condiciones. |
 | Devoluciones | `VentanaDevoluciones` | Registro de devoluciones. |

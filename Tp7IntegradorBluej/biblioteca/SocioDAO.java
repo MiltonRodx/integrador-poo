@@ -77,6 +77,26 @@ public class SocioDAO {
         }
     }
 
+    /**
+     * Persiste los dias de prestamo actuales del socio (el premio de los
+     * docentes responsables es el unico update de datos que tiene el sistema).
+     *
+     * @return la cantidad de filas afectadas (0 si el DNI no existe en la base)
+     */
+    public int actualizarDiasPrestamo(Socio p_socio) throws SQLException {
+
+        String consulta = "UPDATE Socio SET diasPrestamo = ? WHERE dniSocio = ?";
+
+        try (Connection conexion = this.getConexionBD().conectar();
+             PreparedStatement sentencia = conexion.prepareStatement(consulta)) {
+
+            sentencia.setInt(1, p_socio.getDiasPrestamo());
+            sentencia.setInt(2, p_socio.getDniSocio());
+
+            return sentencia.executeUpdate();
+        }
+    }
+
     public ArrayList<Socio> obtenerTodos() throws SQLException{
 
         ArrayList<Socio> socios = new ArrayList<Socio>();

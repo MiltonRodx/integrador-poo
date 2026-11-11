@@ -29,6 +29,22 @@ public class ConexionBD {
     // Método para conectar (si ya está conectado, devuelve la misma)
     public Connection conectar() throws SQLException {
         if (this.conexion == null || this.conexion.isClosed()) {
+            try {
+                // Registro explicito del driver JDBC de SQLite: si el jar no
+                // esta en el classpath (por ejemplo BlueJ abierto en la
+                // subcarpeta biblioteca, que no ve la carpeta +libs del
+                // proyecto) falla aca con un mensaje claro y no con un
+                // "No suitable driver" criptico.
+                Class.forName("org.sqlite.JDBC");
+            } catch (ClassNotFoundException error) {
+                throw new SQLException(
+                    "No se encontro el driver de SQLite (sqlite-jdbc). "
+                    + "Agregue el jar al classpath: en BlueJ abra el proyecto "
+                    + "Tp7IntegradorBluej, que tiene el driver en +libs.",
+                    error
+                );
+            }
+
             this.conexion = DriverManager.getConnection(
                 "jdbc:sqlite:" + this.getRutaBaseDatos()
             );

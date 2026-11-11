@@ -155,7 +155,7 @@ Todo está en el paquete `biblioteca`, con colecciones genéricas
 | Un ejemplar, un préstamo activo | No se presta un libro que ya está prestado. |
 | Fechas por día | Las fechas se normalizan a medianoche. Un préstamo que vence **hoy** todavía está a tiempo, y devolverlo **el mismo día** del vencimiento cuenta como a tiempo. |
 | Docente responsable | Nunca tuvo ni tiene un préstamo vencido. Los devueltos se miden contra su fecha de devolución; los activos, contra hoy. |
-| Premio | `cambiarDiasDePrestamos(int)` suma días de préstamo al docente. |
+| Premio | `cambiarDiasDePrestamos(int)` suma días de préstamo al docente. La opción 14 del menú y el botón "Premiar responsables" de la GUI lo aplican a los docentes responsables y persisten el cambio. |
 | Rechazo silencioso | `prestarLibro` devuelve `boolean`. Quien lo llama decide qué mensaje mostrar. |
 | Informe de vencidos | Cuenta solo préstamos **activos**. |
 
@@ -173,7 +173,12 @@ través del driver `sqlite-jdbc` (carpeta `+libs/`).
 
 - Se crea con la ruta del archivo (`new ConexionBD("biblioteca.db")`) y la
   comparten todos los DAOs.
-- `conectar()` abre `jdbc:sqlite:<ruta>` **solo si hace falta**. Si ya hay una
+- `conectar()` registra el driver explícitamente con
+  `Class.forName("org.sqlite.JDBC")` antes de abrir `jdbc:sqlite:<ruta>`. Si el
+  jar del driver no está en el classpath, falla ahí con un mensaje claro
+  (suele pasar si se abre en BlueJ la subcarpeta `biblioteca` en lugar del
+  proyecto `Tp7IntegradorBluej`, que tiene el driver en `+libs/`).
+- `conectar()` abre la conexión **solo si hace falta**. Si ya hay una
   conexión abierta, devuelve esa misma.
 - Al abrir ejecuta `PRAGMA foreign_keys = ON`. Sin eso, SQLite **ignora** las
   claves foráneas.
@@ -291,8 +296,10 @@ Depende de `LibroDAO` para conocer el `idLibro`. Es **el único DAO que usa
 
 - Los inserts, updates y deletes usan **`PreparedStatement`**. Solo las
   consultas de "traer todo" usan `Statement` simple.
-- **No hay `update`** en `LibroDAO` ni en `SocioDAO`: los datos de socios y
-  libros no se editan.
+- **Casi no hay `update`**: el único es `SocioDAO.actualizarDiasPrestamo(Socio)`,
+  que persiste el premio de días a los docentes responsables (opción 14 del
+  menú y botón "Premiar responsables" de la GUI). Los datos de socios y libros
+  no se editan: `LibroDAO` no tiene ningún `update`.
 - **No hay `delete`** en `PrestamoDAO`: los préstamos son historial. No se
   borran: se les completa la fecha de devolución.
 - `LibroDAO` y `SocioDAO` hacen operaciones de una sola sentencia y confían en el
@@ -345,7 +352,7 @@ bibliotecaDAO, ventanaPrincipal)`. Al elegir una opción del menú,
 
 | Sección | Pantallas |
 |---|---|
-| Socios | `mostrarSocios()`: tarjetas hacia `VentanaSociosDocentes`, `VentanaSociosEstudiantes`, `VentanaListaSocios` y la baja de socio |
+| Socios | `mostrarSocios()`: tarjetas hacia `VentanaSociosDocentes`, `VentanaSociosEstudiantes`, `VentanaListaSocios` y la baja de socio. `VentanaSociosDocentes` tiene además el botón "Premiar responsables", que premia y persiste |
 | Catálogo | `VentanaCatalogo`, `VentanaGestionLibros`, `VentanaListaLibros` |
 | Préstamos | `VentanaPrestamos` |
 | Devoluciones | `VentanaDevoluciones` |
@@ -471,6 +478,7 @@ salir cierra la conexión con `conexionBD.cerrar()`.
 | 9 | Consultar quién tiene un libro. |
 | 10 / 11 / 12 | Listar socios / libros / títulos. |
 | 13 | Eliminar socio: valida el DNI, bloquea si tiene préstamos activos y borra primero la fila de la base. |
+| 14 | Premiar docentes responsables: suma 5 días de préstamo a cada responsable y persiste el cambio. Si la base rechaza, deshace el premio en memoria. |
 | 0 | Salir. |
 
 **Escenario de la consigna**: el menú es interactivo y **no carga datos por sí
@@ -681,8 +689,9 @@ no falla, llama a `biblioteca.quitarSocio(socio)`.
 **Mejora pendiente**: que la GUI siga el mismo orden que la consola (primero la
 base, después el modelo).
 
-**Sin edición de datos.** `LibroDAO` y `SocioDAO` no tienen `update`: para
-corregir un dato hay que dar de baja y de alta.
+**Sin edición de datos.** `LibroDAO` no tiene `update`, y el único de
+`SocioDAO` es `actualizarDiasPrestamo`, que aplica el premio a docentes
+responsables: para corregir un dato hay que dar de baja y de alta.
 
 ---
 

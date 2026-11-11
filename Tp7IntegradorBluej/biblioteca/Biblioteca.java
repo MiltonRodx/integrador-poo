@@ -355,6 +355,29 @@ public class Biblioteca {
         
         return docentesResponsables;
     }
+
+    // +premiarDocentesResponsables(dias: int): ArrayList
+    /**
+     * Premia a cada docente responsable sumandole dias de prestamo
+     * mediante {@link Docente#cambiarDiasDePrestamos(int)}.
+     *
+     * El premio solo cambia el modelo: quien llama se encarga de
+     * persistirlo (SocioDAO.actualizarDiasPrestamo) y de deshacerlo
+     * (restando los mismos dias) si la base rechaza la escritura.
+     *
+     * @param p_dias dias de premio por cada docente responsable
+     * @return colección con los docentes premiados (vacia si no hay responsables)
+     */
+    public ArrayList<Docente> premiarDocentesResponsables(int p_dias) {
+        // docentesResponsables() devuelve una lista nueva: mutarla no altera getSocios().
+        ArrayList<Docente> premiados = this.docentesResponsables();
+
+        for (Docente unDocente : premiados) {
+            unDocente.cambiarDiasDePrestamos(p_dias);
+        }
+
+        return premiados;
+    }
     
  
     // +quienTieneElLibro(p_libro: Libro): String

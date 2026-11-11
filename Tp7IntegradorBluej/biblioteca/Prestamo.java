@@ -24,7 +24,7 @@ public class Prestamo {
      *
      * La fecha de devolucion nace null (prestamo activo).
      *
-     * @param p_fechaRetiro fecha de retiro (normalizada a medianoche)
+     * @param p_fechaRetiro fecha de retiro (se normaliza a medianoche)
      * @param p_socio socio que se lleva el libro
      * @param p_libro ejemplar retirado
      */
@@ -35,8 +35,18 @@ public class Prestamo {
         this.setLibro(p_libro);
     }
 
-    /** Establece la fecha de retiro. */
-    private void setFechaRetiro(Calendar p_fechaRetiro){ this.fechaRetiro = p_fechaRetiro; }
+    /**
+     * Establece la fecha de retiro normalizada a medianoche: la evaluacion
+     * de vencidos es a nivel dia, la hora del dia no debe influir.
+     */
+    private void setFechaRetiro(Calendar p_fechaRetiro){
+        Calendar retiro = (Calendar) p_fechaRetiro.clone();
+        retiro.set(Calendar.HOUR_OF_DAY, 0);
+        retiro.set(Calendar.MINUTE, 0);
+        retiro.set(Calendar.SECOND, 0);
+        retiro.set(Calendar.MILLISECOND, 0);
+        this.fechaRetiro = retiro;
+    }
 
     /** Establece la fecha de devolucion (null mientras el prestamo este activo). */
     private void setFechaDevolucion(Calendar p_fechaDevolucion){ this.fechaDevolucion = p_fechaDevolucion; }
@@ -65,14 +75,20 @@ public class Prestamo {
     /**
      * Registra la devolucion del libro y cierra el prestamo.
      *
-     * @param p_fecha fecha en que se devolvio
+     * @param p_fecha fecha en que se devolvio (se normaliza a medianoche)
      * @throws IllegalArgumentException si la fecha es nula (sin fecha no hay devolucion)
      */
     public void registrarFechaDevolucion(Calendar p_fecha){
         if (p_fecha == null){
             throw new IllegalArgumentException("La fecha de devolucion no puede ser nula");
         }
-        this.setFechaDevolucion(p_fecha);
+        // Tambien a medianoche: devolver el dia del vencimiento sigue siendo a tiempo.
+        Calendar devolucion = (Calendar) p_fecha.clone();
+        devolucion.set(Calendar.HOUR_OF_DAY, 0);
+        devolucion.set(Calendar.MINUTE, 0);
+        devolucion.set(Calendar.SECOND, 0);
+        devolucion.set(Calendar.MILLISECOND, 0);
+        this.setFechaDevolucion(devolucion);
     }
  
     /**

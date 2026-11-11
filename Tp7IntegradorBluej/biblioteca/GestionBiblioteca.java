@@ -57,6 +57,7 @@ public class GestionBiblioteca {
             System.out.println("11. Listar libros");
             System.out.println("12. Listar titulos");
             System.out.println("13. Eliminar socio");
+            System.out.println("14. Premiar docentes responsables");
             System.out.println("0. Salir");
 
             respuesta = leerEntero(teclado, "Ingrese una opcion:");
@@ -396,6 +397,44 @@ public class GestionBiblioteca {
                         System.out.println(
                             "Error al eliminar el socio de la base de datos: "
                             + excepcionSQL.getMessage()
+                        );
+                    }
+                    break;
+
+                case 14:
+                    // Modelo primero: el premio toca solo memoria. Si la base
+                    // rechaza la persistencia, se deshace restando lo sumado
+                    // (mismo criterio que prestamos/devoluciones).
+                    ArrayList<Docente> premiados =
+                        biblioteca.premiarDocentesResponsables(5);
+
+                    if (premiados.isEmpty()) {
+                        System.out.println(
+                            "No hay docentes responsables a quienes premiar."
+                        );
+                        break;
+                    }
+
+                    try {
+                        for (Docente unDocente : premiados) {
+                            bibliotecaDAO.getSocioDAO()
+                                         .actualizarDiasPrestamo(unDocente);
+                        }
+
+                        System.out.println(
+                            "Premio otorgado: +5 dias de prestamo a "
+                            + premiados.size() + " docente(s) responsable(s)."
+                        );
+
+                    } catch (SQLException excepcionSQL) {
+                        for (Docente unDocente : premiados) {
+                            unDocente.cambiarDiasDePrestamos(-5);
+                        }
+
+                        System.out.println(
+                            "Error al guardar el premio en la base de datos: "
+                            + excepcionSQL.getMessage()
+                            + " (se deshizo el cambio en memoria)."
                         );
                     }
                     break;
