@@ -3,7 +3,6 @@ package biblioteca;
 import javax.swing.*;
 import java.awt.*;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 /**
  * Ventana de interfaz gráfica para el registro de nuevos socios docentes
@@ -94,9 +93,6 @@ public class VentanaSociosDocentes extends JPanel
         BotonRedondeado botonRegistrar =
             new BotonRedondeado("Registrar docente");
 
-        BotonRedondeado botonPremiar =
-            new BotonRedondeado("Premiar responsables");
-
         BotonRedondeado botonVolver =
             new BotonRedondeado("Volver");
 
@@ -105,7 +101,6 @@ public class VentanaSociosDocentes extends JPanel
         );
         panelBotones.setBackground(Color.WHITE);
         panelBotones.add(botonVolver);
-        panelBotones.add(botonPremiar);
         panelBotones.add(botonRegistrar);
 
         JPanel panelDatos = new JPanel(new BorderLayout(10, 10));
@@ -146,11 +141,6 @@ public class VentanaSociosDocentes extends JPanel
         // Accion para registrar
         botonRegistrar.addActionListener(
             evento -> registrarDocente()
-        );
-
-        // Accion para premiar a los docentes responsables
-        botonPremiar.addActionListener(
-            evento -> premiarResponsables()
         );
 
         // Accion para volver
@@ -249,55 +239,6 @@ public class VentanaSociosDocentes extends JPanel
             JOptionPane.showMessageDialog(
                 this,
                 "No se pudo guardar el docente en la base de datos."
-            );
-        }
-    }
-
-    /**
-     * Premia a los docentes responsables (+5 dias de prestamo), persiste el
-     * cambio en la base de datos y refresca la lista de socios. Mismo criterio
-     * que la consola: primero el modelo; si la base rechaza la escritura,
-     * se deshace el cambio en memoria para no desincronizar.
-     */
-    private void premiarResponsables()
-    {
-        ArrayList<Docente> premiados = biblioteca.premiarDocentesResponsables(5);
-
-        if (premiados.isEmpty())
-        {
-            JOptionPane.showMessageDialog(
-                this,
-                "No hay docentes responsables a quienes premiar."
-            );
-            return;
-        }
-
-        try
-        {
-            for (Docente unDocente : premiados)
-            {
-                bibliotecaDAO.getSocioDAO().actualizarDiasPrestamo(unDocente);
-            }
-
-            areaSocios.setText(biblioteca.listaDeSocios());
-
-            JOptionPane.showMessageDialog(
-                this,
-                "Premio otorgado: +5 dias de prestamo a "
-                + premiados.size() + " docente(s) responsable(s)."
-            );
-        }
-        catch (SQLException error)
-        {
-            for (Docente unDocente : premiados)
-            {
-                unDocente.cambiarDiasDePrestamos(-5);
-            }
-
-            JOptionPane.showMessageDialog(
-                this,
-                "No se pudo guardar el premio en la base de datos "
-                + "(se deshizo el cambio en memoria)."
             );
         }
     }

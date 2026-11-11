@@ -426,6 +426,15 @@ public class GestionBiblioteca {
                             + premiados.size() + " docente(s) responsable(s)."
                         );
 
+                        for (Docente unDocente : premiados) {
+                            System.out.println(
+                                "  - " + unDocente.getNombre()
+                                + " (D.N.I. " + unDocente.getDniSocio() + ")"
+                                + ": ahora tiene " + unDocente.getDiasPrestamo()
+                                + " dias de prestamo."
+                            );
+                        }
+
                     } catch (SQLException excepcionSQL) {
                         for (Docente unDocente : premiados) {
                             unDocente.cambiarDiasDePrestamos(-5);

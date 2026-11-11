@@ -2,6 +2,8 @@ package biblioteca;
 
 import javax.swing.*;
 import java.awt.*;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class VentanaPrincipal extends JFrame {
     private JPanel panelPrincipal;
@@ -349,6 +351,62 @@ public class VentanaPrincipal extends JFrame {
         return tarjeta;
     }
 
+    /**
+     * Igual que crearTarjeta(titulo, descripcion, boton), pero con un boton
+     * secundario debajo del principal (por ejemplo "Premiar" en Docentes).
+     */
+    public JPanel crearTarjeta(
+        String p_titulo,
+        String p_descripcion,
+        BotonRedondeado p_boton,
+        BotonRedondeado p_botonSecundario)
+    {
+        JPanel tarjeta = new JPanel();
+        tarjeta.setLayout(new BoxLayout(tarjeta, BoxLayout.Y_AXIS));
+        tarjeta.setBackground(gestorTemas.getColorTarjeta());
+
+        tarjeta.setBorder(
+            BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(220, 226, 235)),
+                BorderFactory.createEmptyBorder(25, 15, 25, 15)
+            )
+        );
+
+        JLabel titulo = new JLabel(p_titulo, SwingConstants.CENTER);
+        titulo.setFont(new Font("Arial", Font.BOLD, 19));
+        titulo.setForeground(gestorTemas.getColorTexto());
+        titulo.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel descripcion = new JLabel(
+            "<html><div style='text-align:center; width:180px;'>"
+            + p_descripcion + "</div></html>",
+            SwingConstants.CENTER
+        );
+        descripcion.setHorizontalAlignment(SwingConstants.CENTER);
+        descripcion.setFont(new Font("Arial", Font.PLAIN, 13));
+        descripcion.setForeground(gestorTemas.getColorTextoSecundario());
+        descripcion.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Los botones no se estiran y quedan centrados, uno debajo del otro
+        p_boton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        p_boton.setMaximumSize(p_boton.getPreferredSize());
+
+        p_botonSecundario.setAlignmentX(Component.CENTER_ALIGNMENT);
+        p_botonSecundario.setMaximumSize(p_botonSecundario.getPreferredSize());
+
+        tarjeta.add(Box.createVerticalGlue());
+        tarjeta.add(titulo);
+        tarjeta.add(Box.createVerticalStrut(15));
+        tarjeta.add(descripcion);
+        tarjeta.add(Box.createVerticalStrut(25));
+        tarjeta.add(p_boton);
+        tarjeta.add(Box.createVerticalStrut(10));
+        tarjeta.add(p_botonSecundario);
+        tarjeta.add(Box.createVerticalGlue());
+
+        return tarjeta;
+    }
+
     // Pantalla principal de socios
     public void mostrarSocios()
     {
@@ -389,6 +447,9 @@ public class VentanaPrincipal extends JFrame {
         BotonRedondeado botonDocentes =
             new BotonRedondeado("Ingresar");
 
+        BotonRedondeado botonPremiar =
+            new BotonRedondeado("Premiar");
+
         BotonRedondeado botonEstudiantes =
             new BotonRedondeado("Ingresar");
 
@@ -401,7 +462,8 @@ public class VentanaPrincipal extends JFrame {
         JPanel tarjetaDocentes = crearTarjeta(
             "Docentes",
             "Registro y consulta de socios docentes.",
-            botonDocentes
+            botonDocentes,
+            botonPremiar
         );
 
         JPanel tarjetaEstudiantes = crearTarjeta(
@@ -432,6 +494,10 @@ public class VentanaPrincipal extends JFrame {
 
         botonDocentes.addActionListener(
             evento -> abrirSociosDocentes()
+        );
+
+        botonPremiar.addActionListener(
+            evento -> premiarDocentes()
         );
 
         botonEstudiantes.addActionListener(
@@ -515,6 +581,139 @@ public class VentanaPrincipal extends JFrame {
         );
 
         this.mostrarContenido(panel);
+    }
+
+    /**
+     * Premio a los docentes responsables desde la tarjeta Docentes.
+     *
+     * Abre un dialogo con un desplegable para elegir a quien premiar
+     * (un docente responsable, o todos de una vez) y la cantidad de dias
+     * a agregar. Mismo criterio que el resto del sistema: primero el
+     * modelo ({@link Docente#cambiarDiasDePrestamos(int)}); si la base
+     * rechaza la persistencia, se deshace el cambio en memoria.
+     */
+    private void premiarDocentes()
+    {
+        ArrayList<Docente> responsables = biblioteca.docentesResponsables();
+
+        if (responsables.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                this,
+                "No hay docentes responsables a quienes premiar.",
+                "Premiar docentes",
+                JOptionPane.INFORMATION_MESSAGE
+            );
+            return;
+        }
+
+        // Desplegable: la primera opcion premia a todos, las demas a uno solo
+        JComboBox<String> selector = new JComboBox<String>();
+
+        selector.addItem("(Todos los responsables)");
+
+        for (Docente unDocente : responsables) {
+            selector.addItem(
+                unDocente.getNombre()
+                + " (D.N.I. " + unDocente.getDniSocio() + ")"
+                + " - tiene " + unDocente.getDiasPrestamo()
+                + " dias de prestamo"
+            );
+        }
+
+        JTextField campoDias = new JTextField("5", 6);
+
+        JPanel panel = new JPanel(new GridLayout(0, 1, 8, 8));
+        panel.add(new JLabel("Premiar a:"));
+        panel.add(selector);
+        panel.add(new JLabel("Cantidad de dias a premiar:"));
+        panel.add(campoDias);
+
+        int opcion = JOptionPane.showConfirmDialog(
+            this,
+            panel,
+            "Premiar docentes responsables",
+            JOptionPane.OK_CANCEL_OPTION,
+            JOptionPane.QUESTION_MESSAGE
+        );
+
+        if (opcion != JOptionPane.OK_OPTION) {
+            return;
+        }
+
+        int dias = 0;
+        try {
+            dias = Integer.parseInt(campoDias.getText().trim());
+        } catch (NumberFormatException error) {
+            JOptionPane.showMessageDialog(
+                this,
+                "Debe ingresar un numero entero.",
+                "Error",
+                JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+
+        if (dias <= 0) {
+            JOptionPane.showMessageDialog(
+                this,
+                "La cantidad de dias debe ser mayor que cero.",
+                "Error",
+                JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+
+        // A quien premia: (Todos) o el docente elegido en el desplegable
+        ArrayList<Docente> aPremiar = new ArrayList<Docente>();
+
+        if (selector.getSelectedIndex() == 0) {
+            aPremiar.addAll(responsables);
+        } else {
+            aPremiar.add(responsables.get(selector.getSelectedIndex() - 1));
+        }
+
+        // Modelo primero: el premio toca solo memoria.
+        for (Docente unDocente : aPremiar) {
+            unDocente.cambiarDiasDePrestamos(dias);
+        }
+
+        try {
+            for (Docente unDocente : aPremiar) {
+                bibliotecaDAO.getSocioDAO().actualizarDiasPrestamo(unDocente);
+            }
+
+            StringBuilder detalle = new StringBuilder();
+
+            for (Docente unDocente : aPremiar) {
+                detalle
+                    .append("- ").append(unDocente.getNombre())
+                    .append(" (D.N.I. ").append(unDocente.getDniSocio())
+                    .append("): ahora tiene ").append(unDocente.getDiasPrestamo())
+                    .append(" dias de prestamo\n");
+            }
+
+            JOptionPane.showMessageDialog(
+                this,
+                "Premio otorgado: +" + dias + " dias de prestamo a "
+                + aPremiar.size() + " docente(s) responsable(s):\n\n"
+                + detalle,
+                "Premio otorgado",
+                JOptionPane.INFORMATION_MESSAGE
+            );
+        } catch (SQLException error) {
+            // La base rechazo: deshago el premio en memoria
+            for (Docente unDocente : aPremiar) {
+                unDocente.cambiarDiasDePrestamos(-dias);
+            }
+
+            JOptionPane.showMessageDialog(
+                this,
+                "No se pudo guardar el premio en la base de datos "
+                + "(se deshizo el cambio en memoria).",
+                "Error",
+                JOptionPane.ERROR_MESSAGE
+            );
+        }
     }
 
     private void abrirSociosDocentes()

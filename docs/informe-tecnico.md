@@ -155,7 +155,7 @@ Todo está en el paquete `biblioteca`, con colecciones genéricas
 | Un ejemplar, un préstamo activo | No se presta un libro que ya está prestado. |
 | Fechas por día | Las fechas se normalizan a medianoche. Un préstamo que vence **hoy** todavía está a tiempo, y devolverlo **el mismo día** del vencimiento cuenta como a tiempo. |
 | Docente responsable | Nunca tuvo ni tiene un préstamo vencido. Los devueltos se miden contra su fecha de devolución; los activos, contra hoy. |
-| Premio | `cambiarDiasDePrestamos(int)` suma días de préstamo al docente. La opción 14 del menú y el botón "Premiar responsables" de la GUI lo aplican a los docentes responsables y persisten el cambio. |
+| Premio | `cambiarDiasDePrestamos(int)` suma días de préstamo al docente. La opción 14 del menú suma 5 días; el botón "Premiar" de la tarjeta Docentes muestra los responsables y pide la cantidad de días. Ambos persisten el cambio. |
 | Rechazo silencioso | `prestarLibro` devuelve `boolean`. Quien lo llama decide qué mensaje mostrar. |
 | Informe de vencidos | Cuenta solo préstamos **activos**. |
 
@@ -352,7 +352,7 @@ bibliotecaDAO, ventanaPrincipal)`. Al elegir una opción del menú,
 
 | Sección | Pantallas |
 |---|---|
-| Socios | `mostrarSocios()`: tarjetas hacia `VentanaSociosDocentes`, `VentanaSociosEstudiantes`, `VentanaListaSocios` y la baja de socio. `VentanaSociosDocentes` tiene además el botón "Premiar responsables", que premia y persiste |
+| Socios | `mostrarSocios()`: tarjetas hacia `VentanaSociosDocentes`, `VentanaSociosEstudiantes`, `VentanaListaSocios` y la baja de socio. La tarjeta Docentes tiene además el botón "Premiar": desplegable para elegir a quién premiar (uno o todos los responsables), pide la cantidad de días, premia y persiste |
 | Catálogo | `VentanaCatalogo`, `VentanaGestionLibros`, `VentanaListaLibros` |
 | Préstamos | `VentanaPrestamos` |
 | Devoluciones | `VentanaDevoluciones` |
