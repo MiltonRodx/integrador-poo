@@ -1,5 +1,5 @@
 #BlueJ class context
-#Wed Nov 11 15:53:51 ART 2026
+#Wed Nov 11 16:12:19 ART 2026
 comment0.target=BibliotecaDAO
 comment1.params=p_conexionBD
 comment1.target=BibliotecaDAO(ConexionBD)
@@ -10,6 +10,7 @@ comment11.target=void repararPrestamosDuplicados(java.sql.Statement)
 comment12.target=java.util.ArrayList cargarLibros()
 comment13.params=p_nombre
 comment13.target=Biblioteca cargarBiblioteca(java.lang.String)
+comment13.text=Este m\u00E9todo act\u00FAa como un inicializador o cargador general del sistema. \r\nSe encarga de levantar toda la informaci\u00F3n principal de la biblioteca desde la base de datos y relacionarla en memoria.
 comment2.params=p_conexionBD
 comment2.target=void setConexionBD(ConexionBD)
 comment3.params=p_libroDAO

@@ -285,7 +285,9 @@ public class BibliotecaDAO
     {
         return this.getLibroDAO().obtenerTodos();
     }
-
+    
+    /*Este método actúa como un inicializador o cargador general del sistema. 
+     * Se encarga de levantar toda la información principal de la biblioteca desde la base de datos y relacionarla en memoria.*/
     public Biblioteca cargarBiblioteca(String p_nombre)
         throws SQLException, ParseException   {
         ArrayList<Libro> libros = this.getLibroDAO().obtenerTodos();

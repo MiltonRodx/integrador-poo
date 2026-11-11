@@ -67,11 +67,13 @@ public class LibroDAO
     }
 
     public ArrayList<Libro> obtenerTodos() throws SQLException{
-
+        /*Abre una conexión con SQLite, prepara una sentencia 
+         * y ejecuta un SELECT * FROM Libro para obtener todos los registros de la tabla de libros. 
+         * El resultado de esa consulta queda guardado en formato de filas en el objeto resultado (ResultSet).*/
         ArrayList<Libro> libros = new ArrayList<Libro>();
 
         Connection conexion = this.getConexionBD().conectar();
-
+        // Statement: Es cualquier orden o instrucción completa que le envías al motor de la base de datos para que ejecute una acción.
         Statement sentencia = conexion.createStatement();
 
         ResultSet resultado = sentencia.executeQuery(
