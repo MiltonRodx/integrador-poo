@@ -17,7 +17,7 @@ public class SocioDAO {
 
     public ConexionBD getConexionBD(){ return this.conexionBD; }
 
-    public void agregar(Socio p_socio) throws SQLException{
+    public void agregar(Socio p_socio) throws SQLException {
 
         Connection conexion = this.getConexionBD().conectar();
 

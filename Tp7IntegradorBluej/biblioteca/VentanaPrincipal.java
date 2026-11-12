@@ -559,20 +559,31 @@ public class VentanaPrincipal extends JFrame {
                     return;
                 }
                 // 4. Eliminar socio
-                boolean eliminado = biblioteca.quitarSocio(socio);
-                if (eliminado) {
+                                // 4. Eliminar socio
+                try {
+                    int eliminado = bibliotecaDAO.getSocioDAO().eliminar(socio);
+
+                    if (eliminado == 1) {
+                        JOptionPane.showMessageDialog(
+                            this,
+                            "Socio eliminado correctamente: " + socio.getNombre(),
+                            "Exito",
+                            JOptionPane.INFORMATION_MESSAGE
+                        );
+                        // Actualizar vista (volver a mostrar el menu de socios)
+                        mostrarSocios();
+                    } else {
+                        JOptionPane.showMessageDialog(
+                            this,
+                            "Error: no se pudo eliminar el socio.",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE
+                        );
+                    }
+                } catch (SQLException e) {
                     JOptionPane.showMessageDialog(
                         this,
-                        "Socio eliminado correctamente: " + socio.getNombre(),
-                        "Exito",
-                        JOptionPane.INFORMATION_MESSAGE
-                    );
-                    // Actualizar vista (volver a mostrar el menu de socios)
-                    mostrarSocios();
-                } else {
-                    JOptionPane.showMessageDialog(
-                        this,
-                        "Error: no se pudo eliminar el socio.",
+                        "Error de base de datos al eliminar el socio: " + e.getMessage(),
                         "Error",
                         JOptionPane.ERROR_MESSAGE
                     );
