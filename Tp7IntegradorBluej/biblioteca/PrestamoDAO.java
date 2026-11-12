@@ -341,5 +341,5 @@ public class PrestamoDAO {
             p_prestamo,
             p_prestamo.getSocio().getDiasPrestamo()
         );
-   }
+    }
 }

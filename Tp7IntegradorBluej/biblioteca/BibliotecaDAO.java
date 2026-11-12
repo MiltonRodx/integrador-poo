@@ -16,7 +16,7 @@ public class BibliotecaDAO {
     private SocioDAO socioDAO;
     private PrestamoDAO prestamoDAO;
     
-    /*Centralización: Al instanciar BibliotecaDAO, este le pasa la misma conexión a todos los sub-DAOs.
+    /* Centralización: Al instanciar BibliotecaDAO, este le pasa la misma conexión a todos los sub-DAOs.
      * Desde el punto de vista del negocio, las pantallas o la clase principal solo interactúan con
      * BibliotecaDAO para pedir o guardar cosas, abstrayéndose de cómo se maneja cada tabla por separado.*/
     

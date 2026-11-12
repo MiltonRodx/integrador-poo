@@ -9,8 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class LibroDAO
-{
+public class LibroDAO {
     private ConexionBD conexionBD;
     private HashMap<Libro, Integer> identificadoresLibros;
 
@@ -19,17 +18,13 @@ public class LibroDAO
         this.setIdentificadoresLibros(new HashMap<Libro, Integer>());
     }
 
-    private void setConexionBD(ConexionBD p_conexionBD){
-        this.conexionBD = p_conexionBD;
-    }
+    private void setConexionBD(ConexionBD p_conexionBD){ this.conexionBD = p_conexionBD; }
 
     private void setIdentificadoresLibros(HashMap<Libro, Integer> p_identificadoresLibros){
         this.identificadoresLibros = p_identificadoresLibros;
     }
 
-    public ConexionBD getConexionBD(){
-        return this.conexionBD;
-    }
+    public ConexionBD getConexionBD(){ return this.conexionBD; }
 
     public HashMap<Libro, Integer> getIdentificadoresLibros(){
         return this.identificadoresLibros;
@@ -107,7 +102,7 @@ public class LibroDAO
         return this.getIdentificadoresLibros().get(p_libro);
     }
 
-    public void eliminar(Libro p_libro) throws SQLException{
+    public void eliminar(Libro p_libro) throws SQLException {
 
         Integer identificador = this.getIdentificadoresLibros().get(p_libro);
 
