@@ -69,8 +69,7 @@ public class ConexionBD {
     // se hace ROLLBACK y el error sube para que quien llamo decida que
     // mostrar. Al terminar (salga como salga) la conexion queda con el
     // autoCommit como estaba, lista para el resto de la app.
-    public void enTransaccion(TrabajoBD p_trabajo) throws SQLException
-    {
+    public void enTransaccion(TrabajoBD p_trabajo) throws SQLException {
         Connection conexion = this.conectar();
 
         try {

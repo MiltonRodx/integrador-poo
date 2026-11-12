@@ -79,7 +79,7 @@ public class Prestamo {
      * @throws IllegalArgumentException si la fecha es nula (sin fecha no hay devolucion)
      */
     public void registrarFechaDevolucion(Calendar p_fecha){
-        if (p_fecha == null){
+        if (p_fecha == null) {
             throw new IllegalArgumentException("La fecha de devolucion no puede ser nula");
         }
         // Tambien a medianoche: devolver el dia del vencimiento sigue siendo a tiempo.

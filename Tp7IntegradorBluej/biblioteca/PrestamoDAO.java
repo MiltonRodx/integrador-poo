@@ -13,43 +13,40 @@ import java.util.Calendar;
 public class PrestamoDAO {
     private ConexionBD conexionBD;
     private LibroDAO libroDAO;
+<<<<<<< HEAD
     //constructor
     public PrestamoDAO(ConexionBD p_conexionBD, LibroDAO p_libroDAO)
     {
+=======
+    
+    public PrestamoDAO(ConexionBD p_conexionBD, LibroDAO p_libroDAO) {
+>>>>>>> 1985cdbca04e5958e9aeaee618c3a7e078561cbd
         this.setConexionBD(p_conexionBD);
         this.setLibroDAO(p_libroDAO);
     }
+    
+    private void setConexionBD(ConexionBD p_conexionBD) { this.conexionBD = p_conexionBD; }
 
-    private void setConexionBD(ConexionBD p_conexionBD)
-    {
-        this.conexionBD = p_conexionBD;
-    }
+    private void setLibroDAO(LibroDAO p_libroDAO) { this.libroDAO = p_libroDAO; }
 
-    private void setLibroDAO(LibroDAO p_libroDAO)
-    {
-        this.libroDAO = p_libroDAO;
-    }
+    public ConexionBD getConexionBD() { return this.conexionBD; }
 
-    public ConexionBD getConexionBD()
-    {
-        return this.conexionBD;
-    }
-
-    public LibroDAO getLibroDAO()
-    {
-        return this.libroDAO;
-    }
+    public LibroDAO getLibroDAO() { return this.libroDAO; }
 
     public void agregar(Prestamo p_prestamo, int p_diasPrestamo)
-        throws SQLException
-    {
+        throws SQLException {
         // La base manda: el alta se ejecuta dentro de una transaccion.
         // Si el insert falla (por ejemplo, el indice unico rechaza un
         // prestamo duplicado), la transaccion ya hizo rollback y el
         // error sube para que la GUI deshaga el cambio en memoria.
+<<<<<<< HEAD
         this.getConexionBD().enTransaccion(new TrabajoBD(){
             public void ejecutar(Connection p_conexion) throws SQLException
             {
+=======
+        this.getConexionBD().enTransaccion(new TrabajoBD() {
+            public void ejecutar(Connection p_conexion) throws SQLException {
+>>>>>>> 1985cdbca04e5958e9aeaee618c3a7e078561cbd
                 insertar(p_prestamo, p_diasPrestamo, p_conexion);
             }
         });
@@ -58,9 +55,7 @@ public class PrestamoDAO {
     // Insert de un prestamo con la conexion de la transaccion.
     // NO cierra la conexion: el manejo lo hace ConexionBD.enTransaccion().
     private void insertar(Prestamo p_prestamo, int p_diasPrestamo,
-                          Connection p_conexion)
-        throws SQLException
-    {
+                          Connection p_conexion)  throws SQLException {
         SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
 
         String fechaRetiro = formato.format(
@@ -274,6 +269,5 @@ public class PrestamoDAO {
             p_prestamo,
             p_prestamo.getSocio().getDiasPrestamo()
         );
-   }
-
+    }
 }
