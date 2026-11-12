@@ -390,11 +390,11 @@ public class GestionBiblioteca {
                         }
                     }
 
-                    if(libroConsulta == null){
+                    if (libroConsulta == null) {
                         libroConsulta = biblioteca.buscarLibro(tituloConsulta);
                     }
 
-                    if(libroConsulta != null){
+                    if (libroConsulta != null) {
 
                         try {
 
@@ -566,7 +566,7 @@ public class GestionBiblioteca {
                     System.out.println("Opcion incorrecta.");
                     break;
             }
-        } while(respuesta != 0);
+        } while (respuesta != 0);
 
         teclado.close();
         conexionBD.cerrar();
