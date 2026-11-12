@@ -13,14 +13,8 @@ import java.util.Calendar;
 public class PrestamoDAO {
     private ConexionBD conexionBD;
     private LibroDAO libroDAO;
-<<<<<<< HEAD
-    //constructor
-    public PrestamoDAO(ConexionBD p_conexionBD, LibroDAO p_libroDAO)
-    {
-=======
     
     public PrestamoDAO(ConexionBD p_conexionBD, LibroDAO p_libroDAO) {
->>>>>>> 1985cdbca04e5958e9aeaee618c3a7e078561cbd
         this.setConexionBD(p_conexionBD);
         this.setLibroDAO(p_libroDAO);
     }
@@ -39,14 +33,8 @@ public class PrestamoDAO {
         // Si el insert falla (por ejemplo, el indice unico rechaza un
         // prestamo duplicado), la transaccion ya hizo rollback y el
         // error sube para que la GUI deshaga el cambio en memoria.
-<<<<<<< HEAD
-        this.getConexionBD().enTransaccion(new TrabajoBD(){
-            public void ejecutar(Connection p_conexion) throws SQLException
-            {
-=======
         this.getConexionBD().enTransaccion(new TrabajoBD() {
             public void ejecutar(Connection p_conexion) throws SQLException {
->>>>>>> 1985cdbca04e5958e9aeaee618c3a7e078561cbd
                 insertar(p_prestamo, p_diasPrestamo, p_conexion);
             }
         });
@@ -63,8 +51,7 @@ public class PrestamoDAO {
         );
 
         String fechaDevolucion = null;
-        /*El if: Revisa si el préstamo ya fue devuelto. Si es un préstamo nuevo que se acaba 
-         * de realizar, la fecha de devolución es null (porque todavía lo tiene el socio).*/
+
         if(p_prestamo.estaDevuelto()) {
             fechaDevolucion = formato.format(
                 p_prestamo.getFechaDevolucion().getTime()
@@ -73,11 +60,8 @@ public class PrestamoDAO {
 
         String consulta = "INSERT INTO Prestamo " +
             "(fechaRetiro, fechaDevolucion, dniSocio, idLibro, diasPrestamo) " +
-            "VALUES (?, ?, ?, ?, ?)";//Los signos de interrogacion son placeholders(se evita
-            //posibles ataques de sql injection))
-            
-        //Es un objeto que representa una sentencia SQL precompilada 
-        //y lista para ser ejecutada por la base de datos.
+            "VALUES (?, ?, ?, ?, ?)";
+
         PreparedStatement sentencia = p_conexion.prepareStatement(consulta);
 
         sentencia.setString(1, fechaRetiro);
