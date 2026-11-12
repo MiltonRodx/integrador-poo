@@ -1,6 +1,7 @@
 #BlueJ class context
-#Wed Nov 11 10:55:48 ART 2026
+#Thu Nov 12 10:41:30 ART 2026
 comment0.target=TrabajoBD
 comment1.params=p_conexion
 comment1.target=void ejecutar(java.sql.Connection)
+comment1.text=\r\n Ejecuta una tarea contra la base de datos dentro de una transacci\u00F3n.\r\n \r\n Recibe la conexi\u00F3n ya configurada. No debe cerrar la conexi\u00F3n ni \r\n tocar el autoCommit, ya que el gestor se encarga del commit o del \r\n rollback si ocurre alg\u00FAn error.\r\n \r\n @param p_conexion La conexi\u00F3n transaccional provista.\r\n @throws SQLException Si ocurre un error en la base de datos.\r\n
 numComments=2
