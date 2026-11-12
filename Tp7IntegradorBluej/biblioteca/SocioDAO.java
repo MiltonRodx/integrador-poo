@@ -13,43 +13,36 @@ public class SocioDAO {
         this.setConexionBD(p_conexionBD);
     }
 
-    private void setConexionBD(ConexionBD p_conexionBD){
-        this.conexionBD = p_conexionBD;
-    }
+    private void setConexionBD(ConexionBD p_conexionBD){ this.conexionBD = p_conexionBD; }
 
-    public ConexionBD getConexionBD(){
-        return this.conexionBD;
-    }
+    public ConexionBD getConexionBD(){ return this.conexionBD; }
 
     public void agregar(Socio p_socio) throws SQLException{
 
         Connection conexion = this.getConexionBD().conectar();
 
-        String tipo = "";
+        String tipo = p_socio.soyDeLaClase();
         String area = null;
         String carrera = null;
         
-        if(p_socio instanceof Docente){
-
+        
+        if (tipo.equals("Docente")){
             Docente unDocente = (Docente) p_socio;
-
-            tipo = "Docente";
             area = unDocente.getArea();
-
-        } else if(p_socio instanceof Estudiante){
-
+        }
+        else if (tipo.equals("Estudiante")) {
             Estudiante unEstudiante = (Estudiante) p_socio;
-
-            tipo = "Estudiante";
             carrera = unEstudiante.getCarrera();
         }
-
+    
+        // Estructura de la consulta SQL (con placeholders '?').
         String consulta = "INSERT INTO Socio " +
                           "(dniSocio, nombre, diasPrestamo, tipo, area, carrera) " +
                           "VALUES (?, ?, ?, ?, ?, ?)";
 
         PreparedStatement sentencia = conexion.prepareStatement(consulta);
 
+        // Posicionar los valores en los '?' (placeholders) de la sentencia.
         sentencia.setInt(1, p_socio.getDniSocio());
         sentencia.setString(2, p_socio.getNombre());
         sentencia.setInt(3, p_socio.getDiasPrestamo());
@@ -57,41 +50,49 @@ public class SocioDAO {
         sentencia.setString(5, area);
         sentencia.setString(6, carrera);
 
+        // Ejecución
         sentencia.executeUpdate();
 
+        // Cierre de la sentencia y la conexión
         sentencia.close();
         conexion.close();
     }
     
+    // Da de baja un socio y devuelve cuántas filas de Socio se borraron (0 si no existía)
     public int eliminar(Socio p_socio) throws SQLException {
-
+    
+        // Caja de un elemento para sacar el resultado de la clase anónima
         final int[] filasSocio = new int[1];
-
-        // La baja borra primero el historial de prestamos del socio dentro de
-        // una transaccion: sin eso la FK de Prestamo rechaza el DELETE.
-        // La consola ya bloquea la baja si el socio tiene prestamos activos.
+    
+        // Todo corre en una transacción: o se borra todo o no se borra nada
         this.getConexionBD().enTransaccion(new TrabajoBD() {
             public void ejecutar(Connection p_conexion) throws SQLException {
-
+    
+                // Primero los préstamos, porque la FK de Prestamo apunta al socio
                 String borrarPrestamos =
                     "DELETE FROM Prestamo WHERE dniSocio = ?";
+                // Después el socio
                 String borrarSocio =
                     "DELETE FROM Socio WHERE dniSocio = ?";
-
+    
+                // try-with-resources: cierra las sentencias solo al terminar
                 try (PreparedStatement sentenciaPrestamos =
                          p_conexion.prepareStatement(borrarPrestamos);
                      PreparedStatement sentenciaSocio =
                          p_conexion.prepareStatement(borrarSocio)) {
-
+    
+                    // Borra el historial de préstamos del socio
                     sentenciaPrestamos.setInt(1, p_socio.getDniSocio());
                     sentenciaPrestamos.executeUpdate();
-
+    
+                    // Borra al socio y guarda cuántas filas afectó
                     sentenciaSocio.setInt(1, p_socio.getDniSocio());
                     filasSocio[0] = sentenciaSocio.executeUpdate();
                 }
             }
         });
-
+    
+        // Devuelve el resultado guardado en la caja
         return filasSocio[0];
     }
 
@@ -125,6 +126,7 @@ public class SocioDAO {
             "SELECT * FROM Socio"
         );
 
+        // ResultSet
         ResultSet resultado = sentencia.executeQuery();
 
         while(resultado.next()){
@@ -134,7 +136,7 @@ public class SocioDAO {
             int diasPrestamo = resultado.getInt("diasPrestamo");
             String tipo = resultado.getString("tipo");
 
-            if(tipo.equals("Docente")){
+            if (tipo.equals("Docente")){
 
                 Docente unDocente = new Docente(
                     dni,
@@ -146,7 +148,7 @@ public class SocioDAO {
                 socios.add(unDocente);
 
             } else if(tipo.equals("Estudiante")){
-
+                
                 Estudiante unEstudiante = new Estudiante(
                     dni,
                     nombre,

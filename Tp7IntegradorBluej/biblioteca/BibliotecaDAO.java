@@ -10,14 +10,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.text.ParseException;
 
-public class BibliotecaDAO
-{
+public class BibliotecaDAO {
     private ConexionBD conexionBD;
     private LibroDAO libroDAO;
     private SocioDAO socioDAO;
     private PrestamoDAO prestamoDAO;
-    /*Centralización: Al instanciar BibliotecaDAO, este le pasa la misma conexión a todos los sub-DAOs. Desde el punto de vista del negocio, las pantallas o la clase principal 
-    * solo interactúan con BibliotecaDAO para pedir o guardar cosas, abstrayéndose de cómo se maneja cada tabla por separado.*/
+    
+    /*Centralización: Al instanciar BibliotecaDAO, este le pasa la misma conexión a todos los sub-DAOs.
+     * Desde el punto de vista del negocio, las pantallas o la clase principal solo interactúan con
+     * BibliotecaDAO para pedir o guardar cosas, abstrayéndose de cómo se maneja cada tabla por separado.*/
     
     public BibliotecaDAO(ConexionBD p_conexionBD) {
         this.setConexionBD(p_conexionBD);
@@ -26,40 +27,23 @@ public class BibliotecaDAO
         this.setPrestamoDAO(new PrestamoDAO(p_conexionBD, this.getLibroDAO()));
     }
 
-    private void setConexionBD(ConexionBD p_conexionBD) {
-        this.conexionBD = p_conexionBD;
-    }
+    private void setConexionBD(ConexionBD p_conexionBD) { this.conexionBD = p_conexionBD; }
 
-    private void setLibroDAO(LibroDAO p_libroDAO) {
-        this.libroDAO = p_libroDAO;
-    }
+    private void setLibroDAO(LibroDAO p_libroDAO) { this.libroDAO = p_libroDAO; }
 
-    private void setSocioDAO(SocioDAO p_socioDAO) { 
-        this.socioDAO = p_socioDAO;
-    }
+    private void setSocioDAO(SocioDAO p_socioDAO) { this.socioDAO = p_socioDAO; }
 
-    private void setPrestamoDAO(PrestamoDAO p_prestamoDAO) { 
-        this.prestamoDAO = p_prestamoDAO;
-    }
+    private void setPrestamoDAO(PrestamoDAO p_prestamoDAO) { this.prestamoDAO = p_prestamoDAO; }
 
-    public ConexionBD getConexionBD() {
-        return this.conexionBD;
-    }
+    public ConexionBD getConexionBD() { return this.conexionBD; }
 
-    public LibroDAO getLibroDAO() {
-        return this.libroDAO;
-    }
+    public LibroDAO getLibroDAO() { return this.libroDAO; }
 
-    public SocioDAO getSocioDAO() { 
-        return this.socioDAO;
-    }
+    public SocioDAO getSocioDAO() { return this.socioDAO; }
 
-    public PrestamoDAO getPrestamoDAO() {
-        return this.prestamoDAO;
-    }
+    public PrestamoDAO getPrestamoDAO() { return this.prestamoDAO; }
 
-    public void crearTablas() throws SQLException
-    {
+    public void crearTablas() throws SQLException {
         Connection conexion = this.getConexionBD().conectar();
         Statement sentencia = conexion.createStatement();
 
@@ -95,7 +79,8 @@ public class BibliotecaDAO
         );
 
         boolean existeColumna = false;
-
+    
+        
         ResultSet resultado = sentencia.executeQuery(
             "PRAGMA table_info(Prestamo)"
         );
@@ -201,9 +186,8 @@ public class BibliotecaDAO
         ResultSet conflicto = null;
         int eventos = 0;
 
-        try
-        {
-            // ?????????????????????????????????????????????????????????? wtf
+        try {
+            // ?????????????????????????????????????????????????????????
             conflicto = p_sentencia.executeQuery(
                 "SELECT P.idPrestamo, L.titulo, S.nombre, P.fechaRetiro, " +
                 "(" +
@@ -244,16 +228,13 @@ public class BibliotecaDAO
                 );
             }
         }
-        finally
-        {
-            if(conflicto != null)
-            {
+        finally {
+            if (conflicto != null) {
                 conflicto.close();
             }
         }
 
-        if(eventos == 0)
-        {
+        if(eventos == 0) {
             return;
         }
 
@@ -281,8 +262,7 @@ public class BibliotecaDAO
         );
     }
 
-    public ArrayList<Libro> cargarLibros() throws SQLException
-    {
+    public ArrayList<Libro> cargarLibros() throws SQLException {
         return this.getLibroDAO().obtenerTodos();
     }
     
