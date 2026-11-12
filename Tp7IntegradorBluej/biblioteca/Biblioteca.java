@@ -489,14 +489,17 @@ public class Biblioteca {
      * Genera un listado de los docentes responsables, uno por línea,
      * reutilizando {@link #docentesResponsables()}.
      *
-     * @return el listado de docentes responsables
+     * @return el listado de docentes responsables, o un mensaje si no hay ninguno
      */
     public String listaDeDocentesResponsables() {
-        // Devuelve un String según formato3, reutilizando docentesResponsables() y Socio.toString().
-        return "Lista de Docentes Responsables:\n" + this.docentesResponsables().stream()
-                .map(unDocente -> "* " + unDocente).collect(Collectors.joining("\n"));
-        
+        ArrayList<Docente> docentes = this.docentesResponsables();
+
+        if (docentes.isEmpty()) {
+            return "No se ha encontrado ningun docente responsable";
+        }
+
+        return "Lista de Docentes Responsables:\n" + docentes.stream()
+                .map(unDocente -> "* " + unDocente)
+                .collect(Collectors.joining("\n"));
     }
-    
-    
 }
